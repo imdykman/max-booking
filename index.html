@@ -4,95 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Запись в ОТДИС</title>
-    <!-- Подключаем библиотеку MAX Bridge для связи с приложением -->
     <script src="https://unpkg.com/@vkid/max-bridge-sdk/dist/bridge.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         h1 { font-size: 22px; margin-bottom: 20px; color: #333; }
-        h2 { font-size: 18px; margin-bottom: 15px; color: #555; margin-top: 10px;}
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .weekday, .day {
-            text-align: center;
-            padding: 10px 0;
-            border-radius: 12px;
-        }
+        h2 { font-size: 18px; margin-bottom: 15px; color: #555; margin-top: 10px; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
+        .weekday, .day { text-align: center; padding: 10px 0; border-radius: 12px; }
         .weekday { font-size: 12px; color: #888; }
         .day { background-color: #f0f0f0; cursor: pointer; }
         .day.available { background-color: #e3f2fd; color: #1976d2; }
         .day.selected { background-color: #1976d2; color: white; }
         .day.disabled { background-color: #eee; color: #ccc; cursor: not-allowed; }
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .time-slot {
-            text-align: center;
-            padding: 10px;
-            background-color: #e3f2fd;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+        .time-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .time-slot { text-align: center; padding: 10px; background-color: #e3f2fd; border-radius: 10px; cursor: pointer; }
         .time-slot.selected { background-color: #1976d2; color: white; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #555; }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #1976d2;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+        button { width: 100%; padding: 14px; background-color: #1976d2; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         button:disabled { background-color: #ccc; }
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        .nav-btn {
-            background-color: #ddd;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
+        .nav-buttons { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .nav-btn { background-color: #ddd; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
         .month { font-size: 16px; font-weight: bold; text-align: center; padding: 10px; }
         .close-btn { background-color: #dc3545; margin-top: 20px; }
-        .message {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
+        .message { padding: 12px; border-radius: 10px; margin-bottom: 15px; }
         .message.success { background-color: #e8f5e9; color: #2e7d32; }
         .message.error { background-color: #ffebee; color: #c62828; }
     </style>
@@ -102,19 +41,16 @@
         <div class="card">
             <h1>📅 Запись в ОТДИС</h1>
             <div id="message" class="message" style="display: none;"></div>
-
             <div class="nav-buttons">
                 <div class="nav-btn" onclick="prevMonth()">◀️</div>
                 <div class="month" id="monthDisplay"></div>
                 <div class="nav-btn" onclick="nextMonth()">▶️</div>
             </div>
             <div class="calendar" id="calendar"></div>
-
             <div id="timeSection" style="display: none;">
                 <h2>🕐 Выберите время</h2>
                 <div class="time-slots" id="timeSlots"></div>
             </div>
-
             <div id="formSection" style="display: none;">
                 <h2>📝 Ваши данные</h2>
                 <div class="form-group">
@@ -132,21 +68,18 @@
     </div>
 
     <script>
-        // Глобальные переменные
         let currentDate = new Date();
         let selectedDate = null;
         let selectedTime = null;
         let currentUser = { id: null, name: '' };
         let bridge = null;
-        let workHours = { start: 9, end: 15 }; // По умолчанию для будней
+        let workHours = { start: 9, end: 15 };
         let saturdayHours = { start: 10, end: 13 };
 
-        // --- Работа с MAX Bridge ---
         async function initMax() {
             bridge = new window.MAXBridge();
             try {
-                await bridge.init(); // Инициализируем соединение
-                // Получаем данные о пользователе
+                await bridge.init();
                 const userData = await bridge.getUserData();
                 currentUser.id = userData.id;
                 currentUser.name = userData.name || userData.first_name + ' ' + userData.last_name;
@@ -159,37 +92,26 @@
         }
 
         function closeApp() {
-            if (bridge) {
-                bridge.close(); // Закрываем WebView
-            } else {
-                window.close();
-            }
+            if (bridge) bridge.close();
+            else window.close();
         }
 
+        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ =====
         async function sendBookingToBot(bookingData) {
-    const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-    
-    try {
-        // Пробуем отправить сообщение через bridge (для MAX)
-        if (bridge && typeof bridge.sendMessage === 'function') {
-            await bridge.sendMessage(messageText);
-            console.log('Сообщение отправлено через bridge');
-            return true;
-        }
-        // Альтернативный способ: через открытие диплинка
-        else {
+            const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
             const encodedText = encodeURIComponent(messageText);
-            window.location.href = `https://max.ru/otdis_pk_bot?startapp=send&text=${encodedText}`;
+            
+            // Используем официальный диплинк :share для отправки сообщения через интерфейс MAX
+            window.location.href = `https://max.ru/:share?text=${encodedText}`;
+            
+            showMessage('✅ Открывается окно MAX для отправки заявки.', 'success');
+            setTimeout(() => closeApp(), 2000);
             return true;
         }
-    } catch(e) {
-        console.error('Ошибка отправки:', e);
-        return false;
-    }
-}
+        // =====================================
 
-        // --- Календарь и слоты (логика без изменений)---
         const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+        
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -231,7 +153,6 @@
                     if (h !== workHours.end - 1) slots.push(`${h}:30`);
                 }
             }
-            // Здесь можно было бы запросить занятые слоты у бота, но для простоты показываем все.
             let timeHtml = slots.map(slot => `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`).join('');
             document.getElementById('timeSlots').innerHTML = timeHtml;
             document.getElementById('timeSection').style.display = 'block';
@@ -262,7 +183,7 @@
 
             const success = await sendBookingToBot(bookingData);
             if (success) {
-                showMessage('✅ Вы успешно записаны! Специалист свяжется с вами.', 'success');
+                showMessage('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
                 document.getElementById('submitBtn').disabled = true;
                 setTimeout(() => closeApp(), 3000);
             } else {
@@ -281,7 +202,7 @@
         function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
         function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
 
-        initMax(); // Запускаем при загрузке страницы
+        initMax();
         renderCalendar();
     </script>
 </body>
