@@ -167,17 +167,26 @@
         }
 
         async function sendBookingToBot(bookingData) {
-            // Просим бота сохранить запись.
-            // Для этого мы отправляем боту специальное сообщение через Bridge
-            const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-            try {
-                await bridge.sendMessage(messageText);
-                return true;
-            } catch(e) {
-                console.error(e);
-                return false;
-            }
+    const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
+    
+    try {
+        // Пробуем отправить сообщение через bridge (для MAX)
+        if (bridge && typeof bridge.sendMessage === 'function') {
+            await bridge.sendMessage(messageText);
+            console.log('Сообщение отправлено через bridge');
+            return true;
         }
+        // Альтернативный способ: через открытие диплинка
+        else {
+            const encodedText = encodeURIComponent(messageText);
+            window.location.href = `https://max.ru/otdis_pk_bot?startapp=send&text=${encodedText}`;
+            return true;
+        }
+    } catch(e) {
+        console.error('Ошибка отправки:', e);
+        return false;
+    }
+}
 
         // --- Календарь и слоты (логика без изменений)---
         const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
