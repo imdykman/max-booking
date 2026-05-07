@@ -33,7 +33,7 @@
         .close-btn { background-color: #dc3545; margin-top: 20px; }
         .message { padding: 12px; border-radius: 10px; margin-bottom: 15px; }
         .message.success { background-color: #e8f5e9; color: #2e7d32; }
-        .message.error { background-color: #ffebee; color: #c62828; }
+        .message.error { background-color: #ffebee; color: #c62828; white-space: pre-line; }
     </style>
 </head>
 <body>
@@ -99,14 +99,25 @@
         // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ =====
         async function sendBookingToBot(bookingData) {
             const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-            const encodedText = encodeURIComponent(messageText);
             
-            // Используем официальный диплинк :share для отправки сообщения через интерфейс MAX
-            window.location.href = `https://max.ru/:share?text=${encodedText}`;
-            
-            showMessage('✅ Открывается окно MAX для отправки заявки.', 'success');
-            setTimeout(() => closeApp(), 2000);
-            return true;
+            try {
+                // Отправка через bridge (работает внутри MAX)
+                if (bridge && typeof bridge.sendMessage === 'function') {
+                    await bridge.sendMessage(messageText);
+                    console.log('Сообщение отправлено через bridge');
+                    return true;
+                }
+                // Запасной вариант
+                else {
+                    const encodedText = encodeURIComponent(messageText);
+                    window.location.href = `https://max.ru/otdis_pk_bot?startapp=send&text=${encodedText}`;
+                    return true;
+                }
+            } catch(e) {
+                console.error('Ошибка отправки:', e);
+                showMessage(`❌ Не удалось отправить автоматически. Пожалуйста, скопируйте текст и отправьте боту @otdis_pk_bot:\n\n${messageText}`, 'error');
+                return false;
+            }
         }
         // =====================================
 
@@ -185,9 +196,7 @@
             if (success) {
                 showMessage('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
                 document.getElementById('submitBtn').disabled = true;
-                setTimeout(() => closeApp(), 3000);
-            } else {
-                showMessage('❌ Ошибка при записи. Попробуйте позже.', 'error');
+                setTimeout(() => closeApp(), 2000);
             }
         }
 
@@ -196,7 +205,7 @@
             msgDiv.innerText = text;
             msgDiv.className = `message ${type}`;
             msgDiv.style.display = 'block';
-            setTimeout(() => msgDiv.style.display = 'none', 4000);
+            setTimeout(() => msgDiv.style.display = 'none', 5000);
         }
 
         function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
