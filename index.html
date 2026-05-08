@@ -91,45 +91,32 @@
             }
         }
 
-   function closeApp() {
-    try {
-        if (bridge) {
-            bridge.close();
-        } else if (window.MX && window.MX.close) {
-            window.MX.close();
-        } else if (window.close) {
-            window.close();
-        }
-    } catch(e) {
-        console.log('Не удалось закрыть окно');
-    }
-}
-        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ =====
-       async function sendBookingToBot(bookingData) {
-    const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-    
-    const payload = encodeURIComponent(messageText);
-    const link = `https://max.ru/otdis_pk_bot?startapp=${payload}`;
-    
-    // Открываем ссылку
-    window.location.href = link;
-    
-    showMessage('✅ Открывается чат с ботом. Отправьте сообщение.', 'success');
-    return true;
-}
-                // Запасной вариант
-                else {
-                    const encodedText = encodeURIComponent(messageText);
-                    window.location.href = `https://max.ru/otdis_pk_bot?startapp=send&text=${encodedText}`;
-                    return true;
+        function closeApp() {
+            try {
+                if (bridge) {
+                    bridge.close();
+                } else if (window.MX && window.MX.close) {
+                    window.MX.close();
+                } else if (window.close) {
+                    window.close();
                 }
             } catch(e) {
-                console.error('Ошибка отправки:', e);
-                showMessage(`❌ Не удалось отправить автоматически. Пожалуйста, скопируйте текст и отправьте боту @otdis_pk_bot:\n\n${messageText}`, 'error');
-                return false;
+                console.log('Не удалось закрыть окно');
             }
         }
-        // =====================================
+
+        // ===== ФУНКЦИЯ ОТПРАВКИ (только диплинк) =====
+        async function sendBookingToBot(bookingData) {
+            const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
+            
+            const payload = encodeURIComponent(messageText);
+            const link = `https://max.ru/otdis_pk_bot?startapp=${payload}`;
+            
+            window.location.href = link;
+            showMessage('✅ Открывается чат с ботом. Отправьте сообщение.', 'success');
+            return true;
+        }
+        // ===========================================
 
         const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
         
