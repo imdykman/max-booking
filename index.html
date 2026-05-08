@@ -203,27 +203,24 @@ async function sendBookingToBot(bookingData) {
         }
 
         async function submitBooking() {
-            if (!selectedDate || !selectedTime) { showMessage('Выберите дату и время', 'error'); return; }
-            const userName = document.getElementById('userName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            if (!userName || !phone) { showMessage('Заполните имя и телефон', 'error'); return; }
+    if (!selectedDate || !selectedTime) { showMessage('Выберите дату и время', 'error'); return; }
+    const userName = document.getElementById('userName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    if (!userName || !phone) { showMessage('Заполните имя и телефон', 'error'); return; }
 
-            const bookingData = {
-                user_id: currentUser.id,
-                user_name: userName,
-                phone: phone,
-                date: selectedDate.toISOString().split('T')[0],
-                time: selectedTime,
-                purpose: 'Запись через мини-приложение'
-            };
+    const bookingData = {
+        user_id: currentUser.id,
+        user_name: userName,
+        phone: phone,
+        date: selectedDate.toISOString().split('T')[0],
+        time: selectedTime,
+        purpose: 'Запись через мини-приложение'
+    };
 
-            const success = await sendBookingToBot(bookingData);
-            if (success) {
-                showMessage('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                document.getElementById('submitBtn').disabled = true;
-                setTimeout(() => closeApp(), 2000);
-            }
-        }
+    await sendBookingToBot(bookingData);
+    // Убираем лишнее сообщение, так как инструкция уже показана внутри sendBookingToBot
+    document.getElementById('submitBtn').disabled = true;
+}
 
         function showMessage(text, type) {
             const msgDiv = document.getElementById('message');
