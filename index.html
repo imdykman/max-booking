@@ -106,23 +106,42 @@
         }
 
         // ===== ФУНКЦИЯ ОТПРАВКИ (только диплинк) =====
- async function sendBookingToBot(bookingData) {
+async function sendBookingToBot(bookingData) {
     const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
     
-    // Кодируем текст для URL
-    const encodedText = encodeURIComponent(messageText);
+    // Копируем в буфер обмена
+    await navigator.clipboard.writeText(messageText);
     
-    // Пробуем через параметр text
-    const link = `https://max.ru/otdis_pk_bot?text=${encodedText}`;
+    // Показываем понятную инструкцию
+    showMessage(
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+        '📋 *ДАННЫЕ СКОПИРОВАНЫ!*\n' +
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+        '👇 *Что делать дальше:*\n\n' +
+        '1️⃣ Нажмите *"Открыть чат с ботом"* внизу\n\n' +
+        '2️⃣ В поле ввода сообщения *нажмите и удерживайте* (долгое нажатие)\n\n' +
+        '3️⃣ Выберите *«Вставить»*\n\n' +
+        '4️⃣ Нажмите *«Отправить»* ▶️\n\n' +
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+        '✨ *После отправки специалист свяжется с вами!*\n' +
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        'success'
+    );
     
-    // Открываем чат с ботом
-    window.location.href = link;
+    // Добавляем кнопку для открытия чата
+    setTimeout(() => {
+        const chatLink = document.createElement('button');
+        chatLink.innerText = '📱 Открыть чат с ботом';
+        chatLink.onclick = () => {
+            window.location.href = 'https://max.ru/otdis_pk_bot';
+        };
+        chatLink.style.backgroundColor = '#1976d2';
+        chatLink.style.marginTop = '10px';
+        document.querySelector('.card').appendChild(chatLink);
+    }, 100);
     
-    showMessage('✅ Открывается чат с ботом. Текст уже в поле ввода — просто нажмите "Отправить".', 'success');
-    
-    // Закрываем приложение через 3 секунды
-    setTimeout(() => closeApp(), 3000);
-    
+    // Не закрываем приложение сразу, чтобы пользователь успел прочитать
+    setTimeout(() => closeApp(), 10000);
     return true;
 }
         // ===========================================
