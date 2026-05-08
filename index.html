@@ -12,9 +12,13 @@
             background-color: #f0f2f5;
             padding: 12px;
         }
-        .container { max-width: 600px; margin: 0 auto; }
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-        /* Шапка (кликабельная) */
+        /* Шапка (возврат в главное меню) */
         .header {
             background: linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%);
             color: white;
@@ -24,6 +28,7 @@
             text-align: center;
             cursor: pointer;
             transition: opacity 0.2s;
+            width: 100%;
         }
         .header:active { opacity: 0.8; }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
@@ -36,6 +41,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            width: 100%;
         }
         .info-header {
             display: flex;
@@ -65,11 +71,12 @@
             white-space: pre-line;
         }
 
-        /* Уменьшенные кнопки главного меню */
+        /* Уменьшенные кнопки главного меню — фикс ширины */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 12px;
+            width: 100%;
         }
         .menu-btn {
             background: white;
@@ -82,21 +89,23 @@
             color: #1a56db;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 6px;
+            width: 100%;
         }
         .menu-btn:active { transform: scale(0.97); background-color: #e8eef9; }
         .menu-btn .emoji { font-size: 26px; display: block; }
         .menu-icon-small { width: 28px; height: 28px; object-fit: contain; }
 
-        /* Список направлений подготовки (как карточки) */
+        /* Список направлений подготовки */
         .directions-grid {
             display: flex;
             flex-direction: column;
             gap: 16px;
+            width: 100%;
         }
         .direction-category {
             background: #f8f9fa;
@@ -131,18 +140,20 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            width: 100%;
         }
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
             margin: 15px 0;
+            width: 100%;
         }
         .weekday, .day {
             text-align: center;
             padding: 8px 0;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
         }
         .weekday { font-size: 11px; color: #888; font-weight: 600; }
         .day { background-color: #f0f2f5; cursor: pointer; }
@@ -174,7 +185,7 @@
             background-color: #e3f2fd;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
         }
         .time-slot.selected { background-color: #1a56db; color: white; }
         .form-group { margin: 15px 0; }
@@ -229,7 +240,8 @@
             <button class="menu-btn" onclick="showInfoPage('documents')"><span class="emoji">📋</span>Документы</button>
             <button class="menu-btn" onclick="showBooking()"><span class="emoji">📅</span>Запись</button>
             <button class="menu-btn" onclick="showDirections()"><span class="emoji">🎓</span>Направления</button>
-            <button class="menu-btn" onclick="showInfoPage('prof')"><span class="emoji">💼</span>Профессионалитет</button>
+            <!-- Используем официальный вид иконки профессионалитета — символ ⚙️ + надпись -->
+            <button class="menu-btn" onclick="showInfoPage('prof')"><span class="emoji">⚙️</span>Профессионалитет</button>
             <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
         </div>
     </div>
