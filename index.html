@@ -106,16 +106,26 @@
         }
 
         // ===== ФУНКЦИЯ ОТПРАВКИ (только диплинк) =====
-        async function sendBookingToBot(bookingData) {
-            const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-            
-            const payload = encodeURIComponent(messageText);
-            const link = `https://max.ru/otdis_pk_bot?startapp=${payload}`;
-            
-            window.location.href = link;
-            showMessage('✅ Открывается чат с ботом. Отправьте сообщение.', 'success');
-            return true;
-        }
+      async function sendBookingToBot(bookingData) {
+    const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
+    
+    // Копируем в буфер обмена
+    await navigator.clipboard.writeText(messageText);
+    
+    showMessage(
+        '✅ Текст скопирован в буфер обмена!\n\n' +
+        'Теперь:\n' +
+        '1️⃣ Откройте чат с ботом @otdis_pk_bot\n' +
+        '2️⃣ Вставьте текст (долгое нажатие → Вставить)\n' +
+        '3️⃣ Отправьте сообщение\n\n' +
+        'Специалист свяжется с вами после получения заявки.',
+        'success'
+    );
+    
+    // Не закрываем приложение сразу, чтобы пользователь успел скопировать
+    setTimeout(() => closeApp(), 5000);
+    return true;
+}
         // ===========================================
 
         const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
