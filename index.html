@@ -222,14 +222,13 @@
 
     <div id="mainMenu" class="main-menu">
         <div class="menu-grid">
-            <button class="menu-btn" onclick="showInfoPage('scores')"><span class="emoji">📊</span>Средние баллы</button>
-            <button class="menu-btn" onclick="showInfoPage('documents')"><span class="emoji">📋</span>Документы</button>
-            <button class="menu-btn" onclick="showBooking()"><span class="emoji">📅</span>Запись</button>
-            <button class="menu-btn" onclick="showDirections()"><span class="emoji">🎓</span>Направления</button>
-            <button class="menu-btn" onclick="showInfoPage('prof')"><span class="emoji">🧵</span>Профессионалитет</button>
-            <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
-        </div>
-    </div>
+    <button class="menu-btn" onclick="showDirections()"><span class="emoji">🎓</span>Направления</button>
+    <button class="menu-btn" onclick="showInfoPage('scores')"><span class="emoji">📊</span>Средние баллы</button>
+    <button class="menu-btn" onclick="showInfoPage('documents')"><span class="emoji">📋</span>Документы</button>
+    <button class="menu-btn" onclick="showBooking()"><span class="emoji">📅</span>Запись</button>
+    <button class="menu-btn" onclick="showInfoPage('prof')"><span class="emoji">🧵</span>Профессионалитет</button>
+    <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
+</div>
 
     <!-- Промежуточная страница-инструкция (компактная) -->
     <div id="instructionPage" class="instruction-page hidden">
@@ -309,7 +308,7 @@
 
 <script>
     const contentData = {
-        scores: { title: '📊 Средние баллы 2026', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79' },
+        scores: { title: '📊 Средние баллы 2025', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79' },
         documents: { title: '📋 Список документов', text: '1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 — 4 шт\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа' },
         prof: { title: '💼 Профессионалитет', text: '«Профессионалитет» — новая модель сотрудничества колледжей и работодателей.\n\n• Сокращённые сроки обучения\n• Приоритет практики\n• Целевое обучение и гарантированное трудоустройство\n\nПодробнее: otdis.ru/professionalitet' },
         contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' }
