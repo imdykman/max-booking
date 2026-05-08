@@ -2,79 +2,249 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Запись в ОТДИС</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ОТДИС — Приёмная комиссия</title>
     <script src="https://unpkg.com/@vkid/max-bridge-sdk/dist/bridge.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        h1 { font-size: 22px; margin-bottom: 20px; color: #333; }
-        h2 { font-size: 18px; margin-bottom: 15px; color: #555; margin-top: 10px; }
-        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
-        .weekday, .day { text-align: center; padding: 10px 0; border-radius: 12px; }
-        .weekday { font-size: 12px; color: #888; }
-        .day { background-color: #f0f0f0; cursor: pointer; }
-        .day.available { background-color: #e3f2fd; color: #1976d2; }
-        .day.selected { background-color: #1976d2; color: white; }
-        .day.disabled { background-color: #eee; color: #ccc; cursor: not-allowed; }
-        .time-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .time-slot { text-align: center; padding: 10px; background-color: #e3f2fd; border-radius: 10px; cursor: pointer; }
-        .time-slot.selected { background-color: #1976d2; color: white; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #555; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
-        button { width: 100%; padding: 14px; background-color: #1976d2; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:disabled { background-color: #ccc; }
-        .nav-buttons { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .nav-btn { background-color: #ddd; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
-        .month { font-size: 16px; font-weight: bold; text-align: center; padding: 10px; }
-        .message { padding: 12px; border-radius: 10px; margin-bottom: 15px; }
-        .message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; white-space: pre-line; }
-        .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; white-space: pre-line; }
-        .open-chat-btn { background-color: #28a745; margin-top: 10px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f2f5;
+            padding: 16px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        /* Заголовок */
+        .header {
+            background: linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        
+        /* Сетка кнопок */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .menu-btn {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a56db;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .menu-btn:active { transform: scale(0.97); background-color: #e8eef9; }
+        .menu-btn .emoji { font-size: 28px; display: block; margin-bottom: 8px; }
+        
+        /* Область ответа */
+        .response-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            min-height: 200px;
+        }
+        .response-title {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .response-content {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-line;
+        }
+        
+        /* Календарь и форма (скрыты по умолчанию) */
+        .booking-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin: 15px 0;
+        }
+        .weekday, .day {
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .weekday { font-size: 12px; color: #888; font-weight: 600; }
+        .day { background-color: #f0f2f5; cursor: pointer; }
+        .day.available { background-color: #e3f2fd; color: #1a56db; }
+        .day.selected { background-color: #1a56db; color: white; }
+        .day.disabled { background-color: #e9ecef; color: #adb5bd; cursor: not-allowed; }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .nav-btn {
+            background-color: #e9ecef;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .time-slot {
+            text-align: center;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .time-slot.selected { background-color: #1a56db; color: white; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; color: #555; font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        .booking-btn {
+            background-color: #28a745;
+            margin-top: 10px;
+        }
+        
+        /* Нижняя ссылка */
+        .footer-link {
+            text-align: center;
+            padding: 15px;
+        }
+        .footer-link a {
+            color: #1a56db;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-btn {
+            background-color: #e9ecef;
+            color: #333;
+            margin-top: 10px;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h1>📅 Запись в ОТДИС</h1>
-            <div id="message" class="message" style="display: none;"></div>
+        <div class="header">
+            <h1>📚 ОТДИС</h1>
+            <p>Приёмная комиссия 2025</p>
+        </div>
+
+        <!-- Главное меню -->
+        <div id="mainMenu">
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="getScores()">
+                    <span class="emoji">📊</span>
+                    Средние баллы
+                </button>
+                <button class="menu-btn" onclick="getDocuments()">
+                    <span class="emoji">📋</span>
+                    Список документов
+                </button>
+                <button class="menu-btn" onclick="showBooking()">
+                    <span class="emoji">📅</span>
+                    Запись
+                </button>
+                <button class="menu-btn" onclick="getDirections()">
+                    <span class="emoji">🎓</span>
+                    Направления подготовки
+                </button>
+                <button class="menu-btn" onclick="getProfessionalitet()">
+                    <span class="emoji">💼</span>
+                    Профессионалитет
+                </button>
+                <button class="menu-btn" onclick="getContacts()">
+                    <span class="emoji">📍</span>
+                    Контакты
+                </button>
+            </div>
+        </div>
+
+        <!-- Область для ответов -->
+        <div id="responseArea" class="response-area">
+            <div class="response-title">📌 ИНФОРМАЦИЯ</div>
+            <div class="response-content" id="responseContent">
+                👋 Добро пожаловать!<br><br>
+                Выберите нужный раздел в меню выше.
+            </div>
+        </div>
+
+        <!-- Секция записи (скрыта по умолчанию) -->
+        <div id="bookingSection" class="booking-section hidden">
             <div class="nav-buttons">
-                <div class="nav-btn" onclick="prevMonth()">◀️</div>
+                <div class="nav-btn" onclick="hideBooking()">◀️ Назад</div>
                 <div class="month" id="monthDisplay"></div>
                 <div class="nav-btn" onclick="nextMonth()">▶️</div>
             </div>
             <div class="calendar" id="calendar"></div>
-            <div id="timeSection" style="display: none;">
+            <div id="timeSection" class="hidden">
                 <h2>🕐 Выберите время</h2>
                 <div class="time-slots" id="timeSlots"></div>
             </div>
-            <div id="formSection" style="display: none;">
-                <h2>📝 Ваши данные</h2>
+            <div id="formSection" class="hidden">
                 <div class="form-group">
-                    <label>Ваше имя</label>
+                    <label>📝 Ваше имя</label>
                     <input type="text" id="userName" placeholder="Иванов Иван">
                 </div>
                 <div class="form-group">
-                    <label>Телефон</label>
+                    <label>📞 Телефон</label>
                     <input type="tel" id="phone" placeholder="+7 912 345 67 89">
                 </div>
-                <button id="submitBtn" onclick="submitBooking()">✅ Записаться</button>
+                <button class="booking-btn" id="submitBtn" onclick="submitBooking()">✅ Записаться</button>
             </div>
+        </div>
+
+        <!-- Ссылка на сайт -->
+        <div class="footer-link">
+            <a href="https://otdis.ru" target="_blank">❓ Часто задаваемые вопросы → otdis.ru</a>
         </div>
     </div>
 
     <script>
+        // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+        let currentUser = { id: null, name: '' };
+        let bridge = null;
         let currentDate = new Date();
         let selectedDate = null;
         let selectedTime = null;
-        let currentUser = { id: null, name: '' };
-        let bridge = null;
         let workHours = { start: 9, end: 15 };
         let saturdayHours = { start: 10, end: 13 };
 
+        // ========== ИНИЦИАЛИЗАЦИЯ MAX ==========
         async function initMax() {
             bridge = new window.MAXBridge();
             try {
@@ -83,56 +253,109 @@
                 currentUser.id = userData.id;
                 currentUser.name = userData.name || userData.first_name + ' ' + userData.last_name;
                 document.getElementById('userName').value = currentUser.name;
-                console.log('Приложение инициализировано. Пользователь:', currentUser);
+                console.log('Приложение инициализировано:', currentUser);
             } catch (e) {
                 console.error('Ошибка инициализации MAX:', e);
             }
         }
 
-        function showMessage(text, type) {
-            const msgDiv = document.getElementById('message');
-            msgDiv.innerHTML = text;
-            msgDiv.className = `message ${type}`;
-            msgDiv.style.display = 'block';
+        // ========== ОТОБРАЖЕНИЕ ОТВЕТОВ ==========
+        function setResponse(text) {
+            document.getElementById('responseContent').innerHTML = text;
+            document.getElementById('responseArea').style.display = 'block';
         }
 
-        async function sendBookingToBot(bookingData) {
-            const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-            
-            // Копируем в буфер
-            try {
-                await navigator.clipboard.writeText(messageText);
-            } catch(e) {
-                console.log('Ошибка копирования');
-            }
-            
-            // Показываем инструкцию
-            const instruction = '📋 <b>ДАННЫЕ СКОПИРОВАНЫ В БУФЕР</b><br><br>' +
-                '▸ Откройте чат с ботом по кнопке ниже<br>' +
-                '▸ В поле ввода <b>нажмите и удерживайте</b> → Вставить<br>' +
-                '▸ Отправьте сообщение<br><br>' +
-                '✅ После отправки специалист свяжется с вами!';
-            
-            showMessage(instruction, 'success');
-            
-            // Добавляем кнопку для открытия чата
-            const card = document.querySelector('.card');
-            if (!document.getElementById('openChatBtn')) {
-                const btn = document.createElement('button');
-                btn.id = 'openChatBtn';
-                btn.innerText = '📱 Открыть чат с ботом';
-                btn.className = 'open-chat-btn';
-                btn.onclick = () => {
-                    window.location.href = 'https://max.ru/otdis_pk_bot';
-                };
-                card.appendChild(btn);
-            }
-            
-            return true;
+        // ========== ДАННЫЕ ДЛЯ ОТВЕТОВ ==========
+        const scoresData = '📊 *СРЕДНИЕ БАЛЛЫ 2025*\n\n' +
+            '• Реклама — 4,1\n' +
+            '• Банковское дело — 3,9\n' +
+            '• Дизайн в СМИ — 4,03\n' +
+            '• КМ и технология — 4,3\n' +
+            '• Мастер швейных изделий — 3,9\n' +
+            '• Оператор швейного оборудования — 3,79\n\n' +
+            'Это средние баллы аттестата для поступления.';
+
+        const documentsData = '📋 *СПИСОК ДОКУМЕНТОВ*\n\n' +
+            '1️⃣ Паспорт (оригинал + 2 копии)\n' +
+            '2️⃣ Аттестат (оригинал + 2 копии)\n' +
+            '3️⃣ Фото 3×4 — 4 шт\n' +
+            '4️⃣ Медсправка форма 086\n' +
+            '5️⃣ Прививочный сертификат\n' +
+            '6️⃣ Медицинский полис (2 копии)\n' +
+            '7️⃣ СНИЛС (2 копии)\n' +
+            '8️⃣ Документы о льготах\n' +
+            '9️⃣ ИНН (копия)\n' +
+            '🔟 Документы об инвалидности/ОВЗ\n' +
+            '1️⃣1️⃣ Заключение ПМПК\n' +
+            '1️⃣2️⃣ Приписное (при наличии)\n\n' +
+            '🗓️ Срок подачи: до 15 августа\n\n' +
+            '📌 Все копии заверяются при подаче.';
+
+        const directionsData = '🎓 *НАПРАВЛЕНИЯ ПОДГОТОВКИ*\n\n' +
+            '• 38.02.04 — Реклама\n' +
+            '• 42.02.02 — Банковское дело\n' +
+            '• 54.02.07 — Дизайн в СМИ и полиграфии\n' +
+            '• 15.02.12 — КМ и технология изготовления изделий ЛП\n' +
+            '• 29.01.07 — Мастер по изготовлению швейных изделий\n' +
+            '• 29.01.08 — Оператор швейного оборудования\n\n' +
+            '📌 Все специальности очные, платные.';
+
+        const professionalitetData = '💼 *ПРОФЕССИОНАЛИТЕТ*\n\n' +
+            'Программа «Профессионалитет» — это:\n' +
+            '• Сокращённые сроки обучения\n' +
+            '• Упор на практику\n' +
+            '• Трудоустройство после выпуска\n\n' +
+            '📌 Подробнее на сайте: otdis.ru/professionalitet';
+
+        const contactsData = '📍 *КОНТАКТЫ*\n\n' +
+            '📞 +7 (343) 378-17-25 (доб. 3)\n' +
+            '✉️ postupi@otdis.ru\n' +
+            '🌐 otdis.ru\n' +
+            '🏢 г. Екатеринбург, пер. Красный, д. 3\n\n' +
+            '🕒 *Часы работы:*\n' +
+            'Пн-Пт 09:00 — 16:00\n' +
+            'Сб 10:00 — 14:00\n' +
+            'Вс — выходной';
+
+        // ========== ОБРАБОТЧИКИ МЕНЮ ==========
+        function getScores() { setResponse(scoresData); hideBooking(); }
+        function getDocuments() { setResponse(documentsData); hideBooking(); }
+        function getDirections() { setResponse(directionsData); hideBooking(); }
+        function getProfessionalitet() { setResponse(professionalitetData); hideBooking(); }
+        function getContacts() { setResponse(contactsData); hideBooking(); }
+
+        // ========== ЗАПИСЬ ==========
+        function showBooking() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('responseArea').style.display = 'none';
+            document.getElementById('bookingSection').classList.remove('hidden');
+            renderCalendar();
         }
 
-        const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-        
+        function hideBooking() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('responseArea').style.display = 'block';
+            document.getElementById('bookingSection').classList.add('hidden');
+            selectedDate = null;
+            selectedTime = null;
+        }
+
+        // Генерация слотов
+        function generateTimeSlots(date) {
+            const dayOfWeek = new Date(date).getDay();
+            let startHour, endHour;
+            if (dayOfWeek === 6) { startHour = 10; endHour = 13; }
+            else if (dayOfWeek >= 1 && dayOfWeek <= 5) { startHour = 9; endHour = 15; }
+            else { return []; }
+            const slots = [];
+            for (let hour = startHour; hour < endHour; hour++) {
+                slots.push(`${hour.toString().padStart(2, '0')}:00`);
+                if (hour !== endHour - 1) slots.push(`${hour.toString().padStart(2, '0')}:30`);
+            }
+            return slots;
+        }
+
+        // Рендер календаря
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -141,9 +364,14 @@
             const startDayOfWeek = firstDay.getDay();
             const today = new Date(); today.setHours(0,0,0,0);
             document.getElementById('monthDisplay').innerText = `${currentDate.toLocaleString('ru', { month: 'long' })} ${year}`;
+            
             let html = '';
+            const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
             for (let i = 0; i < 7; i++) html += `<div class="weekday">${dayNames[i]}</div>`;
-            for (let i = 0; i < (startDayOfWeek === 0 ? 6 : startDayOfWeek - 1); i++) html += `<div class="day disabled"></div>`;
+            
+            const offset = (startDayOfWeek === 0 ? 6 : startDayOfWeek - 1);
+            for (let i = 0; i < offset; i++) html += `<div class="day disabled"></div>`;
+            
             for (let day = 1; day <= lastDay.getDate(); day++) {
                 const date = new Date(year, month, day);
                 const isWeekend = date.getDay() === 0;
@@ -161,62 +389,37 @@
             selectedDate = new Date(dateStr);
             selectedTime = null;
             renderCalendar();
-            const dayOfWeek = selectedDate.getDay();
-            let slots = [];
-            if (dayOfWeek === 6) {
-                for (let h = saturdayHours.start; h < saturdayHours.end; h++) {
-                    slots.push(`${h}:00`);
-                    if (h !== saturdayHours.end - 1) slots.push(`${h}:30`);
-                }
-            } else {
-                for (let h = workHours.start; h < workHours.end; h++) {
-                    slots.push(`${h}:00`);
-                    if (h !== workHours.end - 1) slots.push(`${h}:30`);
-                }
-            }
-            let timeHtml = slots.map(slot => `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`).join('');
+            const slots = generateTimeSlots(selectedDate);
+            const timeHtml = slots.map(slot => `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`).join('');
             document.getElementById('timeSlots').innerHTML = timeHtml;
-            document.getElementById('timeSection').style.display = 'block';
-            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('timeSection').classList.remove('hidden');
+            document.getElementById('formSection').classList.add('hidden');
         }
 
         function selectTime(time) {
             selectedTime = time;
             document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
             event.target.classList.add('selected');
-            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('formSection').classList.remove('hidden');
         }
 
         async function submitBooking() {
-            if (!selectedDate || !selectedTime) { 
-                alert('Выберите дату и время'); 
-                return; 
-            }
+            if (!selectedDate || !selectedTime) { alert('Выберите дату и время'); return; }
             const userName = document.getElementById('userName').value.trim();
             const phone = document.getElementById('phone').value.trim();
-            if (!userName || !phone) { 
-                alert('Заполните имя и телефон'); 
-                return; 
-            }
+            if (!userName || !phone) { alert('Заполните имя и телефон'); return; }
 
-            const bookingData = {
-                user_id: currentUser.id,
-                user_name: userName,
-                phone: phone,
-                date: selectedDate.toISOString().split('T')[0],
-                time: selectedTime,
-                purpose: 'Запись через мини-приложение'
-            };
-
-            await sendBookingToBot(bookingData);
-            document.getElementById('submitBtn').disabled = true;
+            const messageText = `ЗАПИСЬ:\nИмя: ${userName}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
+            
+            await navigator.clipboard.writeText(messageText);
+            setResponse('✅ Текст скопирован в буфер обмена!\n\n📋 Откройте чат с ботом и отправьте сообщение.\n\n' + messageText);
+            hideBooking();
         }
 
-        function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
         function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
+        function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
 
         initMax();
-        renderCalendar();
     </script>
 </body>
 </html>
