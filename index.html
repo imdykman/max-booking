@@ -105,16 +105,18 @@
     }
 }
         // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ =====
-        async function sendBookingToBot(bookingData) {
-            const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
-            
-            try {
-                // Отправка через bridge (работает внутри MAX)
-                if (bridge && typeof bridge.sendMessage === 'function') {
-                    await bridge.sendMessage(messageText);
-                    console.log('Сообщение отправлено через bridge');
-                    return true;
-                }
+       async function sendBookingToBot(bookingData) {
+    const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
+    
+    const payload = encodeURIComponent(messageText);
+    const link = `https://max.ru/otdis_pk_bot?startapp=${payload}`;
+    
+    // Открываем ссылку
+    window.location.href = link;
+    
+    showMessage('✅ Открывается чат с ботом. Отправьте сообщение.', 'success');
+    return true;
+}
                 // Запасной вариант
                 else {
                     const encodedText = encodeURIComponent(messageText);
