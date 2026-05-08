@@ -313,7 +313,22 @@
     const contentData = {
         scores: { title: '📊 Средние баллы 2025', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79' },
         documents: { title: '📋 Список документов', text: '1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 — 4 шт\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа' },
-        prof: { title: '💼 Профессионалитет', text: '«Профессионалитет» — новая модель сотрудничества колледжей и работодателей.\n\n• Сокращённые сроки обучения\n• Приоритет практики\n• Целевое обучение и гарантированное трудоустройство\n\nПодробнее: otdis.ru/professionalitet' },
+        prof: { 
+    title: 'Профессионалитет', 
+    text: '«Профессионалитет» — это федеральный проект, который готовит кадры для реального сектора экономики.\n\n' +
+          '⚡ Ключевые преимущества:\n' +
+          '• Сокращённые сроки обучения (от 1 года 10 мес.)\n' +
+          '• Приоритет практики на реальном производстве\n' +
+          '• Целевое обучение и гарантированное трудоустройство\n' +
+          '• Современное оборудование и мастерские\n' +
+          '• Наставничество от ведущих специалистов\n\n' +
+          '📌 В ОТДИС программы Профессионалитета:\n' +
+          '• Мастер по изготовлению швейных изделий\n' +
+          '• Оператор швейного оборудования\n' +
+          '• Конструирование, моделирование и технология изготовления швейных изделий\n' +
+          '• Дизайнер в легкой промышленности\n\n' +
+          '🌐 Подробнее: otdis.ru/professionalitet' 
+},
         contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' }
     };
 
@@ -349,17 +364,23 @@
         document.getElementById('instructionPage').classList.add('hidden');
     }
 
-    function showInfoPage(type) {
-        const data = contentData[type];
-        document.getElementById('infoTitle').innerText = data.title;
-        document.getElementById('infoContent').innerText = data.text;
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('infoPage').classList.remove('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
+   function showInfoPage(type) {
+    const data = contentData[type];
+    document.getElementById('infoTitle').innerText = data.title;
+    
+    // Для страницы "Профессионалитет" добавляем логотип в начало текста
+    let contentText = data.text;
+    if (type === 'prof') {
+        contentText = `<div style="text-align: center; margin-bottom: 16px;"><img src="images/professionalitet.png" alt="Профессионалитет" style="width: 80px; height: 80px; object-fit: contain;"></div>\n\n` + data.text;
     }
-
+    
+    document.getElementById('infoContent').innerHTML = contentText;
+    document.getElementById('mainMenu').classList.add('hidden');
+    document.getElementById('infoPage').classList.remove('hidden');
+    document.getElementById('directionsPage').classList.add('hidden');
+    document.getElementById('bookingSection').classList.add('hidden');
+    document.getElementById('instructionPage').classList.add('hidden');
+}
     function showDirections() {
         const container = document.getElementById('directionsList');
         container.innerHTML = directionsCategories.map(cat => `
