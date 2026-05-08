@@ -111,6 +111,7 @@
         }
 
         async function sendBookingToBot(bookingData) {
+            alert('sendBookingToBot ВЫЗВАНА!');
             const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
             
             // Копируем в буфер
