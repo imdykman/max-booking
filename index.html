@@ -10,15 +10,15 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f0f2f5;
-            padding: 12px;
+            padding: 0;
+            margin: 0;
         }
         .container {
             max-width: 550px;
             margin: 0 auto;
+            padding: 12px;
             width: 100%;
         }
-
-        /* Шапка (возврат в главное меню) */
         .header {
             background: linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%);
             color: white;
@@ -27,21 +27,19 @@
             margin-bottom: 20px;
             text-align: center;
             cursor: pointer;
-            transition: opacity 0.2s;
             width: 100%;
         }
         .header:active { opacity: 0.8; }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
         .header p { font-size: 13px; opacity: 0.9; }
 
-        /* Общие стили для окон */
-        .info-page, .main-menu {
+        .info-page, .main-menu, .booking-section {
+            width: 100%;
             background: white;
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            width: 100%;
         }
         .info-header {
             display: flex;
@@ -57,7 +55,6 @@
             font-size: 24px;
             cursor: pointer;
             padding: 0 8px;
-            line-height: 1;
         }
         .info-title {
             font-size: 18px;
@@ -71,10 +68,9 @@
             white-space: pre-line;
         }
 
-        /* Уменьшенные кнопки главного меню — фикс ширины */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             width: 100%;
         }
@@ -82,7 +78,7 @@
             background: white;
             border: none;
             border-radius: 14px;
-            padding: 10px 6px;
+            padding: 12px 6px;
             text-align: center;
             font-size: 13px;
             font-weight: 500;
@@ -95,12 +91,11 @@
             align-items: center;
             gap: 6px;
             width: 100%;
+            min-width: 0;
         }
         .menu-btn:active { transform: scale(0.97); background-color: #e8eef9; }
         .menu-btn .emoji { font-size: 26px; display: block; }
-        .menu-icon-small { width: 28px; height: 28px; object-fit: contain; }
 
-        /* Список направлений подготовки */
         .directions-grid {
             display: flex;
             flex-direction: column;
@@ -133,15 +128,6 @@
         .direction-icon { font-size: 22px; min-width: 36px; text-align: center; }
         .direction-name { font-size: 14px; color: #333; line-height: 1.3; }
 
-        /* Календарь и форма */
-        .booking-section {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            width: 100%;
-        }
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -178,6 +164,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             margin: 15px 0;
+            width: 100%;
         }
         .time-slot {
             text-align: center;
@@ -200,7 +187,6 @@
         .booking-btn {
             background-color: #28a745;
             color: white;
-            margin-top: 10px;
         }
         button {
             width: 100%;
@@ -212,7 +198,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .back-to-menu-btn { background-color: #e9ecef; color: #333; }
         .hidden { display: none; }
         .footer-link {
             text-align: center;
@@ -227,26 +212,22 @@
 </head>
 <body>
 <div class="container">
-    <!-- Шапка (возврат в главное меню) -->
     <div class="header" onclick="goToMainMenu()">
         <h1>📚 ОТДИС</h1>
         <p>Приёмная комиссия 2026</p>
     </div>
 
-    <!-- Главное меню -->
     <div id="mainMenu" class="main-menu">
         <div class="menu-grid">
             <button class="menu-btn" onclick="showInfoPage('scores')"><span class="emoji">📊</span>Средние баллы</button>
             <button class="menu-btn" onclick="showInfoPage('documents')"><span class="emoji">📋</span>Документы</button>
             <button class="menu-btn" onclick="showBooking()"><span class="emoji">📅</span>Запись</button>
             <button class="menu-btn" onclick="showDirections()"><span class="emoji">🎓</span>Направления</button>
-            <!-- Используем официальный вид иконки профессионалитета — символ ⚙️ + надпись -->
             <button class="menu-btn" onclick="showInfoPage('prof')"><span class="emoji">⚙️</span>Профессионалитет</button>
             <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
         </div>
     </div>
 
-    <!-- Страница для информации -->
     <div id="infoPage" class="info-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="goToMainMenu()">←</button>
@@ -255,7 +236,6 @@
         <div class="info-content" id="infoContent"></div>
     </div>
 
-    <!-- Страница направлений подготовки -->
     <div id="directionsPage" class="info-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="goToMainMenu()">←</button>
@@ -264,7 +244,6 @@
         <div class="info-content" id="directionsList"></div>
     </div>
 
-    <!-- Секция записи -->
     <div id="bookingSection" class="booking-section hidden">
         <div class="nav-buttons">
             <div class="nav-btn" onclick="hideBooking()">◀️ Назад</div>
@@ -285,66 +264,47 @@
                 <label>📞 Телефон</label>
                 <input type="tel" id="phone" placeholder="+7 912 345 67 89">
             </div>
-            <button class="booking-btn" id="submitBtn" onclick="submitBooking()">✅ Записаться</button>
+            <button class="booking-btn" onclick="submitBooking()">✅ Записаться</button>
         </div>
     </div>
 
-    <!-- Нижняя ссылка -->
     <div class="footer-link">
         <a href="https://otdis.ru" target="_blank">❓ Часто задаваемые вопросы → otdis.ru</a>
     </div>
 </div>
 
 <script>
-    // Данные для информационных страниц
     const contentData = {
-        scores: { title: '📊 Средние баллы 2026', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79\n\nСредние баллы аттестата для поступления.' },
-        documents: { title: '📋 Список документов', text: '1️⃣ Паспорт (оригинал + 2 копии)\n2️⃣ Аттестат (оригинал + 2 копии)\n3️⃣ Фото 3×4 — 4 шт\n4️⃣ Медсправка форма 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис (2 копии)\n7️⃣ СНИЛС (2 копии)\n8️⃣ Документы о льготах\n9️⃣ ИНН (копия)\n🔟 Документы об инвалидности/ОВЗ\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное (при наличии)\n\n🗓️ Срок подачи: до 15 августа' },
-        prof: { title: '💼 Профессионалитет', text: '«Профессионалитет» — новая модель сотрудничества колледжей и работодателей.\n\nКлючевые преимущества:\n• Сокращённые сроки обучения\n• Приоритет практики\n• Целевое обучение и гарантированное трудоустройство\n• Современное оборудование\n\nПодробнее: otdis.ru/professionalitet' },
-        contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\n🕒 Часы работы:\nПн-Пт 09:00—16:00\nСб 10:00—14:00\nВс — выходной' }
+        scores: { title: '📊 Средние баллы 2026', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79' },
+        documents: { title: '📋 Список документов', text: '1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 — 4 шт\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа' },
+        prof: { title: '💼 Профессионалитет', text: '«Профессионалитет» — новая модель сотрудничества колледжей и работодателей.\n\n• Сокращённые сроки обучения\n• Приоритет практики\n• Целевое обучение и гарантированное трудоустройство\n\nПодробнее: otdis.ru/professionalitet' },
+        contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' }
     };
 
-    // Список направлений с иерархией и иконками
     const directionsCategories = [
-        {
-            title: "🎓 Бюджетные места",
-            icon: "🎓",
-            items: [
-                { icon: "✂️", name: "Конструирование, моделирование и технология швейных изделий" },
-                { icon: "🎨", name: "Дизайн (легкая промышленность)" },
-                { icon: "🧵", name: "Мастер по изготовлению швейных изделий" },
-                { icon: "⚙️", name: "Оператор оборудования швейного производства (швея)" },
-                { icon: "🎭", name: "Художник по костюму" }
-            ]
-        },
-        {
-            title: "♿ Иной бюджет (для лиц с ОВЗ)",
-            icon: "♿",
-            items: [
-                { icon: "🪡", name: "Оператор швейного оборудования (швея) — проф. подготовка" }
-            ]
-        },
-        {
-            title: "💰 Платное обучение (внебюджет)",
-            icon: "💰",
-            items: [
-                { icon: "📢", name: "Реклама" },
-                { icon: "🏦", name: "Банковское дело" },
-                { icon: "🎨", name: "Дизайн (СМИ и полиграфия)" }
-            ]
-        }
+        { title: "🎓 Бюджетные места", icon: "🎓", items: [
+            { icon: "✂️", name: "Конструирование, моделирование и технология швейных изделий" },
+            { icon: "🎨", name: "Дизайн (легкая промышленность)" },
+            { icon: "🧵", name: "Мастер по изготовлению швейных изделий" },
+            { icon: "⚙️", name: "Оператор оборудования швейного производства" },
+            { icon: "🎭", name: "Художник по костюму" }
+        ]},
+        { title: "♿ Для лиц с ОВЗ", icon: "♿", items: [
+            { icon: "🪡", name: "Оператор швейного оборудования (швея) — проф. подготовка" }
+        ]},
+        { title: "💰 Платное обучение", icon: "💰", items: [
+            { icon: "📢", name: "Реклама" },
+            { icon: "🏦", name: "Банковское дело" },
+            { icon: "🎨", name: "Дизайн (СМИ и полиграфия)" }
+        ]}
     ];
 
-    // Глобальные переменные для записи
     let currentUser = { id: null, name: '' };
     let bridge = null;
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
-    let workHours = { start: 9, end: 15 };
-    let saturdayHours = { start: 10, end: 13 };
 
-    // Инициализация MAX
     async function initMax() {
         bridge = new window.MAXBridge();
         try {
@@ -353,11 +313,9 @@
             currentUser.id = userData.id;
             currentUser.name = userData.name || userData.first_name + ' ' + userData.last_name;
             document.getElementById('userName').value = currentUser.name;
-            console.log('Приложение инициализировано:', currentUser);
         } catch (e) { console.error('Ошибка инициализации MAX:', e); }
     }
 
-    // Навигация
     function goToMainMenu() {
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('infoPage').classList.add('hidden');
@@ -367,7 +325,6 @@
 
     function showInfoPage(type) {
         const data = contentData[type];
-        if (!data) return;
         document.getElementById('infoTitle').innerText = data.title;
         document.getElementById('infoContent').innerText = data.text;
         document.getElementById('mainMenu').classList.add('hidden');
@@ -381,37 +338,22 @@
         container.innerHTML = directionsCategories.map(cat => `
             <div class="direction-category">
                 <div class="category-title">${cat.icon} ${cat.title}</div>
-                ${cat.items.map(item => `
-                    <div class="direction-item">
-                        <div class="direction-icon">${item.icon}</div>
-                        <div class="direction-name">${item.name}</div>
-                    </div>
-                `).join('')}
+                ${cat.items.map(item => `<div class="direction-item"><div class="direction-icon">${item.icon}</div><div class="direction-name">${item.name}</div></div>`).join('')}
             </div>
         `).join('');
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('directionsPage').classList.remove('hidden');
     }
 
-    // Календарь и запись
-    function showBooking() {
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('bookingSection').classList.remove('hidden');
-        renderCalendar();
-    }
-
-    function hideBooking() { goToMainMenu(); }
-
     function generateTimeSlots(date) {
         const dayOfWeek = new Date(date).getDay();
-        let startHour, endHour;
-        if (dayOfWeek === 6) { startHour = 10; endHour = 13; }
-        else if (dayOfWeek >= 1 && dayOfWeek <= 5) { startHour = 9; endHour = 15; }
-        else { return []; }
+        if (dayOfWeek === 0) return [];
+        let startHour = (dayOfWeek === 6) ? 10 : 9;
+        let endHour = (dayOfWeek === 6) ? 13 : 15;
         const slots = [];
         for (let hour = startHour; hour < endHour; hour++) {
-            slots.push(`${hour.toString().padStart(2, '0')}:00`);
-            if (hour !== endHour - 1) slots.push(`${hour.toString().padStart(2, '0')}:30`);
+            slots.push(`${hour}:00`);
+            if (hour !== endHour - 1) slots.push(`${hour}:30`);
         }
         return slots;
     }
@@ -466,13 +408,18 @@
         const userName = document.getElementById('userName').value.trim();
         const phone = document.getElementById('phone').value.trim();
         if (!userName || !phone) { alert('Заполните имя и телефон'); return; }
-
         const messageText = `ЗАПИСЬ:\nИмя: ${userName}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
         await navigator.clipboard.writeText(messageText);
-        alert('✅ Текст скопирован в буфер обмена!\n\nОткройте чат с ботом и отправьте сообщение.');
+        alert('✅ Текст скопирован!\n\nОткройте чат с ботом и отправьте.');
         goToMainMenu();
     }
 
+    function showBooking() {
+        document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('bookingSection').classList.remove('hidden');
+        renderCalendar();
+    }
+    function hideBooking() { goToMainMenu(); }
     function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
     function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
 
