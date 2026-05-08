@@ -91,11 +91,19 @@
             }
         }
 
-        function closeApp() {
-            if (bridge) bridge.close();
-            else window.close();
+   function closeApp() {
+    try {
+        if (bridge) {
+            bridge.close();
+        } else if (window.MX && window.MX.close) {
+            window.MX.close();
+        } else if (window.close) {
+            window.close();
         }
-
+    } catch(e) {
+        console.log('Не удалось закрыть окно');
+    }
+}
         // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ =====
         async function sendBookingToBot(bookingData) {
             const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
