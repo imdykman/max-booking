@@ -191,7 +191,7 @@
         }
         .instruction-btn {
             background-color: #1a56db;
-            margin-top: 12px;
+            margin-top: 8px;
         }
         button {
             width: 100%;
@@ -214,14 +214,14 @@
         .instruction-steps {
             background: #f8f9fa;
             border-radius: 12px;
-            padding: 8px 12px;
-            margin: 8px 0;
+            padding: 6px 10px;
+            margin: 4px 0;
         }
         .step {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 0;
+            padding: 5px 0;
             border-bottom: 1px solid #e9ecef;
         }
         .step:last-child { border-bottom: none; }
@@ -258,34 +258,34 @@
         </div>
     </div>
 
-    <!-- Промежуточная страница-инструкция (компактная) -->
+    <!-- Промежуточная страница-инструкция (исправленная) -->
     <div id="instructionPage" class="instruction-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="hideInstruction()">← Назад</button>
             <div class="info-title">📋 Отправка заявки</div>
         </div>
         <div class="info-content">
-            <div style="text-align: center; margin-bottom: 8px;">
-                <span style="font-size: 32px;">✉️</span>
+            <div style="text-align: center; margin: 0 0 6px 0;">
+                <span style="font-size: 28px;">✉️</span>
             </div>
-            <p style="text-align: center; margin-bottom: 10px; font-size: 14px;"><strong>Ваши данные готовы!</strong></p>
+            <p style="text-align: center; margin-bottom: 8px; font-size: 14px;"><strong>Ваши данные готовы!</strong></p>
             
-            <div class="instruction-steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-text">Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></div>
+            <div class="instruction-steps" style="margin: 4px 0; padding: 6px 10px;">
+                <div class="step" style="padding: 5px 0;">
+                    <div class="step-number" style="width: 22px; height: 22px; border-radius: 50%; font-size: 12px;">1</div>
+                    <div class="step-text" style="font-size: 13px;">Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></div>
                 </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-text">Нажмите <strong>«Отправить»</strong></div>
+                <div class="step" style="padding: 5px 0;">
+                    <div class="step-number" style="width: 22px; height: 22px; border-radius: 50%; font-size: 12px;">2</div>
+                    <div class="step-text" style="font-size: 13px;">Нажмите <strong>«Отправить»</strong></div>
                 </div>
             </div>
             
-            <p style="font-size: 12px; color: #666; text-align: center; margin: 8px 0;">
+            <p style="font-size: 11px; color: #666; text-align: center; margin: 6px 0;">
                 Специалист свяжется с вами
             </p>
             
-            <button class="instruction-btn" onclick="shareBooking()">📨 Отправить заявку</button>
+            <button class="instruction-btn" onclick="shareBooking()" style="margin-top: 8px; padding: 8px;">📨 Отправить заявку</button>
         </div>
     </div>
 
