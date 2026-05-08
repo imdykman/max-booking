@@ -106,24 +106,23 @@
         }
 
         // ===== ФУНКЦИЯ ОТПРАВКИ (только диплинк) =====
-      async function sendBookingToBot(bookingData) {
+ async function sendBookingToBot(bookingData) {
     const messageText = `ЗАПИСЬ:\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`;
     
-    // Копируем в буфер обмена
-    await navigator.clipboard.writeText(messageText);
+    // Кодируем текст для URL
+    const encodedText = encodeURIComponent(messageText);
     
-    showMessage(
-        '✅ Текст скопирован в буфер обмена!\n\n' +
-        'Теперь:\n' +
-        '1️⃣ Откройте чат с ботом @otdis_pk_bot\n' +
-        '2️⃣ Вставьте текст (долгое нажатие → Вставить)\n' +
-        '3️⃣ Отправьте сообщение\n\n' +
-        'Специалист свяжется с вами после получения заявки.',
-        'success'
-    );
+    // Пробуем через параметр text
+    const link = `https://max.ru/otdis_pk_bot?text=${encodedText}`;
     
-    // Не закрываем приложение сразу, чтобы пользователь успел скопировать
-    setTimeout(() => closeApp(), 5000);
+    // Открываем чат с ботом
+    window.location.href = link;
+    
+    showMessage('✅ Открывается чат с ботом. Текст уже в поле ввода — просто нажмите "Отправить".', 'success');
+    
+    // Закрываем приложение через 3 секунды
+    setTimeout(() => closeApp(), 3000);
+    
     return true;
 }
         // ===========================================
