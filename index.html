@@ -212,7 +212,6 @@
             font-size: 12px;
         }
 
-        /* Стили для кастомных модальных окон */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -271,10 +270,6 @@
             margin-top: 0;
         }
         
-        .modal-button:hover {
-            background-color: #0e3a9e;
-        }
-        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -306,7 +301,6 @@
         </div>
     </div>
 
-    <!-- Промежуточная страница-инструкция (только для телефона) -->
     <div id="instructionPage" class="instruction-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="hideInstruction()">← Назад</button>
@@ -428,9 +422,7 @@
     let selectedDate = null;
     let selectedTime = null;
     let pendingBookingData = null;
-    let isSubmitting = false;
 
-    // Кастомные всплывающие окна
     function showAlert(message, type = 'info') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
@@ -459,7 +451,6 @@
         });
     }
 
-    // Основные функции навигации
     function goToMainMenu() {
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('infoPage').classList.add('hidden');
@@ -505,7 +496,6 @@
         document.getElementById('bookingSection').classList.remove('hidden');
     }
 
-    // Функции для работы с календарем и временем
     function generateTimeSlots(date) {
         const dayOfWeek = new Date(date).getDay();
         if (dayOfWeek === 0) return [];
@@ -605,19 +595,16 @@
     }
 
     async function prepareBooking() {
-        // Валидация даты
         if (!selectedDate) { 
             await showAlert('Пожалуйста, выберите дату', 'warning');
             return; 
         }
         
-        // Валидация времени
         if (!selectedTime) { 
             await showAlert('Пожалуйста, выберите время', 'warning');
             return; 
         }
         
-        // Получаем и валидируем имя
         const userName = document.getElementById('userName').value.trim();
         if (!userName) { 
             await showAlert('Пожалуйста, введите ваше имя', 'warning');
@@ -631,7 +618,6 @@
             return;
         }
         
-        // Получаем и валидируем телефон
         const phone = document.getElementById('phone').value.trim();
         if (!phone) { 
             await showAlert('Пожалуйста, введите номер телефона', 'warning');
@@ -646,7 +632,6 @@
             return;
         }
 
-        // Сохраняем данные
         pendingBookingData = {
             user_name: userName,
             phone: phone,
@@ -655,25 +640,20 @@
             timestamp: new Date().toISOString()
         };
 
-        // Проверяем, есть ли WebApp (телефон) или это обычный браузер
         const isWebApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (!isWebApp) {
-            // Для веб-версии - сразу отправляем
             await shareBookingWeb();
+            clearBookingForm();
+            goToMainMenu();
         } else {
-            // Для телефона - показываем страницу с инструкцией
             document.getElementById('bookingSection').classList.add('hidden');
             document.getElementById('instructionPage').classList.remove('hidden');
         }
     }
 
-    // Отправка для веб-версии (сразу копируем и показываем результат)
     async function shareBookingWeb() {
-        if (!pendingBookingData) {
-            await showAlert('Нет данных для отправки', 'error');
-            return;
-        }
+        if (!pendingBookingData) return;
         
         const messageText = `🏫 ОТДИС - Приёмная комиссия\n\n` +
                            `📝 Новая запись\n\n` +
@@ -683,30 +663,15 @@
                            `⏰ Время: ${pendingBookingData.time}`;
         
         try {
-            // Копируем в буфер обмена
             await navigator.clipboard.writeText(messageText);
-            
-            // Показываем успех
-            await showAlert(
-                '✅ Данные скопированы!\n\n' +
-                'Откройте чат «ОТДИС приёмная комиссия»\n' +
-                'и вставьте текст (Ctrl+V)',
-                'success'
-            );
-            
-            clearBookingForm();
-            goToMainMenu();
+            await showAlert('✅ Данные скопированы!\n\nОткройте чат «ОТДИС приёмная комиссия»\nи вставьте текст (Ctrl+V)', 'success');
         } catch(e) {
-            console.error('Ошибка при копировании:', e);
-            await showAlert('❌ Не удалось скопировать данные.\nПожалуйста, попробуйте ещё раз.', 'error');
+            await showAlert('❌ Не удалось скопировать данные', 'error');
         }
     }
 
     async function shareBooking() {
-        if (!pendingBookingData) {
-            await showAlert('Нет данных для отправки', 'error');
-            return;
-        }
+        if (!pendingBookingData) return;
         
         const messageText = `🏫 ОТДИС - Приёмная комиссия\n\n` +
                            `📝 Новая запись\n\n` +
@@ -717,21 +682,14 @@
         
         try {
             if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-                const result = await window.WebApp.shareMaxContent({ 
-                    text: messageText 
-                });
-                
+                const result = await window.WebApp.shareMaxContent({ text: messageText });
                 if (result.status === 'shared') {
                     await showAlert('✅ Заявка отправлена!\nСпециалист свяжется с вами.', 'success');
-                    clearBookingForm();
-                    goToMainMenu();
-                } else if (result.status === 'cancelled') {
-                    clearBookingForm();
-                    goToMainMenu();
                 }
+                clearBookingForm();
+                goToMainMenu();
             }
         } catch(e) {
-            console.error('Ошибка при отправке:', e);
             await showAlert('❌ Ошибка при отправке', 'error');
             clearBookingForm();
             goToMainMenu();
@@ -741,14 +699,11 @@
     function clearBookingForm() {
         document.getElementById('userName').value = '';
         document.getElementById('phone').value = '';
-        
         selectedDate = null;
         selectedTime = null;
         pendingBookingData = null;
-        
         document.getElementById('timeSection').classList.add('hidden');
         document.getElementById('formSection').classList.add('hidden');
-        
         if (document.getElementById('bookingSection') && !document.getElementById('bookingSection').classList.contains('hidden')) {
             renderCalendar();
         }
@@ -761,10 +716,6 @@
         renderCalendar();
     }
     
-    function hideBooking() { 
-        goToMainMenu(); 
-    }
-    
     function nextMonth() { 
         currentDate.setMonth(currentDate.getMonth() + 1); 
         renderCalendar(); 
@@ -775,14 +726,12 @@
         renderCalendar(); 
     }
 
-    // Инициализация маски телефона
     function initPhoneMask() {
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
             phoneInput.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 11) value = value.slice(0, 11);
-                
                 let formatted = '';
                 if (value.length > 0) {
                     formatted = '+7';
@@ -796,7 +745,6 @@
         }
     }
 
-    // Запуск при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         initPhoneMask();
     });
