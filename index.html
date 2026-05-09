@@ -255,6 +255,7 @@
             color: #666;
             margin-bottom: 20px;
             line-height: 1.4;
+            white-space: pre-line;
         }
         
         .modal-button {
@@ -445,7 +446,7 @@
                     <div class="modal-icon">${icon}</div>
                     <div class="modal-title">ОТДИС</div>
                     <div class="modal-message">${message}</div>
-                    <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Хорошо</button>
+                    <button class="modal-button">Хорошо</button>
                 </div>
             `;
             
@@ -604,19 +605,20 @@
     }
 
     async function prepareBooking() {
+        // Валидация даты
         if (!selectedDate) { 
             await showAlert('Пожалуйста, выберите дату', 'warning');
             return; 
         }
         
+        // Валидация времени
         if (!selectedTime) { 
             await showAlert('Пожалуйста, выберите время', 'warning');
             return; 
         }
         
+        // Получаем и валидируем имя
         const userName = document.getElementById('userName').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        
         if (!userName) { 
             await showAlert('Пожалуйста, введите ваше имя', 'warning');
             document.getElementById('userName').focus();
@@ -629,6 +631,8 @@
             return;
         }
         
+        // Получаем и валидируем телефон
+        const phone = document.getElementById('phone').value.trim();
         if (!phone) { 
             await showAlert('Пожалуйста, введите номер телефона', 'warning');
             document.getElementById('phone').focus();
@@ -637,11 +641,12 @@
         
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) {
-            await showAlert('Введите корректный номер телефона (например: +7 912 345 67 89)', 'warning');
+            await showAlert('Введите корректный номер телефона\n(например: +7 912 345 67 89)', 'warning');
             document.getElementById('phone').focus();
             return;
         }
 
+        // Сохраняем данные
         pendingBookingData = {
             user_name: userName,
             phone: phone,
@@ -675,21 +680,17 @@
                            `👤 Имя: ${pendingBookingData.user_name}\n` +
                            `📞 Телефон: ${pendingBookingData.phone}\n` +
                            `📅 Дата: ${pendingBookingData.date}\n` +
-                           `⏰ Время: ${pendingBookingData.time}\n` +
-                           `🕐 Создано: ${new Date(pendingBookingData.timestamp).toLocaleString('ru-RU')}`;
+                           `⏰ Время: ${pendingBookingData.time}`;
         
         try {
             // Копируем в буфер обмена
             await navigator.clipboard.writeText(messageText);
             
-            // Показываем успех с инструкцией
+            // Показываем успех
             await showAlert(
                 '✅ Данные скопированы!\n\n' +
-                '📋 Теперь:\n' +
-                '1. Откройте чат «ОТДИС приёмная комиссия»\n' +
-                '2. Вставьте текст (Ctrl+V)\n' +
-                '3. Отправьте сообщение\n\n' +
-                'Специалист свяжется с вами',
+                'Откройте чат «ОТДИС приёмная комиссия»\n' +
+                'и вставьте текст (Ctrl+V)',
                 'success'
             );
             
@@ -697,7 +698,7 @@
             goToMainMenu();
         } catch(e) {
             console.error('Ошибка при копировании:', e);
-            await showAlert('❌ Не удалось скопировать данные. Пожалуйста, попробуйте ещё раз.', 'error');
+            await showAlert('❌ Не удалось скопировать данные.\nПожалуйста, попробуйте ещё раз.', 'error');
         }
     }
 
@@ -707,13 +708,12 @@
             return;
         }
         
-        const messageText = `🏫 *ОТДИС - Приёмная комиссия*\n\n` +
-                           `📝 *Новая запись*\n\n` +
-                           `👤 *Имя:* ${pendingBookingData.user_name}\n` +
-                           `📞 *Телефон:* ${pendingBookingData.phone}\n` +
-                           `📅 *Дата:* ${pendingBookingData.date}\n` +
-                           `⏰ *Время:* ${pendingBookingData.time}\n` +
-                           `🕐 *Создано:* ${new Date(pendingBookingData.timestamp).toLocaleString('ru-RU')}`;
+        const messageText = `🏫 ОТДИС - Приёмная комиссия\n\n` +
+                           `📝 Новая запись\n\n` +
+                           `👤 Имя: ${pendingBookingData.user_name}\n` +
+                           `📞 Телефон: ${pendingBookingData.phone}\n` +
+                           `📅 Дата: ${pendingBookingData.date}\n` +
+                           `⏰ Время: ${pendingBookingData.time}`;
         
         try {
             if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
@@ -722,24 +722,17 @@
                 });
                 
                 if (result.status === 'shared') {
-                    await showAlert('✅ Заявка успешно отправлена!\n\nСпециалист свяжется с вами.', 'success');
+                    await showAlert('✅ Заявка отправлена!\nСпециалист свяжется с вами.', 'success');
                     clearBookingForm();
                     goToMainMenu();
                 } else if (result.status === 'cancelled') {
-                    // Отмена - просто закрываем страницу инструкции и возвращаемся
                     clearBookingForm();
                     goToMainMenu();
                 }
-            } else {
-                await navigator.clipboard.writeText(messageText);
-                await showAlert('✅ Данные скопированы в буфер обмена!\n\n📋 Вставьте их в чат с приёмной комиссией (Ctrl+V)\n\nСпециалист свяжется с вами.', 'success');
-                clearBookingForm();
-                goToMainMenu();
             }
         } catch(e) {
             console.error('Ошибка при отправке:', e);
-            await navigator.clipboard.writeText(messageText);
-            await showAlert('✅ Данные скопированы в буфер обмена!\n\n📋 Вставьте их в чат с приёмной комиссией\n\nСпециалист свяжется с вами.', 'success');
+            await showAlert('❌ Ошибка при отправке', 'error');
             clearBookingForm();
             goToMainMenu();
         }
