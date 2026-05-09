@@ -458,38 +458,6 @@
         });
     }
 
-    // Функция для подтверждения (да/нет)
-    function showConfirm(message) {
-        return new Promise((resolve) => {
-            const overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            
-            overlay.innerHTML = `
-                <div class="modal">
-                    <div class="modal-icon">❓</div>
-                    <div class="modal-title">ОТДИС</div>
-                    <div class="modal-message">${message}</div>
-                    <div style="display: flex; gap: 10px; margin-top: 0;">
-                        <button class="modal-button" id="confirmNo" style="background-color: #6c757d; flex: 1; margin-top: 0;">Отмена</button>
-                        <button class="modal-button" id="confirmYes" style="background-color: #28a745; flex: 1; margin-top: 0;">Отправить</button>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(overlay);
-            
-            document.getElementById('confirmYes').onclick = () => {
-                overlay.remove();
-                resolve(true);
-            };
-            
-            document.getElementById('confirmNo').onclick = () => {
-                overlay.remove();
-                resolve(false);
-            };
-        });
-    }
-
     // Основные функции навигации
     function goToMainMenu() {
         document.getElementById('mainMenu').classList.remove('hidden');
@@ -686,8 +654,8 @@
         const isWebApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (!isWebApp) {
-            // Для веб-версии - сразу отправляем без промежуточной страницы
-            await shareBookingDirect();
+            // Для веб-версии - сразу отправляем
+            await shareBookingWeb();
         } else {
             // Для телефона - показываем страницу с инструкцией
             document.getElementById('bookingSection').classList.add('hidden');
@@ -695,8 +663,8 @@
         }
     }
 
-    // Прямая отправка для веб-версии (без промежуточной страницы)
-    async function shareBookingDirect() {
+    // Отправка для веб-версии (сразу копируем и показываем результат)
+    async function shareBookingWeb() {
         if (!pendingBookingData) {
             await showAlert('Нет данных для отправки', 'error');
             return;
@@ -711,22 +679,15 @@
                            `🕐 Создано: ${new Date(pendingBookingData.timestamp).toLocaleString('ru-RU')}`;
         
         try {
-            // Показываем подтверждение перед отправкой
-            const confirmed = await showConfirm('Отправить заявку в приёмную комиссию?');
-            if (!confirmed) {
-                await showAlert('Отправка отменена', 'info');
-                return;
-            }
-            
             // Копируем в буфер обмена
             await navigator.clipboard.writeText(messageText);
             
             // Показываем успех с инструкцией
             await showAlert(
-                '✅ Данные скопированы в буфер обмена!\n\n' +
+                '✅ Данные скопированы!\n\n' +
                 '📋 Теперь:\n' +
                 '1. Откройте чат «ОТДИС приёмная комиссия»\n' +
-                '2. Вставьте текст (Ctrl+V или Cmd+V)\n' +
+                '2. Вставьте текст (Ctrl+V)\n' +
                 '3. Отправьте сообщение\n\n' +
                 'Специалист свяжется с вами',
                 'success'
@@ -755,13 +716,6 @@
                            `🕐 *Создано:* ${new Date(pendingBookingData.timestamp).toLocaleString('ru-RU')}`;
         
         try {
-            // Показываем подтверждение перед отправкой
-            const confirmed = await showConfirm('Отправить заявку в приёмную комиссию?');
-            if (!confirmed) {
-                await showAlert('Отправка отменена', 'info');
-                return;
-            }
-            
             if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
                 const result = await window.WebApp.shareMaxContent({ 
                     text: messageText 
@@ -772,7 +726,9 @@
                     clearBookingForm();
                     goToMainMenu();
                 } else if (result.status === 'cancelled') {
-                    await showAlert('Отправка отменена', 'info');
+                    // Отмена - просто закрываем страницу инструкции и возвращаемся
+                    clearBookingForm();
+                    goToMainMenu();
                 }
             } else {
                 await navigator.clipboard.writeText(messageText);
@@ -826,7 +782,7 @@
         renderCalendar(); 
     }
 
-     // Инициализация маски телефона
+    // Инициализация маски телефона
     function initPhoneMask() {
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
