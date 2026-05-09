@@ -44,7 +44,7 @@
         }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
         .header p { font-size: 13px; opacity: 0.9; margin: 0; }
-        .info-page, .main-menu, .booking-section, .instruction-page {
+        .info-page, .main-menu, .booking-section, .instruction-page, .direction-detail-page {
             width: 100%;
             background: white;
             border-radius: 20px;
@@ -133,12 +133,38 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .direction-item:active {
+            background-color: #e8eef9;
+            transform: scale(0.98);
         }
         .direction-item:last-child { border-bottom: none; }
         .direction-icon { font-size: 20px; min-width: 32px; text-align: center; }
         .direction-name { font-size: 13px; color: #333; line-height: 1.3; }
+        .detail-block {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .detail-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+        .price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a56db;
+        }
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -291,6 +317,20 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #1a56db;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .faq-answer {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 2px solid #1a56db;
+        }
     </style>
 </head>
 <body>
@@ -313,6 +353,8 @@
                 <img src="images/professionalitet.png" alt="Профессионалитет" style="width: 64px; height: 64px; object-fit: contain;">
             </button>
             <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
+            <button class="menu-btn" onclick="showInfoPage('prepCourses')"><span class="emoji">📚</span>Подготовительные курсы</button>
+            <button class="menu-btn" onclick="showInfoPage('faq')"><span class="emoji">💬</span>Вопросы-ответы</button>
         </div>
     </div>
 
@@ -362,6 +404,14 @@
         <div class="info-content" id="directionsList"></div>
     </div>
 
+    <div id="directionDetailPage" class="direction-detail-page hidden">
+        <div class="info-header">
+            <button class="back-button" onclick="showDirections()">←</button>
+            <div class="info-title" id="detailTitle"></div>
+        </div>
+        <div class="info-content" id="detailContent"></div>
+    </div>
+
     <div id="bookingSection" class="booking-section hidden">
         <div class="nav-buttons">
             <div class="nav-btn" onclick="prevMonth()">◀️</div>
@@ -393,37 +443,34 @@
 
 <script>
     const contentData = {
-        
-scores: { 
-    title: '📊 Средние баллы 2025', 
-    text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
-          '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Реклама — <strong>4,1</strong></div>' +
-          '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Банковское дело — <strong>3,9</strong></div>' +
-          '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Дизайн в СМИ — <strong>4,03</strong></div>' +
-          '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> КМ и технология — <strong>4,3</strong></div>' +
-          '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Мастер швейных изделий — <strong>3,9</strong></div>' +
-          '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Оператор швейного оборудования — <strong>3,79</strong></div>' +
-          '</div>' 
-},
-        
+        scores: { 
+            title: '📊 Средние баллы 2025', 
+            text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Реклама — <strong>4,1</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Банковское дело — <strong>3,9</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Дизайн в СМИ — <strong>4,03</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> КМ и технология — <strong>4,3</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Мастер швейных изделий — <strong>3,9</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Оператор швейного оборудования — <strong>3,79</strong></div>' +
+                  '</div>' 
+        },
         documents: { 
-    title: '📋 Список документов', 
-    text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">1.</span> 📄 Паспорт</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">2.</span> 📄 Аттестат</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">3.</span> 📄 Фото 3×4 (4 шт)</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">4.</span> 📄 Медсправка 086</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">5.</span> 📄 Прививочный сертификат</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">6.</span> 📄 Медицинский полис</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">7.</span> 📄 СНИЛС</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">8.</span> 📄 Документы о льготах</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">9.</span> 📄 ИНН</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">10.</span> 📄 Документы об инвалидности</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">11.</span> 📄 Заключение ПМПК</div>' +
-          '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">12.</span> 📄 Приписное</div>' +
-          '</div><div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;">🗓️ Срок подачи: до 15 августа</div>' 
-},
-        
+            title: '📋 Список документы', 
+            text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">1.</span> 📄 Паспорт</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">2.</span> 📄 Аттестат</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">3.</span> 📄 Фото 3×4 (4 шт)</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">4.</span> 📄 Медсправка 086</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">5.</span> 📄 Прививочный сертификат</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">6.</span> 📄 Медицинский полис</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">7.</span> 📄 СНИЛС</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">8.</span> 📄 Документы о льготах</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">9.</span> 📄 ИНН</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">10.</span> 📄 Документы об инвалидности</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">11.</span> 📄 Заключение ПМПК</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">12.</span> 📄 Приписное</div>' +
+                  '</div><div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;">🗓️ Срок подачи: до 15 августа</div>' 
+        },
         prof: { 
             title: 'Профессионалитет', 
             text: '«Профессионалитет» — это федеральный проект, который готовит кадры для реального сектора экономики.\n\n' +
@@ -440,38 +487,141 @@ scores: {
                   '• Дизайнер в легкой промышленности\n\n' +
                   '🌐 Подробнее: <a href="https://otdis.ru/professionalitet" target="_blank" style="color: #1a56db; text-decoration: none;">otdis.ru/professionalitet</a>' 
         },
-        contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' }
+        contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' },
+        prepCourses: { 
+            title: '📚 Подготовительные курсы', 
+            text: '<div style="display: flex; flex-direction: column; gap: 16px;">' +
+                  '<div class="detail-block"><div class="detail-label">📖 Русский язык</div><div class="detail-value">8 занятий, 2 раза в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">5 000 ₽ / месяц</div></div>' +
+                  '<div class="detail-block"><div class="detail-label">🧮 Математика</div><div class="detail-value">8 занятий, 2 раза в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">5 000 ₽ / месяц</div></div>' +
+                  '<div class="detail-block"><div class="detail-label">🎨 Рисунок (для дизайнеров)</div><div class="detail-value">4 занятия в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">6 000 ₽ / месяц</div></div>' +
+                  '<div class="detail-block"><div class="detail-label">📝 Комплексная подготовка</div><div class="detail-value">Все предметы + профориентация</div><div class="price" style="font-size: 14px; margin-top: 6px;">12 000 ₽ / месяц</div></div>' +
+                  '</div><div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">📞 Запись по телефону: +7 (343) 378-17-25 (доб. 3)</div>' 
+        },
+        faq: { 
+            title: '💬 Часто задаваемые вопросы', 
+            text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div>' +
+                  '<div class="faq-answer">Паспорт, аттестат, фото 3×4 (4 шт), медсправка 086, СНИЛС, ИНН. Полный список есть в разделе "Документы".</div>' +
+                  '<div class="faq-question">❓ Есть ли бюджетные места?</div>' +
+                  '<div class="faq-answer">Да, на большинство специальностей есть бюджетные места. Подробнее в разделе "Направления".</div>' +
+                  '<div class="faq-question">❓ Как узнать средний балл аттестата?</div>' +
+                  '<div class="faq-answer">Средний балл можно посмотреть в разделе "Средние баллы". Мы публикуем данные за прошлый год.</div>' +
+                  '<div class="faq-question">❓ Можно ли подать документы онлайн?</div>' +
+                  '<div class="faq-answer">Да, через форму записи на сайте или по электронной почте postupi@otdis.ru</div>' +
+                  '<div class="faq-question">❓ Когда начинаются вступительные испытания?</div>' +
+                  '<div class="faq-answer">Испытания проходят с 1 июля по 15 августа. Точное расписание уточняйте по телефону.</div>' +
+                  '<div class="faq-question">❓ Есть ли подготовительные курсы?</div>' +
+                  '<div class="faq-answer">Да, мы проводим подготовку по русскому языку, математике и рисунку. Подробнее в разделе "Подготовительные курсы".</div>' 
+        }
     };
 
-const directionsCategories = [
-    { 
-        title: "Бюджетные места", 
-        icon: "●", 
-        items: [
-            { icon: "✂️", name: "Конструирование, моделирование и технология швейных изделий" },
-            { icon: "🎨", name: "Дизайн (легкая промышленность)" },
-            { icon: "🧵", name: "Мастер по изготовлению швейных изделий" },
-            { icon: "⚙️", name: "Оператор оборудования швейного производства" },
-            { icon: "🎭", name: "Художник по костюму" }
-        ]
-    },
-    { 
-        title: "Платное обучение", 
-        icon: "●", 
-        items: [
-            { icon: "📢", name: "Реклама" },
-            { icon: "🏦", name: "Банковское дело" },
-            { icon: "🎨", name: "Дизайн (СМИ и полиграфия)" }
-        ]
-    },
-    { 
-        title: "Для лиц с ОВЗ", 
-        icon: "●", 
-        items: [
-            { icon: "🪡", name: "Оператор швейного оборудования (швея) — проф. подготовка" }
-        ]
-    }
-];
+    // Данные о направлениях с подробной информацией
+    const directionsDetails = {
+        "Конструирование, моделирование и технология швейных изделий": {
+            icon: "✂️",
+            duration: "3 года 10 месяцев",
+            description: "Подготовка специалистов по созданию и моделированию одежды, работа с современным оборудованием и CAD-системами.",
+            qualification: "Технолог-конструктор швейных изделий",
+            form: "Очная / Заочная",
+            type: "budget"
+        },
+        "Дизайн (легкая промышленность)": {
+            icon: "🎨",
+            duration: "3 года 10 месяцев",
+            description: "Разработка дизайн-проектов одежды, аксессуаров, работа с материалами и цветом, создание коллекций.",
+            qualification: "Дизайнер",
+            form: "Очная",
+            type: "budget"
+        },
+        "Мастер по изготовлению швейных изделий": {
+            icon: "🧵",
+            duration: "2 года 10 месяцев",
+            description: "Профессиональная подготовка портных широкого профиля, работа с разными видами тканей и технологиями пошива.",
+            qualification: "Портной / Мастер швейного производства",
+            form: "Очная",
+            type: "budget"
+        },
+        "Оператор оборудования швейного производства": {
+            icon: "⚙️",
+            duration: "1 год 10 месяцев",
+            description: "Подготовка специалистов для работы на современном швейном оборудовании, включая автоматизированные линии.",
+            qualification: "Оператор швейного оборудования",
+            form: "Очная",
+            type: "budget"
+        },
+        "Художник по костюму": {
+            icon: "🎭",
+            duration: "3 года 10 месяцев",
+            description: "Создание театральных и сценических костюмов, работа с историческими и современными стилями.",
+            qualification: "Художник по костюму",
+            form: "Очная",
+            type: "budget"
+        },
+        "Реклама": {
+            icon: "📢",
+            duration: "2 года 10 месяцев",
+            description: "Подготовка специалистов в области рекламы и маркетинга, создание рекламных кампаний и креативных концепций.",
+            qualification: "Специалист по рекламе",
+            form: "Очная / Заочная",
+            type: "paid",
+            price: "98 000 ₽ / год"
+        },
+        "Банковское дело": {
+            icon: "🏦",
+            duration: "2 года 10 месяцев",
+            description: "Подготовка специалистов для работы в банках и финансовых учреждениях, кредитование, банковские операции.",
+            qualification: "Специалист банковского дела",
+            form: "Очная / Заочная",
+            type: "paid",
+            price: "92 000 ₽ / год"
+        },
+        "Дизайн (СМИ и полиграфия)": {
+            icon: "🎨",
+            duration: "3 года 10 месяцев",
+            description: "Создание дизайна для печатных и цифровых СМИ, разработка макетов, верстка, работа с типографикой.",
+            qualification: "Графический дизайнер",
+            form: "Очная",
+            type: "paid",
+            price: "105 000 ₽ / год"
+        },
+        "Оператор швейного оборудования (швея) — проф. подготовка": {
+            icon: "🪡",
+            duration: "1 год",
+            description: "Профессиональная подготовка швей, работа на промышленном оборудовании, пошив различных изделий.",
+            qualification: "Швея",
+            form: "Очная",
+            type: "disabled"
+        }
+    };
+
+    const directionsCategories = [
+        { 
+            title: "Бюджетные места", 
+            icon: "●", 
+            items: [
+                { icon: "✂️", name: "Конструирование, моделирование и технология швейных изделий" },
+                { icon: "🎨", name: "Дизайн (легкая промышленность)" },
+                { icon: "🧵", name: "Мастер по изготовлению швейных изделий" },
+                { icon: "⚙️", name: "Оператор оборудования швейного производства" },
+                { icon: "🎭", name: "Художник по костюму" }
+            ]
+        },
+        { 
+            title: "Платное обучение", 
+            icon: "●", 
+            items: [
+                { icon: "📢", name: "Реклама" },
+                { icon: "🏦", name: "Банковское дело" },
+                { icon: "🎨", name: "Дизайн (СМИ и полиграфия)" }
+            ]
+        },
+        { 
+            title: "Для лиц с ОВЗ", 
+            icon: "●", 
+            items: [
+                { icon: "🪡", name: "Оператор швейного оборудования (швея) — проф. подготовка" }
+            ]
+        }
+    ];
 
     let currentDate = new Date();
     let selectedDate = null;
@@ -510,12 +660,15 @@ const directionsCategories = [
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('infoPage').classList.add('hidden');
         document.getElementById('directionsPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.add('hidden');
         document.getElementById('bookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
     }
 
     function showInfoPage(type) {
         const data = contentData[type];
+        if (!data) return;
+        
         document.getElementById('infoTitle').innerText = data.title;
         
         let contentText = data.text;
@@ -527,6 +680,7 @@ const directionsCategories = [
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('infoPage').classList.remove('hidden');
         document.getElementById('directionsPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.add('hidden');
         document.getElementById('bookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
     }
@@ -536,11 +690,75 @@ const directionsCategories = [
         container.innerHTML = directionsCategories.map(cat => `
             <div class="direction-category">
                 <div class="category-title">${cat.icon} ${cat.title}</div>
-                ${cat.items.map(item => `<div class="direction-item"><div class="direction-icon">${item.icon}</div><div class="direction-name">${item.name}</div></div>`).join('')}
+                ${cat.items.map(item => `
+                    <div class="direction-item" onclick="showDirectionDetail('${item.name.replace(/'/g, "\\'")}')">
+                        <div class="direction-icon">${item.icon}</div>
+                        <div class="direction-name">${item.name}</div>
+                    </div>
+                `).join('')}
             </div>
         `).join('');
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('directionsPage').classList.remove('hidden');
+        document.getElementById('infoPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.add('hidden');
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
+    }
+
+    function showDirectionDetail(directionName) {
+        const detail = directionsDetails[directionName];
+        if (!detail) return;
+        
+        document.getElementById('detailTitle').innerHTML = `${detail.icon} ${directionName}`;
+        
+        let detailHtml = `
+            <div class="detail-block">
+                <div class="detail-label">⏱️ Срок обучения</div>
+                <div class="detail-value">${detail.duration}</div>
+            </div>
+            <div class="detail-block">
+                <div class="detail-label">📝 Описание</div>
+                <div class="detail-value">${detail.description}</div>
+            </div>
+            <div class="detail-block">
+                <div class="detail-label">🎓 Квалификация</div>
+                <div class="detail-value">${detail.qualification}</div>
+            </div>
+            <div class="detail-block">
+                <div class="detail-label">🏫 Форма обучения</div>
+                <div class="detail-value">${detail.form}</div>
+            </div>
+        `;
+        
+        if (detail.type === 'paid' && detail.price) {
+            detailHtml += `
+                <div class="detail-block">
+                    <div class="detail-label">💰 Стоимость обучения</div>
+                    <div class="detail-value price">${detail.price}</div>
+                </div>
+            `;
+        }
+        
+        if (detail.type === 'budget') {
+            detailHtml += `
+                <div class="detail-block">
+                    <div class="detail-label">🎯 Бюджетные места</div>
+                    <div class="detail-value" style="color: #28a745;">✓ Есть (уточняйте количество)</div>
+                </div>
+            `;
+        }
+        
+        detailHtml += `
+            <div style="margin-top: 16px; text-align: center;">
+                <button onclick="showBooking()" style="background: #28a745; margin-top: 0; padding: 12px;">📅 Записаться на консультацию</button>
+            </div>
+        `;
+        
+        document.getElementById('detailContent').innerHTML = detailHtml;
+        document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('directionsPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.remove('hidden');
         document.getElementById('infoPage').classList.add('hidden');
         document.getElementById('bookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
@@ -695,18 +913,15 @@ const directionsCategories = [
             timestamp: new Date().toISOString()
         };
 
-        // Показываем страницу с инструкцией
         document.getElementById('bookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-    // Функция для отправки через мессенджер
     function shareBooking() {
         if (!pendingBookingData) return;
         
         const messageText = `ОТДИС - Приёмная комиссия\n\nНовая запись\n\nИмя: ${pendingBookingData.user_name}\nТелефон: ${pendingBookingData.phone}\nДата: ${pendingBookingData.date}\nВремя: ${pendingBookingData.time}`;
         
-        // Пытаемся отправить через WebApp (для телефона и веб-версии Max)
         if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
             window.WebApp.shareMaxContent({ text: messageText }).then(result => {
                 if (result.status === 'shared') {
@@ -720,7 +935,6 @@ const directionsCategories = [
                 goToMainMenu();
             });
         } else {
-            // Для обычного браузера - копируем в буфер
             navigator.clipboard.writeText(messageText).then(() => {
                 showAlert('✅ Данные скопированы!\n\nОткройте чат "ОТДИС приёмная комиссия" и вставьте текст (Ctrl+V)', 'success');
                 clearBookingForm();
@@ -748,6 +962,9 @@ const directionsCategories = [
 
     function showBooking() {
         document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('infoPage').classList.add('hidden');
+        document.getElementById('directionsPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.add('hidden');
         document.getElementById('bookingSection').classList.remove('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
         renderCalendar();
