@@ -331,6 +331,22 @@
             padding-left: 12px;
             border-left: 2px solid #1a56db;
         }
+
+                @keyframes slideUpToast {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        .toast-notification {
+            animation: slideUpToast 0.3s ease;
+        }
+
     </style>
 </head>
 <body>
@@ -648,15 +664,15 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-    function sendFinalRequest() {
+function sendFinalRequest() {
     if (!pendingData) return;
     const messageText = pendingData.text;
     
-    // Проверяем, открыто ли приложение в Max или в обычном браузере
-    const isMaxApp = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.shareMaxContent;
+    // Проверяем, открыто ли приложение в Max
+    const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
     
     if (isMaxApp) {
-        // Для приложения Max
+        // Для приложения Max - показываем инструкцию перед отправкой
         showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
             window.WebApp.shareMaxContent({ text: messageText }).then(result => {
                 if (result.status === 'shared') {
@@ -673,11 +689,15 @@
             });
         });
     } else {
-        // Для веб-браузера - сразу копируем в буфер
+        // Для веб-браузера - сразу копируем и показываем тост (не блокирующий)
         navigator.clipboard.writeText(messageText).then(() => {
-            showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
+            // Показываем тост-уведомление (исчезнет через 3 секунды)
+            showToast('✅ Данные скопированы! Вставьте в чат (Ctrl+V)');
             clearForms();
-            goToMainMenu();
+            // Возвращаемся на главную через 1 секунду
+            setTimeout(() => {
+                goToMainMenu();
+            }, 1000);
         }).catch(() => { 
             showAlert('❌ Не удалось скопировать данные. Попробуйте ещё раз.', 'error'); 
             clearForms(); 
@@ -685,6 +705,45 @@
         });
     }
 }
+
+// Новая функция для тост-уведомления (не блокирует интерфейс)
+function showToast(message) {
+    // Удаляем старый тост, если есть
+    const oldToast = document.querySelector('.toast-notification');
+    if (oldToast) oldToast.remove();
+    
+    // Создаём тост
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 2000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideUpToast 0.3s ease;
+        white-space: nowrap;
+        max-width: 90%;
+        white-space: normal;
+        text-align: center;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Удаляем через 3 секунды
+    setTimeout(() => {
+        if (toast) toast.remove();
+    }, 3000);
+}
+
 
     function clearForms() {
         pendingData = null;
