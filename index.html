@@ -796,7 +796,7 @@
     function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
     function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
 
-    // ========== ЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ ==========
+           // ========== ЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ ==========
     function showFullBooking() {
         goToMainMenu();
         document.getElementById('fullBookingSection').classList.remove('hidden');
@@ -821,7 +821,22 @@
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
         const text = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
-        showInstructionWithData({ text: text }, 'full');
+        
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            showInstructionWithData({ text: text }, 'full');
+        } else {
+            pendingData = { text: text };
+            navigator.clipboard.writeText(text).then(function() {
+                clearForms();
+                showConfirmPage();
+            }).catch(function() {
+                alert('❌ Не удалось скопировать данные');
+                clearForms();
+                goToMainMenu();
+            });
+        }
     }
 
     // ========== ЗАПИСЬ НА КОНСУЛЬТАЦИЮ ==========
@@ -842,7 +857,44 @@
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
         const text = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${name}\nТелефон: ${phone}\nВремя: ${new Date().toLocaleString('ru-RU')}`;
-        showInstructionWithData({ text: text }, 'consult');
+        
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            showInstructionWithData({ text: text }, 'consult');
+        } else {
+            pendingData = { text: text };
+            navigator.clipboard.writeText(text).then(function() {
+                clearForms();
+                showConfirmPage();
+            }).catch(function() {
+                alert('❌ Не удалось скопировать данные');
+                clearForms();
+                goToMainMenu();
+            });
+        }
+    }
+
+    function showConfirmPage() {
+        document.getElementById('fullBookingSection').classList.add('hidden');
+        document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('infoPage').classList.add('hidden');
+        document.getElementById('directionsPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.add('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('confirmPage').classList.remove('hidden');
+    }
+    
+    function goToMainMenuFromConfirm() {
+        clearForms();
+        document.getElementById('confirmPage').classList.add('hidden');
+        goToMainMenu();
+    }
+    
+    function closeApp() {
+        alert('Вы можете закрыть вкладку браузера');
+        window.close();
     }
 
     function initPhoneMask() {
@@ -881,6 +933,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', initPhoneMask);
+       
 </script>
 </body>
 </html>
