@@ -305,7 +305,7 @@
         </div>
     </div>
 
-    <!-- Промежуточная страница-инструкция -->
+    <!-- Промежуточная страница-инструкция (только для телефона) -->
     <div id="instructionPage" class="instruction-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="hideInstruction()">← Назад</button>
@@ -332,7 +332,7 @@
                 Специалист свяжется с вами
             </p>
             
-            <button class="instruction-btn" onclick="shareBookingSafe()" style="margin-top: 12px; padding: 10px;">📨 Отправить заявку</button>
+            <button class="instruction-btn" onclick="shareBooking()" style="margin-top: 12px; padding: 10px;">📨 Отправить заявку</button>
         </div>
     </div>
 
@@ -454,6 +454,38 @@
             button.onclick = () => {
                 overlay.remove();
                 resolve();
+            };
+        });
+    }
+
+    // Функция для подтверждения (да/нет)
+    function showConfirm(message) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            overlay.innerHTML = `
+                <div class="modal">
+                    <div class="modal-icon">❓</div>
+                    <div class="modal-title">ОТДИС</div>
+                    <div class="modal-message">${message}</div>
+                    <div style="display: flex; gap: 10px; margin-top: 0;">
+                        <button class="modal-button" id="confirmNo" style="background-color: #6c757d; flex: 1; margin-top: 0;">Отмена</button>
+                        <button class="modal-button" id="confirmYes" style="background-color: #28a745; flex: 1; margin-top: 0;">Отправить</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            document.getElementById('confirmYes').onclick = () => {
+                overlay.remove();
+                resolve(true);
+            };
+            
+            document.getElementById('confirmNo').onclick = () => {
+                overlay.remove();
+                resolve(false);
             };
         });
     }
@@ -650,40 +682,62 @@
             timestamp: new Date().toISOString()
         };
 
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.remove('hidden');
+        // Проверяем, есть ли WebApp (телефон) или это обычный браузер
+        const isWebApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (!isWebApp) {
+            // Для веб-версии - сразу отправляем без промежуточной страницы
+            await shareBookingDirect();
+        } else {
+            // Для телефона - показываем страницу с инструкцией
+            document.getElementById('bookingSection').classList.add('hidden');
+            document.getElementById('instructionPage').classList.remove('hidden');
+        }
     }
 
-        // Функция для подтверждения (да/нет)
-    function showConfirm(message) {
-        return new Promise((resolve) => {
-            const overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
+    // Прямая отправка для веб-версии (без промежуточной страницы)
+    async function shareBookingDirect() {
+        if (!pendingBookingData) {
+            await showAlert('Нет данных для отправки', 'error');
+            return;
+        }
+        
+        const messageText = `🏫 ОТДИС - Приёмная комиссия\n\n` +
+                           `📝 Новая запись\n\n` +
+                           `👤 Имя: ${pendingBookingData.user_name}\n` +
+                           `📞 Телефон: ${pendingBookingData.phone}\n` +
+                           `📅 Дата: ${pendingBookingData.date}\n` +
+                           `⏰ Время: ${pendingBookingData.time}\n` +
+                           `🕐 Создано: ${new Date(pendingBookingData.timestamp).toLocaleString('ru-RU')}`;
+        
+        try {
+            // Показываем подтверждение перед отправкой
+            const confirmed = await showConfirm('Отправить заявку в приёмную комиссию?');
+            if (!confirmed) {
+                await showAlert('Отправка отменена', 'info');
+                return;
+            }
             
-            overlay.innerHTML = `
-                <div class="modal">
-                    <div class="modal-icon">❓</div>
-                    <div class="modal-title">ОТДИС</div>
-                    <div class="modal-message">${message}</div>
-                    <div style="display: flex; gap: 10px; margin-top: 0;">
-                        <button class="modal-button" id="confirmNo" style="background-color: #6c757d; flex: 1; margin-top: 0;">Отмена</button>
-                        <button class="modal-button" id="confirmYes" style="background-color: #28a745; flex: 1; margin-top: 0;">Отправить</button>
-                    </div>
-                </div>
-            `;
+            // Копируем в буфер обмена
+            await navigator.clipboard.writeText(messageText);
             
-            document.body.appendChild(overlay);
+            // Показываем успех с инструкцией
+            await showAlert(
+                '✅ Данные скопированы в буфер обмена!\n\n' +
+                '📋 Теперь:\n' +
+                '1. Откройте чат «ОТДИС приёмная комиссия»\n' +
+                '2. Вставьте текст (Ctrl+V или Cmd+V)\n' +
+                '3. Отправьте сообщение\n\n' +
+                'Специалист свяжется с вами',
+                'success'
+            );
             
-            document.getElementById('confirmYes').onclick = () => {
-                overlay.remove();
-                resolve(true);
-            };
-            
-            document.getElementById('confirmNo').onclick = () => {
-                overlay.remove();
-                resolve(false);
-            };
-        });
+            clearBookingForm();
+            goToMainMenu();
+        } catch(e) {
+            console.error('Ошибка при копировании:', e);
+            await showAlert('❌ Не удалось скопировать данные. Пожалуйста, попробуйте ещё раз.', 'error');
+        }
     }
 
     async function shareBooking() {
@@ -735,20 +789,6 @@
         }
     }
 
-    async function shareBookingSafe() {
-        if (isSubmitting) {
-            await showAlert('Отправка уже выполняется, пожалуйста, подождите...', 'warning');
-            return;
-        }
-        
-        isSubmitting = true;
-        try {
-            await shareBooking();
-        } finally {
-            isSubmitting = false;
-        }
-    }
-
     function clearBookingForm() {
         document.getElementById('userName').value = '';
         document.getElementById('phone').value = '';
@@ -789,28 +829,4 @@
     // Инициализация маски телефона
     function initPhoneMask() {
         const phoneInput = document.getElementById('phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                
-                let formatted = '';
-                if (value.length > 0) {
-                    formatted = '+7';
-                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
-                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
-                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
-                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
-                }
-                e.target.value = formatted;
-            });
-        }
-    }
-
-    // Запуск при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        initPhoneMask();
-    });
-</script>
-</body>
-</html>
+        if
