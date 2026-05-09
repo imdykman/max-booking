@@ -334,7 +334,9 @@
     </style>
 </head>
 <body>
-<div class="container">
+<script>
+
+    <div class="container">
     <div class="header" onclick="goToMainMenu()">
         <img src="images/Logotip_OTDIS_pk.png" alt="ОТДИС" class="header-logo" onerror="this.style.display='none'">
         <div class="header-text">
@@ -348,7 +350,7 @@
             <button class="menu-btn" onclick="showDirections()"><span class="emoji">🎓</span>Направления</button>
             <button class="menu-btn" onclick="showInfoPage('scores')"><span class="emoji">📊</span>Средние баллы</button>
             <button class="menu-btn" onclick="showInfoPage('documents')"><span class="emoji">📋</span>Документы</button>
-            <button class="menu-btn" onclick="showBooking()"><span class="emoji">📅</span>Запись</button>
+            <button class="menu-btn" onclick="showFullBooking()"><span class="emoji">📅</span>Запись для подачи документов</button>
             <button class="menu-btn" onclick="showInfoPage('prof')">
                 <img src="images/professionalitet.png" alt="Профессионалитет" style="width: 64px; height: 64px; object-fit: contain;">
             </button>
@@ -412,7 +414,8 @@
         <div class="info-content" id="detailContent"></div>
     </div>
 
-    <div id="bookingSection" class="booking-section hidden">
+    <!-- Блок для полноценной записи (с календарем) -->
+    <div id="fullBookingSection" class="booking-section hidden">
         <div class="nav-buttons">
             <div class="nav-btn" onclick="prevMonth()">◀️</div>
             <div class="month" id="monthDisplay"></div>
@@ -426,13 +429,36 @@
         <div id="formSection" class="hidden">
             <div class="form-group">
                 <label>📝 Ваше имя</label>
-                <input type="text" id="userName" placeholder="Иванов Иван">
+                <input type="text" id="fullUserName" placeholder="Иванов Иван">
             </div>
             <div class="form-group">
                 <label>📞 Телефон</label>
-                <input type="tel" id="phone" placeholder="+7 912 345 67 89">
+                <input type="tel" id="fullPhone" placeholder="+7 912 345 67 89">
             </div>
-            <button class="booking-btn" onclick="prepareBooking()">✅ Записаться</button>
+            <button class="booking-btn" onclick="prepareFullBooking()">✅ Записаться</button>
+        </div>
+    </div>
+
+    <!-- Блок для записи на консультацию (упрощенный) -->
+    <div id="consultBookingSection" class="booking-section hidden">
+        <div class="info-header">
+            <button class="back-button" onclick="hideConsultBooking()">← Назад</button>
+            <div class="info-title">📝 Запись на консультацию</div>
+        </div>
+        <div class="info-content">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 48px;">📅</span>
+                <p style="margin-top: 8px;">Оставьте контакты, и наш специалист свяжется с вами в ближайшее время</p>
+            </div>
+            <div class="form-group">
+                <label>📝 Ваше имя</label>
+                <input type="text" id="consultUserName" placeholder="Иванов Иван">
+            </div>
+            <div class="form-group">
+                <label>📞 Телефон</label>
+                <input type="tel" id="consultPhone" placeholder="+7 912 345 67 89">
+            </div>
+            <button class="booking-btn" onclick="prepareConsultBooking()">✅ Отправить заявку</button>
         </div>
     </div>
 
@@ -440,7 +466,7 @@
         <a href="https://otdis.ru" target="_blank">❓ Часто задаваемые вопросы → otdis.ru</a>
     </div>
 </div>
-<script>
+    
     const contentData = {
         scores: { 
             title: '📊 Средние баллы 2025', 
