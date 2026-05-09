@@ -28,10 +28,23 @@
             text-align: center;
             cursor: pointer;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
         .header:active { opacity: 0.8; }
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        .header-text {
+            text-align: left;
+        }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
-        .header p { font-size: 13px; opacity: 0.9; }
+        .header p { font-size: 13px; opacity: 0.9; margin: 0; }
         .info-page, .main-menu, .booking-section, .instruction-page {
             width: 100%;
             background: white;
@@ -284,8 +297,11 @@
 <body>
 <div class="container">
     <div class="header" onclick="goToMainMenu()">
-        <h1>📚 ОТДИС</h1>
-        <p>Приёмная комиссия 2026</p>
+        <img src="images/Logotip_OTDIS_pk.png" alt="ОТДИС" class="header-logo" onerror="this.style.display='none'">
+        <div class="header-text">
+            <h1>ОТДИС</h1>
+            <p>Приёмная комиссия 2026</p>
+        </div>
     </div>
 
     <div id="mainMenu" class="main-menu">
