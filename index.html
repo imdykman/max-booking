@@ -348,48 +348,24 @@
             <button class="menu-btn" onclick="showDirections()"><span class="emoji">🎓</span>Направления</button>
             <button class="menu-btn" onclick="showInfoPage('scores')"><span class="emoji">📊</span>Средние баллы</button>
             <button class="menu-btn" onclick="showInfoPage('documents')"><span class="emoji">📋</span>Документы</button>
-            <button class="menu-btn" onclick="showFullBooking()"><span class="emoji">📅</span>Запись для подачи документов</button>
+            <button class="menu-btn" onclick="showFullBooking()"><span class="emoji">📅</span>Запись на подачу документов</button>
             <button class="menu-btn" onclick="showInfoPage('prof')">
                 <img src="images/professionalitet.png" alt="Профессионалитет" style="width: 64px; height: 64px; object-fit: contain;">
             </button>
             <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
             <button class="menu-btn" onclick="showInfoPage('prepCourses')"><span class="emoji">📚</span>Подготовительные курсы</button>
             <button class="menu-btn" onclick="showInfoPage('faq')"><span class="emoji">💬</span>Вопросы-ответы</button>
+            <button class="menu-btn" onclick="showConsultBookingDirect()"><span class="emoji">📞</span>Запись на консультацию</button>
         </div>
     </div>
 
     <div id="instructionPage" class="instruction-page hidden">
         <div class="info-header">
-            <button class="back-button" onclick="hideInstruction()">← Назад</button>
+            <button class="back-button" onclick="hideInstruction()">←</button>
             <div class="info-title">📋 Отправка заявки</div>
         </div>
-        <div class="info-content" style="padding: 0; margin: 0;">
-            <div style="text-align: center;">
-                <span style="font-size: 48px;">✉️</span>
-            </div>
-            <p style="text-align: center; margin: 8px 0; font-size: 16px;"><strong>Ваши данные готовы к отправке!</strong></p>
-            
-            <div style="background: #e3f2fd; border-radius: 12px; padding: 12px; margin: 12px 0;">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <span style="background: #1a56db; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">1</span>
-                    <span style="font-size: 14px;">Нажмите кнопку <strong>«Отправить»</strong> ниже</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <span style="background: #1a56db; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">2</span>
-                    <span style="font-size: 14px;">Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="background: #1a56db; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">3</span>
-                    <span style="font-size: 14px;">Нажмите <strong>«Отправить»</strong> в чате</span>
-                </div>
-            </div>
-            
-            <div style="background: #f0fdf4; border-radius: 12px; padding: 12px; margin: 12px 0; text-align: center;">
-                <span style="font-size: 14px;">✅ После отправки специалист свяжется с вами</span>
-            </div>
-            
-            <button class="instruction-btn" onclick="shareBooking()" style="margin-top: 8px; padding: 14px; font-size: 16px;">📨 Отправить заявку</button>
-        </div>
+        <div class="info-content" id="instructionContent"></div>
+        <button class="instruction-btn" onclick="sendFinalRequest()" style="margin-top: 12px;">📨 Отправить</button>
     </div>
 
     <div id="infoPage" class="info-page hidden">
@@ -416,7 +392,12 @@
         <div class="info-content" id="detailContent"></div>
     </div>
 
+    <!-- Форма для полноценной записи -->
     <div id="fullBookingSection" class="booking-section hidden">
+        <div class="info-header">
+            <button class="back-button" onclick="showFullBooking()">←</button>
+            <div class="info-title">📅 Запись на подачу документов</div>
+        </div>
         <div class="nav-buttons">
             <div class="nav-btn" onclick="prevMonth()">◀️</div>
             <div class="month" id="monthDisplay"></div>
@@ -440,10 +421,11 @@
         </div>
     </div>
 
+    <!-- Форма для консультации -->
     <div id="consultBookingSection" class="booking-section hidden">
         <div class="info-header">
-            <button class="back-button" onclick="hideConsultBooking()">← Назад</button>
-            <div class="info-title">📝 Запись на консультацию</div>
+            <button class="back-button" onclick="goToMainMenu()">←</button>
+            <div class="info-title">📞 Запись на консультацию</div>
         </div>
         <div class="info-content">
             <div style="text-align: center; margin-bottom: 20px;">
@@ -468,216 +450,65 @@
 </div>
 
 <script>
+    // ========== ДАННЫЕ ==========
     const contentData = {
-        scores: { 
-            title: '📊 Средние баллы 2025', 
-            text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
-                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Реклама — <strong>4,1</strong></div>' +
-                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Банковское дело — <strong>3,9</strong></div>' +
-                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Дизайн в СМИ — <strong>4,03</strong></div>' +
-                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> КМ и технология — <strong>4,3</strong></div>' +
-                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Мастер швейных изделий — <strong>3,9</strong></div>' +
-                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Оператор швейного оборудования — <strong>3,79</strong></div>' +
-                  '</div>' 
-        },
-        documents: { 
-            title: '📋 Список документы', 
-            text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">1.</span> 📄 Паспорт</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">2.</span> 📄 Аттестат</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">3.</span> 📄 Фото 3×4 (4 шт)</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">4.</span> 📄 Медсправка 086</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">5.</span> 📄 Прививочный сертификат</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">6.</span> 📄 Медицинский полис</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">7.</span> 📄 СНИЛС</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">8.</span> 📄 Документы о льготах</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">9.</span> 📄 ИНН</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">10.</span> 📄 Документы об инвалидности</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">11.</span> 📄 Заключение ПМПК</div>' +
-                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">12.</span> 📄 Приписное</div>' +
-                  '</div><div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;">🗓️ Срок подачи: до 15 августа</div>' 
-        },
-        prof: { 
-            title: 'Профессионалитет', 
-            text: '«Профессионалитет» — это федеральный проект, который готовит кадры для реального сектора экономики.\n\n' +
-                  '⚡ Ключевые преимущества:\n' +
-                  '• Сокращённые сроки обучения (от 1 года 10 мес.)\n' +
-                  '• Приоритет практики на реальном производстве\n' +
-                  '• Целевое обучение и гарантированное трудоустройство\n' +
-                  '• Современное оборудование и мастерские\n' +
-                  '• Наставничество от ведущих специалистов\n\n' +
-                  '📌 В ОТДИС программы Профессионалитета:\n' +
-                  '• Мастер по изготовлению швейных изделий\n' +
-                  '• Оператор швейного оборудования\n' +
-                  '• Конструирование, моделирование и технология изготовления швейных изделий\n' +
-                  '• Дизайнер в легкой промышленности\n\n' +
-                  '🌐 Подробнее: <a href="https://otdis.ru/professionalitet" target="_blank" style="color: #1a56db; text-decoration: none;">otdis.ru/professionalitet</a>' 
-        },
+        scores: { title: '📊 Средние баллы 2025', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79' },
+        documents: { title: '📋 Список документов', text: '1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 — 4 шт\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа' },
+        prof: { title: 'Профессионалитет', text: '«Профессионалитет» — федеральный проект подготовки кадров.\n\n⚡ Ключевые преимущества:\n• Сокращённые сроки обучения\n• Приоритет практики\n• Гарантированное трудоустройство' },
         contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' },
-        prepCourses: { 
-            title: '📚 Подготовительные курсы', 
-            text: '<div style="display: flex; flex-direction: column; gap: 16px;">' +
-                  '<div class="detail-block"><div class="detail-label">📖 Русский язык</div><div class="detail-value">8 занятий, 2 раза в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">5 000 ₽ / месяц</div></div>' +
-                  '<div class="detail-block"><div class="detail-label">🧮 Математика</div><div class="detail-value">8 занятий, 2 раза в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">5 000 ₽ / месяц</div></div>' +
-                  '<div class="detail-block"><div class="detail-label">🎨 Рисунок (для дизайнеров)</div><div class="detail-value">4 занятия в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">6 000 ₽ / месяц</div></div>' +
-                  '<div class="detail-block"><div class="detail-label">📝 Комплексная подготовка</div><div class="detail-value">Все предметы + профориентация</div><div class="price" style="font-size: 14px; margin-top: 6px;">12 000 ₽ / месяц</div></div>' +
-                  '</div><div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">📞 Запись по телефону: +7 (343) 378-17-25 (доб. 3)</div>' 
-        },
-        faq: { 
-            title: '💬 Часто задаваемые вопросы', 
-            text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div>' +
-                  '<div class="faq-answer">Паспорт, аттестат, фото 3×4 (4 шт), медсправка 086, СНИЛС, ИНН. Полный список есть в разделе "Документы".</div>' +
-                  '<div class="faq-question">❓ Есть ли бюджетные места?</div>' +
-                  '<div class="faq-answer">Да, на большинство специальностей есть бюджетные места. Подробнее в разделе "Направления".</div>' +
-                  '<div class="faq-question">❓ Как узнать средний балл аттестата?</div>' +
-                  '<div class="faq-answer">Средний балл можно посмотреть в разделе "Средние баллы". Мы публикуем данные за прошлый год.</div>' +
-                  '<div class="faq-question">❓ Можно ли подать документы онлайн?</div>' +
-                  '<div class="faq-answer">Да, через форму записи на сайте или по электронной почте postupi@otdis.ru</div>' +
-                  '<div class="faq-question">❓ Когда начинаются вступительные испытания?</div>' +
-                  '<div class="faq-answer">Испытания проходят с 1 июля по 15 августа. Точное расписание уточняйте по телефону.</div>' +
-                  '<div class="faq-question">❓ Есть ли подготовительные курсы?</div>' +
-                  '<div class="faq-answer">Да, мы проводим подготовку по русскому языку, математике и рисунку. Подробнее в разделе "Подготовительные курсы".</div>' 
-        }
-    };
-
-    const directionsDetails = {
-        "Конструирование, моделирование и технология швейных изделий": {
-            icon: "✂️",
-            duration: "3 года 10 месяцев",
-            description: "Подготовка специалистов по созданию и моделированию одежды, работа с современным оборудованием и CAD-системами.",
-            qualification: "Технолог-конструктор швейных изделий",
-            form: "Очная",
-            type: "budget"
-        },
-        "Дизайн (легкая промышленность)": {
-            icon: "🎨",
-            duration: "3 года 10 месяцев",
-            description: "Разработка дизайн-проектов одежды, аксессуаров, работа с материалами и цветом, создание коллекций.",
-            qualification: "Дизайнер",
-            form: "Очная",
-            type: "budget"
-        },
-        "Мастер по изготовлению швейных изделий": {
-            icon: "🧵",
-            duration: "2 года 10 месяцев",
-            description: "Профессиональная подготовка портных широкого профиля, работа с разными видами тканей и технологиями пошива.",
-            qualification: "Портной / Мастер швейного производства",
-            form: "Очная",
-            type: "budget"
-        },
-        "Оператор оборудования швейного производства": {
-            icon: "⚙️",
-            duration: "1 год 10 месяцев",
-            description: "Подготовка специалистов для работы на современном швейном оборудовании, включая автоматизированные линии.",
-            qualification: "Оператор швейного оборудования",
-            form: "Очная",
-            type: "budget"
-        },
-        "Художник по костюму": {
-            icon: "🎭",
-            duration: "3 года 10 месяцев",
-            description: "Создание театральных и сценических костюмов, работа с историческими и современными стилями.",
-            qualification: "Художник по костюму",
-            form: "Очная",
-            type: "budget"
-        },
-        "Реклама": {
-            icon: "📢",
-            duration: "2 года 10 месяцев",
-            description: "Подготовка специалистов в области рекламы и маркетинга, создание рекламных кампаний и креативных концепций.",
-            qualification: "Специалист по рекламе",
-            form: "Очная",
-            type: "paid",
-            price: "98 000 ₽ / год"
-        },
-        "Банковское дело": {
-            icon: "🏦",
-            duration: "2 года 10 месяцев",
-            description: "Подготовка специалистов для работы в банках и финансовых учреждениях, кредитование, банковские операции.",
-            qualification: "Специалист банковского дела",
-            form: "Очная",
-            type: "paid",
-            price: "92 000 ₽ / год"
-        },
-        "Дизайн (СМИ и полиграфия)": {
-            icon: "🎨",
-            duration: "3 года 10 месяцев",
-            description: "Создание дизайна для печатных и цифровых СМИ, разработка макетов, верстка, работа с типографикой.",
-            qualification: "Графический дизайнер",
-            form: "Очная",
-            type: "paid",
-            price: "105 000 ₽ / год"
-        },
-        "Оператор швейного оборудования (швея) — проф. подготовка": {
-            icon: "🪡",
-            duration: "1 год",
-            description: "Профессиональная подготовка швей, работа на промышленном оборудовании, пошив различных изделий.",
-            qualification: "Швея",
-            form: "Очная",
-            type: "disabled"
-        }
+        prepCourses: { title: '📚 Подготовительные курсы', text: '• Русский язык — 5 000 ₽/мес\n• Математика — 5 000 ₽/мес\n• Рисунок — 6 000 ₽/мес\n• Комплекс — 12 000 ₽/мес\n\n📞 Запись по телефону: +7 (343) 378-17-25 (доб. 3)' },
+        faq: { title: '💬 Часто задаваемые вопросы', text: '❓ Какие документы нужны?\n✅ Паспорт, аттестат, фото, медсправка 086, СНИЛС, ИНН.\n\n❓ Есть ли бюджетные места?\n✅ Да, на большинство специальностей.\n\n❓ Можно ли подать документы онлайн?\n✅ Да, через форму на сайте.' }
     };
 
     const directionsCategories = [
-        { 
-            title: "Бюджетные места", 
-            icon: "●", 
-            items: [
-                { icon: "✂️", name: "Конструирование, моделирование и технология швейных изделий" },
-                { icon: "🎨", name: "Дизайн (легкая промышленность)" },
-                { icon: "🧵", name: "Мастер по изготовлению швейных изделий" },
-                { icon: "⚙️", name: "Оператор оборудования швейного производства" },
-                { icon: "🎭", name: "Художник по костюму" }
-            ]
-        },
-        { 
-            title: "Платное обучение", 
-            icon: "●", 
-            items: [
-                { icon: "📢", name: "Реклама" },
-                { icon: "🏦", name: "Банковское дело" },
-                { icon: "🎨", name: "Дизайн (СМИ и полиграфия)" }
-            ]
-        },
-        { 
-            title: "Для лиц с ОВЗ", 
-            icon: "●", 
-            items: [
-                { icon: "🪡", name: "Оператор швейного оборудования (швея) — проф. подготовка" }
-            ]
-        }
+        { title: "Бюджетные места", icon: "●", items: [
+            { icon: "✂️", name: "Конструирование, моделирование и технология швейных изделий" },
+            { icon: "🎨", name: "Дизайн (легкая промышленность)" },
+            { icon: "🧵", name: "Мастер по изготовлению швейных изделий" },
+            { icon: "⚙️", name: "Оператор оборудования швейного производства" },
+            { icon: "🎭", name: "Художник по костюму" }
+        ]},
+        { title: "Платное обучение", icon: "●", items: [
+            { icon: "📢", name: "Реклама" },
+            { icon: "🏦", name: "Банковское дело" },
+            { icon: "🎨", name: "Дизайн (СМИ и полиграфия)" }
+        ]},
+        { title: "Для лиц с ОВЗ", icon: "●", items: [
+            { icon: "🪡", name: "Оператор швейного оборудования (швея) — проф. подготовка" }
+        ]}
     ];
 
-    let pendingBookingData = null;
+    const directionsDetails = {
+        "Конструирование, моделирование и технология швейных изделий": { duration: "3 года 10 мес", description: "Подготовка технологов-конструкторов", qualification: "Технолог-конструктор", form: "Очная", type: "budget" },
+        "Дизайн (легкая промышленность)": { duration: "3 года 10 мес", description: "Разработка дизайн-проектов одежды", qualification: "Дизайнер", form: "Очная", type: "budget" },
+        "Мастер по изготовлению швейных изделий": { duration: "2 года 10 мес", description: "Подготовка портных широкого профиля", qualification: "Портной", form: "Очная", type: "budget" },
+        "Оператор оборудования швейного производства": { duration: "1 год 10 мес", description: "Работа на современном оборудовании", qualification: "Оператор", form: "Очная", type: "budget" },
+        "Художник по костюму": { duration: "3 года 10 мес", description: "Создание сценических костюмов", qualification: "Художник", form: "Очная", type: "budget" },
+        "Реклама": { duration: "2 года 10 мес", description: "Специалист по рекламе", qualification: "Специалист по рекламе", form: "Очная", type: "paid", price: "98 000 ₽/год" },
+        "Банковское дело": { duration: "2 года 10 мес", description: "Специалист банковского дела", qualification: "Специалист", form: "Очная", type: "paid", price: "92 000 ₽/год" },
+        "Дизайн (СМИ и полиграфия)": { duration: "3 года 10 мес", description: "Графический дизайнер", qualification: "Дизайнер", form: "Очная", type: "paid", price: "105 000 ₽/год" },
+        "Оператор швейного оборудования (швея) — проф. подготовка": { duration: "1 год", description: "Профессиональная подготовка швей", qualification: "Швея", form: "Очная", type: "disabled" }
+    };
+
+    // ========== ПЕРЕМЕННЫЕ ==========
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
+    let pendingData = null;
+    let currentBookingType = null;
 
+    // ========== ОСНОВНЫЕ ФУНКЦИИ ==========
     function showAlert(message, type = 'info') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
-            
             let icon = 'ℹ️';
             if (type === 'success') icon = '✅';
             if (type === 'error') icon = '❌';
             if (type === 'warning') icon = '⚠️';
-            
-            overlay.innerHTML = `
-                <div class="modal">
-                    <div class="modal-icon">${icon}</div>
-                    <div class="modal-title">ОТДИС</div>
-                    <div class="modal-message">${message}</div>
-                    <button class="modal-button">Хорошо</button>
-                </div>
-            `;
-            
+            overlay.innerHTML = `<div class="modal"><div class="modal-icon">${icon}</div><div class="modal-title">ОТДИС</div><div class="modal-message">${message}</div><button class="modal-button">Хорошо</button></div>`;
             document.body.appendChild(overlay);
-            const button = overlay.querySelector('.modal-button');
-            button.onclick = () => {
-                overlay.remove();
-                resolve();
-            };
+            overlay.querySelector('.modal-button').onclick = () => { overlay.remove(); resolve(); };
         });
     }
 
@@ -686,218 +517,106 @@
         document.getElementById('infoPage').classList.add('hidden');
         document.getElementById('directionsPage').classList.add('hidden');
         document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
     }
 
     function showInfoPage(type) {
         const data = contentData[type];
         if (!data) return;
-        
         document.getElementById('infoTitle').innerText = data.title;
-        
-        let contentText = data.text;
-        if (type === 'prof') {
-            contentText = `<div style="text-align: center; margin-bottom: 16px;"><img src="images/professionalitet.png" alt="Профессионалитет" style="width: 80px; height: 80px; object-fit: contain;"></div>\n\n` + data.text;
-        }
-        
-        document.getElementById('infoContent').innerHTML = contentText;
-        document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('infoContent').innerHTML = data.text;
+        goToMainMenu();
         document.getElementById('infoPage').classList.remove('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
-        document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.add('hidden');
-        document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
     }
-    
+
     function showDirections() {
         const container = document.getElementById('directionsList');
         container.innerHTML = directionsCategories.map(cat => `
             <div class="direction-category">
                 <div class="category-title">${cat.icon} ${cat.title}</div>
-                ${cat.items.map(item => `
-                    <div class="direction-item" onclick="showDirectionDetail('${item.name.replace(/'/g, "\\'")}')">
-                        <div class="direction-icon">${item.icon}</div>
-                        <div class="direction-name">${item.name}</div>
-                    </div>
-                `).join('')}
+                ${cat.items.map(item => `<div class="direction-item" onclick="showDirectionDetail('${item.name.replace(/'/g, "\\'")}')"><div class="direction-icon">${item.icon}</div><div class="direction-name">${item.name}</div></div>`).join('')}
             </div>
         `).join('');
-        document.getElementById('mainMenu').classList.add('hidden');
+        goToMainMenu();
         document.getElementById('directionsPage').classList.remove('hidden');
-        document.getElementById('infoPage').classList.add('hidden');
-        document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.add('hidden');
-        document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
     }
 
     function showDirectionDetail(directionName) {
         const detail = directionsDetails[directionName];
         if (!detail) return;
-        
         document.getElementById('detailTitle').innerHTML = `${detail.icon} ${directionName}`;
-        
-        let detailHtml = `
-            <div class="detail-block">
-                <div class="detail-label">⏱️ Срок обучения</div>
-                <div class="detail-value">${detail.duration}</div>
-            </div>
-            <div class="detail-block">
-                <div class="detail-label">📝 Описание</div>
-                <div class="detail-value">${detail.description}</div>
-            </div>
-            <div class="detail-block">
-                <div class="detail-label">🎓 Квалификация</div>
-                <div class="detail-value">${detail.qualification}</div>
-            </div>
-            <div class="detail-block">
-                <div class="detail-label">🏫 Форма обучения</div>
-                <div class="detail-value">${detail.form}</div>
-            </div>
-        `;
-        
-        if (detail.type === 'paid' && detail.price) {
-            detailHtml += `
-                <div class="detail-block">
-                    <div class="detail-label">💰 Стоимость обучения</div>
-                    <div class="detail-value price">${detail.price}</div>
-                </div>
-            `;
-        }
-        
-        if (detail.type === 'budget') {
-            detailHtml += `
-                <div class="detail-block">
-                    <div class="detail-label">🎯 Бюджетные места</div>
-                    <div class="detail-value" style="color: #28a745;">✓ Есть (уточняйте количество)</div>
-                </div>
-            `;
-        }
-        
-        detailHtml += `
-            <div style="margin-top: 16px; text-align: center;">
-                <button onclick="showConsultBooking()" style="background: #28a745; margin-top: 0; padding: 12px;">📞 Записаться на консультацию</button>
-            </div>
-        `;
-        
-        document.getElementById('detailContent').innerHTML = detailHtml;
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
+        let html = `<div class="detail-block"><div class="detail-label">⏱️ Срок обучения</div><div class="detail-value">${detail.duration}</div></div>
+                    <div class="detail-block"><div class="detail-label">📝 Описание</div><div class="detail-value">${detail.description}</div></div>
+                    <div class="detail-block"><div class="detail-label">🎓 Квалификация</div><div class="detail-value">${detail.qualification}</div></div>
+                    <div class="detail-block"><div class="detail-label">🏫 Форма обучения</div><div class="detail-value">${detail.form}</div></div>`;
+        if (detail.type === 'paid') html += `<div class="detail-block"><div class="detail-label">💰 Стоимость</div><div class="detail-value price">${detail.price}</div></div>`;
+        if (detail.type === 'budget') html += `<div class="detail-block"><div class="detail-label">🎯 Бюджетные места</div><div class="detail-value" style="color:#28a745;">✓ Есть</div></div>`;
+        html += `<div style="margin-top:16px;text-align:center;"><button onclick="showConsultBookingDirect()" style="background:#28a745;margin-top:0;padding:12px;">📞 Записаться на консультацию</button></div>`;
+        document.getElementById('detailContent').innerHTML = html;
+        goToMainMenu();
         document.getElementById('directionDetailPage').classList.remove('hidden');
-        document.getElementById('infoPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.add('hidden');
-        document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
     }
 
     function hideInstruction() {
         document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.remove('hidden');
+        if (currentBookingType === 'full') {
+            document.getElementById('fullBookingSection').classList.remove('hidden');
+        } else {
+            document.getElementById('consultBookingSection').classList.remove('hidden');
+        }
     }
 
-    async function prepareBooking() {
-        const userName = document.getElementById('userName').value.trim();
-        if (!userName) { 
-            await showAlert('Пожалуйста, введите ваше имя', 'warning');
-            document.getElementById('userName').focus();
-            return; 
-        }
-        
-        if (userName.length < 2) {
-            await showAlert('Имя должно содержать хотя бы 2 символа', 'warning');
-            document.getElementById('userName').focus();
-            return;
-        }
-        
-        const phone = document.getElementById('phone').value.trim();
-        if (!phone) { 
-            await showAlert('Пожалуйста, введите номер телефона', 'warning');
-            document.getElementById('phone').focus();
-            return; 
-        }
-        
-        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
-        if (!phoneRegex.test(phone)) {
-            await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning');
-            document.getElementById('phone').focus();
-            return;
-        }
-
-        pendingBookingData = {
-            user_name: userName,
-            phone: phone,
-            date: "консультация",
-            time: "—",
-            timestamp: new Date().toISOString()
-        };
-
-        document.getElementById('bookingSection').classList.add('hidden');
+    function showInstructionWithData(data, type) {
+        currentBookingType = type;
+        pendingData = data;
+        let html = `<div style="text-align:center;"><span style="font-size:48px;">✉️</span></div>
+                    <p style="text-align:center;margin:8px 0;font-size:16px;"><strong>Ваши данные готовы к отправке!</strong></p>
+                    <div style="background:#e3f2fd;border-radius:12px;padding:12px;margin:12px 0;">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span><span>Нажмите <strong>«Отправить»</strong></span></div>
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">2</span><span>Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span></div>
+                        <div style="display:flex;align-items:center;gap:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">3</span><span>Нажмите <strong>«Отправить»</strong> в чате</span></div>
+                    </div>
+                    <div style="background:#f0fdf4;border-radius:12px;padding:12px;text-align:center;"><span>✅ После отправки специалист свяжется с вами</span></div>`;
+        document.getElementById('instructionContent').innerHTML = html;
+        document.getElementById('fullBookingSection').classList.add('hidden');
+        document.getElementById('consultBookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-    function shareBooking() {
-        if (!pendingBookingData) return;
-        
-        const messageText = `ОТДИС - Приёмная комиссия\n\nНОВАЯ ЗАЯВКА\n\nИмя: ${pendingBookingData.user_name}\nТелефон: ${pendingBookingData.phone}`;
-        
+    function sendFinalRequest() {
+        if (!pendingData) return;
+        const messageText = pendingData.text;
         showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-            
             if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
                 window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    if (result.status === 'shared') {
-                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    } else {
-                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                    }
-                    clearBookingForm();
+                    if (result.status === 'shared') showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                    else showAlert('ℹ️ Отправка не завершена.', 'info');
+                    clearForms();
                     goToMainMenu();
-                }).catch(() => {
-                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error');
-                    clearBookingForm();
-                    goToMainMenu();
-                });
+                }).catch(() => { showAlert('❌ Ошибка при отправке', 'error'); clearForms(); goToMainMenu(); });
             } else {
                 navigator.clipboard.writeText(messageText).then(() => {
-                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
-                    clearBookingForm();
+                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст\n3. Отправьте', 'success');
+                    clearForms();
                     goToMainMenu();
-                }).catch(() => {
-                    showAlert('❌ Не удалось скопировать данные', 'error');
-                    clearBookingForm();
-                    goToMainMenu();
-                });
+                }).catch(() => { showAlert('❌ Не удалось скопировать', 'error'); clearForms(); goToMainMenu(); });
             }
         });
     }
 
-    function clearBookingForm() {
-        document.getElementById('userName').value = '';
-        document.getElementById('phone').value = '';
-        pendingBookingData = null;
+    function clearForms() {
+        pendingData = null;
+        currentBookingType = null;
+        selectedDate = null;
+        selectedTime = null;
     }
 
-    function showBooking() {
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('infoPage').classList.add('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
-        document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.remove('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.add('hidden');
-        document.getElementById('consultBookingSection').classList.add('hidden');
-        
-        document.getElementById('userName').value = '';
-        document.getElementById('phone').value = '';
-    }
-    
-    // ========== ФУНКЦИИ ДЛЯ КАЛЕНДАРЯ ==========
+    // ========== КАЛЕНДАРЬ ==========
     function generateTimeSlots(date) {
         const dayOfWeek = new Date(date).getDay();
         if (dayOfWeek === 0) return [];
@@ -917,46 +636,25 @@
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const startDayOfWeek = firstDay.getDay();
-        const today = new Date(); 
-        today.setHours(0,0,0,0);
-        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-        
+        const today = new Date(); today.setHours(0,0,0,0);
+        const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
         document.getElementById('monthDisplay').innerText = `${monthNames[month]} ${year}`;
-        
         let html = '';
-        const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-        for (let i = 0; i < 7; i++) {
-            html += `<div class="weekday">${dayNames[i]}</div>`;
-        }
-        
+        const dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+        for (let i = 0; i < 7; i++) html += `<div class="weekday">${dayNames[i]}</div>`;
         const offset = (startDayOfWeek === 0 ? 6 : startDayOfWeek - 1);
-        for (let i = 0; i < offset; i++) {
-            html += `<div class="day disabled"></div>`;
-        }
-        
+        for (let i = 0; i < offset; i++) html += `<div class="day disabled"></div>`;
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const date = new Date(year, month, day);
             const isWeekend = date.getDay() === 0;
             const isPast = date < today;
             let className = 'day';
-            
-            if (isWeekend || isPast) {
-                className += ' disabled';
-            } else {
-                className += ' available';
-            }
-            
-            if (selectedDate && selectedDate.toDateString() === date.toDateString()) {
-                className += ' selected';
-            }
-            
-            if (!isWeekend && !isPast) {
-                html += `<div class="${className}" onclick="selectDateFromCalendar('${date.toISOString()}')">${day}</div>`;
-            } else {
-                html += `<div class="${className}">${day}</div>`;
-            }
+            if (isWeekend || isPast) className += ' disabled';
+            else className += ' available';
+            if (selectedDate && selectedDate.toDateString() === date.toDateString()) className += ' selected';
+            if (!isWeekend && !isPast) html += `<div class="${className}" onclick="selectDateFromCalendar('${date.toISOString()}')">${day}</div>`;
+            else html += `<div class="${className}">${day}</div>`;
         }
-        
         document.getElementById('calendar').innerHTML = html;
     }
 
@@ -964,301 +662,88 @@
         selectedDate = new Date(dateStr);
         selectedTime = null;
         renderCalendar();
-        
         const slots = generateTimeSlots(selectedDate);
-        const timeHtml = slots.map(slot => 
-            `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`
-        ).join('');
-        
-        document.getElementById('timeSlots').innerHTML = timeHtml;
+        document.getElementById('timeSlots').innerHTML = slots.map(slot => `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`).join('');
         document.getElementById('timeSection').classList.remove('hidden');
         document.getElementById('formSection').classList.add('hidden');
     }
 
     function selectTime(time) {
         selectedTime = time;
-        
-        const allTimeSlots = document.querySelectorAll('.time-slot');
-        allTimeSlots.forEach(el => el.classList.remove('selected'));
-        
-        let targetSlot = null;
-        for (let slot of allTimeSlots) {
-            if (slot.textContent === time) {
-                targetSlot = slot;
-                break;
-            }
-        }
-        
-        if (targetSlot) {
-            targetSlot.classList.add('selected');
-        }
-        
+        document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
+        event.target.classList.add('selected');
         document.getElementById('formSection').classList.remove('hidden');
     }
 
-    function nextMonth() { 
-        currentDate.setMonth(currentDate.getMonth() + 1); 
-        renderCalendar(); 
-    }
-    
-    function prevMonth() { 
-        currentDate.setMonth(currentDate.getMonth() - 1); 
-        renderCalendar(); 
-    }
-    
+    function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
+    function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
+
+    // ========== ЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ ==========
     function showFullBooking() {
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('infoPage').classList.add('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
-        document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.remove('hidden');
-        document.getElementById('consultBookingSection').classList.add('hidden');
-        
-        renderCalendar();
-        
-        document.getElementById('fullUserName').value = '';
-        document.getElementById('fullPhone').value = '';
-        selectedDate = null;
-        selectedTime = null;
-        document.getElementById('timeSection').classList.add('hidden');
-        document.getElementById('formSection').classList.add('hidden');
-    }
-    
-    async function prepareFullBooking() {
-        if (!selectedDate) { 
-            await showAlert('Пожалуйста, выберите дату', 'warning');
-            return; 
-        }
-        
-        if (!selectedTime) { 
-            await showAlert('Пожалуйста, выберите время', 'warning');
-            return; 
-        }
-        
-        const userName = document.getElementById('fullUserName').value.trim();
-        if (!userName) { 
-            await showAlert('Пожалуйста, введите ваше имя', 'warning');
-            document.getElementById('fullUserName').focus();
-            return; 
-        }
-        
-        if (userName.length < 2) {
-            await showAlert('Имя должно содержать хотя бы 2 символа', 'warning');
-            document.getElementById('fullUserName').focus();
-            return;
-        }
-        
-        const phone = document.getElementById('fullPhone').value.trim();
-        if (!phone) { 
-            await showAlert('Пожалуйста, введите номер телефона', 'warning');
-            document.getElementById('fullPhone').focus();
-            return; 
-        }
-        
-        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
-        if (!phoneRegex.test(phone)) {
-            await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning');
-            document.getElementById('fullPhone').focus();
-            return;
-        }
-
-        const fullBookingData = {
-            user_name: userName,
-            phone: phone,
-            date: selectedDate.toISOString().split('T')[0],
-            time: selectedTime,
-            timestamp: new Date().toISOString()
-        };
-
-        const messageText = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${fullBookingData.user_name}\nТелефон: ${fullBookingData.phone}\nДата: ${fullBookingData.date}\nВремя: ${fullBookingData.time}`;
-        
-        showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-            
-            if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    if (result.status === 'shared') {
-                        showAlert('✅ Заявка на подачу документов отправлена! Специалист свяжется с вами.', 'success');
-                    } else {
-                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                    }
-                    clearFullBookingForm();
-                    goToMainMenu();
-                }).catch(() => {
-                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error');
-                    clearFullBookingForm();
-                    goToMainMenu();
-                });
-            } else {
-                navigator.clipboard.writeText(messageText).then(() => {
-                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
-                    clearFullBookingForm();
-                    goToMainMenu();
-                }).catch(() => {
-                    showAlert('❌ Не удалось скопировать данные', 'error');
-                    clearFullBookingForm();
-                    goToMainMenu();
-                });
-            }
-        });
-    }
-
-    function clearFullBookingForm() {
-        document.getElementById('fullUserName').value = '';
-        document.getElementById('fullPhone').value = '';
-        selectedDate = null;
-        selectedTime = null;
-        document.getElementById('timeSection').classList.add('hidden');
-        document.getElementById('formSection').classList.add('hidden');
-        renderCalendar();
-    }
-    
-    function showConsultBooking() {
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('infoPage').classList.add('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
-        document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.add('hidden');
-        document.getElementById('consultBookingSection').classList.remove('hidden');
-        
-        document.getElementById('consultUserName').value = '';
-        document.getElementById('consultPhone').value = '';
-    }
-    
-    function hideConsultBooking() {
         goToMainMenu();
-    }
-    
-    async function prepareConsultBooking() {
-        const userName = document.getElementById('consultUserName').value.trim();
-        if (!userName) { 
-            await showAlert('Пожалуйста, введите ваше имя', 'warning');
-            document.getElementById('consultUserName').focus();
-            return; 
-        }
-        
-        if (userName.length < 2) {
-            await showAlert('Имя должно содержать хотя бы 2 символа', 'warning');
-            document.getElementById('consultUserName').focus();
-            return;
-        }
-        
-        const phone = document.getElementById('consultPhone').value.trim();
-        if (!phone) { 
-            await showAlert('Пожалуйста, введите номер телефона', 'warning');
-            document.getElementById('consultPhone').focus();
-            return; 
-        }
-        
-        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
-        if (!phoneRegex.test(phone)) {
-            await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning');
-            document.getElementById('consultPhone').focus();
-            return;
-        }
-
-        const consultData = {
-            user_name: userName,
-            phone: phone,
-            timestamp: new Date().toISOString()
-        };
-
-        const messageText = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${consultData.user_name}\nТелефон: ${consultData.phone}`;
-        
-        showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-            
-            if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    if (result.status === 'shared') {
-                        showAlert('✅ Заявка на консультацию отправлена! Специалист свяжется с вами.', 'success');
-                    } else {
-                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                    }
-                    clearConsultBookingForm();
-                    goToMainMenu();
-                }).catch(() => {
-                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error');
-                    clearConsultBookingForm();
-                    goToMainMenu();
-                });
-            } else {
-                navigator.clipboard.writeText(messageText).then(() => {
-                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
-                    clearConsultBookingForm();
-                    goToMainMenu();
-                }).catch(() => {
-                    showAlert('❌ Не удалось скопировать данные', 'error');
-                    clearConsultBookingForm();
-                    goToMainMenu();
-                });
-            }
-        });
+        document.getElementById('fullBookingSection').classList.remove('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
+        selectedDate = null;
+        selectedTime = null;
+        renderCalendar();
+        document.getElementById('timeSection').classList.add('hidden');
+        document.getElementById('formSection').classList.add('hidden');
+        document.getElementById('fullUserName').value = '';
+        document.getElementById('fullPhone').value = '';
     }
 
-    function clearConsultBookingForm() {
+    function prepareFullBooking() {
+        if (!selectedDate) { showAlert('Выберите дату', 'warning'); return; }
+        if (!selectedTime) { showAlert('Выберите время', 'warning'); return; }
+        const name = document.getElementById('fullUserName').value.trim();
+        if (!name) { showAlert('Введите имя', 'warning'); return; }
+        const phone = document.getElementById('fullPhone').value.trim();
+        if (!phone) { showAlert('Введите телефон', 'warning'); return; }
+        const text = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
+        showInstructionWithData({ text: text }, 'full');
+    }
+
+    // ========== ЗАПИСЬ НА КОНСУЛЬТАЦИЮ ==========
+    function showConsultBookingDirect() {
+        goToMainMenu();
+        document.getElementById('consultBookingSection').classList.remove('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('consultUserName').value = '';
         document.getElementById('consultPhone').value = '';
+    }
+
+    function prepareConsultBooking() {
+        const name = document.getElementById('consultUserName').value.trim();
+        if (!name) { showAlert('Введите имя', 'warning'); return; }
+        const phone = document.getElementById('consultPhone').value.trim();
+        if (!phone) { showAlert('Введите телефон', 'warning'); return; }
+        const text = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${name}\nТелефон: ${phone}\nВремя: ${new Date().toLocaleString('ru-RU')}`;
+        showInstructionWithData({ text: text }, 'consult');
     }
 
     function initPhoneMask() {
-        const phoneInput = document.getElementById('phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                let formatted = '';
-                if (value.length > 0) {
-                    formatted = '+7';
-                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
-                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
-                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
-                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
-                }
-                e.target.value = formatted;
-            });
-        }
-        
-        const fullPhoneInput = document.getElementById('fullPhone');
-        if (fullPhoneInput) {
-            fullPhoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                let formatted = '';
-                if (value.length > 0) {
-                    formatted = '+7';
-                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
-                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
-                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
-                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
-                }
-                e.target.value = formatted;
-            });
-        }
-        
-        const consultPhoneInput = document.getElementById('consultPhone');
-        if (consultPhoneInput) {
-            consultPhoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                let formatted = '';
-                if (value.length > 0) {
-                    formatted = '+7';
-                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
-                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
-                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
-                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
-                }
-                e.target.value = formatted;
-            });
-        }
+        const masks = ['phone', 'fullPhone', 'consultPhone'];
+        masks.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 11) value = value.slice(0, 11);
+                    let formatted = '';
+                    if (value.length > 0) {
+                        formatted = '+7';
+                        if (value.length > 1) formatted += ' ' + value.slice(1, 4);
+                        if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
+                        if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
+                        if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
+                    }
+                    e.target.value = formatted;
+                });
+            }
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initPhoneMask();
-    });
+    document.addEventListener('DOMContentLoaded', initPhoneMask);
 </script>
 </body>
 </html>
