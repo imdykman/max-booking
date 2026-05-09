@@ -452,12 +452,41 @@
 <script>
     // ========== ДАННЫЕ ==========
     const contentData = {
-        scores: { title: '📊 Средние баллы 2025', text: '• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79' },
-        documents: { title: '📋 Список документов', text: '1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 — 4 шт\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа' },
+        scores: { 
+            title: '📊 Средние баллы 2025', 
+            text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Реклама — <strong>4,1</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Банковское дело — <strong>3,9</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Дизайн в СМИ — <strong>4,03</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> КМ и технология — <strong>4,3</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Мастер швейных изделий — <strong>3,9</strong></div>' +
+                  '<div><span style="display: inline-block; width: 8px; height: 8px; background: #1a56db; border-radius: 50%; margin-right: 12px; vertical-align: middle;"></span> Оператор швейного оборудования — <strong>3,79</strong></div>' +
+                  '</div>' 
+        },
+        documents: { 
+            title: '📋 Список документов', 
+            text: '<div style="display: flex; flex-direction: column; gap: 10px;">' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">1.</span> 📄 Паспорт</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">2.</span> 📄 Аттестат</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">3.</span> 📄 Фото 3×4 (4 шт)</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">4.</span> 📄 Медсправка 086</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">5.</span> 📄 Прививочный сертификат</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">6.</span> 📄 Медицинский полис</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">7.</span> 📄 СНИЛС</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">8.</span> 📄 Документы о льготах</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">9.</span> 📄 ИНН</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">10.</span> 📄 Документы об инвалидности</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">11.</span> 📄 Заключение ПМПК</div>' +
+                  '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">12.</span> 📄 Приписное</div>' +
+                  '</div><div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;">🗓️ Срок подачи: до 15 августа</div>' 
+        },
         prof: { title: 'Профессионалитет', text: '«Профессионалитет» — федеральный проект подготовки кадров.\n\n⚡ Ключевые преимущества:\n• Сокращённые сроки обучения\n• Приоритет практики\n• Гарантированное трудоустройство' },
         contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' },
-        prepCourses: { title: '📚 Подготовительные курсы', text: '• Русский язык — 5 000 ₽/мес\n• Математика — 5 000 ₽/мес\n• Рисунок — 6 000 ₽/мес\n• Комплекс — 12 000 ₽/мес\n\n📞 Запись по телефону: +7 (343) 378-17-25 (доб. 3)' },
-        faq: { title: '💬 Часто задаваемые вопросы', text: '❓ Какие документы нужны?\n✅ Паспорт, аттестат, фото, медсправка 086, СНИЛС, ИНН.\n\n❓ Есть ли бюджетные места?\n✅ Да, на большинство специальностей.\n\n❓ Можно ли подать документы онлайн?\n✅ Да, через форму на сайте.' }
+        prepCourses: { title: '📚 Подготовительные курсы', text: '<div style="display: flex; flex-direction: column; gap: 16px;"><div class="detail-block"><div class="detail-label">📖 Русский язык</div><div class="detail-value">8 занятий, 2 раза в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">5 000 ₽ / месяц</div></div><div class="detail-block"><div class="detail-label">🧮 Математика</div><div class="detail-value">8 занятий, 2 раза в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">5 000 ₽ / месяц</div></div><div class="detail-block"><div class="detail-label">🎨 Рисунок</div><div class="detail-value">4 занятия в неделю</div><div class="price" style="font-size: 14px; margin-top: 6px;">6 000 ₽ / месяц</div></div><div class="detail-block"><div class="detail-label">📝 Комплексная подготовка</div><div class="detail-value">Все предметы + профориентация</div><div class="price" style="font-size: 14px; margin-top: 6px;">12 000 ₽ / месяц</div></div></div><div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">📞 Запись по телефону: +7 (343) 378-17-25 (доб. 3)</div>' },
+        faq: { 
+            title: '💬 Часто задаваемые вопросы', 
+            text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div><div class="faq-answer">Паспорт, аттестат, фото 3×4 (4 шт), медсправка 086, СНИЛС, ИНН. Полный список есть в разделе "Документы".</div><div class="faq-question">❓ Есть ли бюджетные места?</div><div class="faq-answer">Да, на большинство специальностей есть бюджетные места. Подробнее в разделе "Направления".</div><div class="faq-question">❓ Как узнать средний балл аттестата?</div><div class="faq-answer">Средний балл можно посмотреть в разделе "Средние баллы". Мы публикуем данные за прошлый год.</div><div class="faq-question">❓ Можно ли подать документы онлайн?</div><div class="faq-answer">Да, через форму записи на сайте или по электронной почте postupi@otdis.ru</div><div class="faq-question">❓ Когда начинаются вступительные испытания?</div><div class="faq-answer">Испытания проходят с 1 июля по 15 августа. Точное расписание уточняйте по телефону.</div><div class="faq-question">❓ Есть ли подготовительные курсы?</div><div class="faq-answer">Да, мы проводим подготовку по русскому языку, математике и рисунку. Подробнее в разделе "Подготовительные курсы".</div>' 
+        }
     };
 
     const directionsCategories = [
@@ -479,15 +508,15 @@
     ];
 
     const directionsDetails = {
-        "Конструирование, моделирование и технология швейных изделий": { duration: "3 года 10 мес", description: "Подготовка технологов-конструкторов", qualification: "Технолог-конструктор", form: "Очная", type: "budget" },
-        "Дизайн (легкая промышленность)": { duration: "3 года 10 мес", description: "Разработка дизайн-проектов одежды", qualification: "Дизайнер", form: "Очная", type: "budget" },
-        "Мастер по изготовлению швейных изделий": { duration: "2 года 10 мес", description: "Подготовка портных широкого профиля", qualification: "Портной", form: "Очная", type: "budget" },
-        "Оператор оборудования швейного производства": { duration: "1 год 10 мес", description: "Работа на современном оборудовании", qualification: "Оператор", form: "Очная", type: "budget" },
-        "Художник по костюму": { duration: "3 года 10 мес", description: "Создание сценических костюмов", qualification: "Художник", form: "Очная", type: "budget" },
-        "Реклама": { duration: "2 года 10 мес", description: "Специалист по рекламе", qualification: "Специалист по рекламе", form: "Очная", type: "paid", price: "98 000 ₽/год" },
-        "Банковское дело": { duration: "2 года 10 мес", description: "Специалист банковского дела", qualification: "Специалист", form: "Очная", type: "paid", price: "92 000 ₽/год" },
-        "Дизайн (СМИ и полиграфия)": { duration: "3 года 10 мес", description: "Графический дизайнер", qualification: "Дизайнер", form: "Очная", type: "paid", price: "105 000 ₽/год" },
-        "Оператор швейного оборудования (швея) — проф. подготовка": { duration: "1 год", description: "Профессиональная подготовка швей", qualification: "Швея", form: "Очная", type: "disabled" }
+        "Конструирование, моделирование и технология швейных изделий": { icon: "✂️", duration: "3 года 10 месяцев", description: "Подготовка специалистов по созданию и моделированию одежды, работа с современным оборудованием и CAD-системами.", qualification: "Технолог-конструктор швейных изделий", form: "Очная", type: "budget" },
+        "Дизайн (легкая промышленность)": { icon: "🎨", duration: "3 года 10 месяцев", description: "Разработка дизайн-проектов одежды, аксессуаров, работа с материалами и цветом, создание коллекций.", qualification: "Дизайнер", form: "Очная", type: "budget" },
+        "Мастер по изготовлению швейных изделий": { icon: "🧵", duration: "2 года 10 месяцев", description: "Профессиональная подготовка портных широкого профиля, работа с разными видами тканей и технологиями пошива.", qualification: "Портной / Мастер швейного производства", form: "Очная", type: "budget" },
+        "Оператор оборудования швейного производства": { icon: "⚙️", duration: "1 год 10 месяцев", description: "Подготовка специалистов для работы на современном швейном оборудовании, включая автоматизированные линии.", qualification: "Оператор швейного оборудования", form: "Очная", type: "budget" },
+        "Художник по костюму": { icon: "🎭", duration: "3 года 10 месяцев", description: "Создание театральных и сценических костюмов, работа с историческими и современными стилями.", qualification: "Художник по костюму", form: "Очная", type: "budget" },
+        "Реклама": { icon: "📢", duration: "2 года 10 месяцев", description: "Подготовка специалистов в области рекламы и маркетинга, создание рекламных кампаний и креативных концепций.", qualification: "Специалист по рекламе", form: "Очная", type: "paid", price: "98 000 ₽ / год" },
+        "Банковское дело": { icon: "🏦", duration: "2 года 10 месяцев", description: "Подготовка специалистов для работы в банках и финансовых учреждениях, кредитование, банковские операции.", qualification: "Специалист банковского дела", form: "Очная", type: "paid", price: "92 000 ₽ / год" },
+        "Дизайн (СМИ и полиграфия)": { icon: "🎨", duration: "3 года 10 месяцев", description: "Создание дизайна для печатных и цифровых СМИ, разработка макетов, верстка, работа с типографикой.", qualification: "Графический дизайнер", form: "Очная", type: "paid", price: "105 000 ₽ / год" },
+        "Оператор швейного оборудования (швея) — проф. подготовка": { icon: "🪡", duration: "1 год", description: "Профессиональная подготовка швей, работа на промышленном оборудовании, пошив различных изделий.", qualification: "Швея", form: "Очная", type: "disabled" }
     };
 
     // ========== ПЕРЕМЕННЫЕ ==========
@@ -553,8 +582,8 @@
                     <div class="detail-block"><div class="detail-label">📝 Описание</div><div class="detail-value">${detail.description}</div></div>
                     <div class="detail-block"><div class="detail-label">🎓 Квалификация</div><div class="detail-value">${detail.qualification}</div></div>
                     <div class="detail-block"><div class="detail-label">🏫 Форма обучения</div><div class="detail-value">${detail.form}</div></div>`;
-        if (detail.type === 'paid') html += `<div class="detail-block"><div class="detail-label">💰 Стоимость</div><div class="detail-value price">${detail.price}</div></div>`;
-        if (detail.type === 'budget') html += `<div class="detail-block"><div class="detail-label">🎯 Бюджетные места</div><div class="detail-value" style="color:#28a745;">✓ Есть</div></div>`;
+        if (detail.type === 'paid') html += `<div class="detail-block"><div class="detail-label">💰 Стоимость обучения</div><div class="detail-value price">${detail.price}</div></div>`;
+        if (detail.type === 'budget') html += `<div class="detail-block"><div class="detail-label">🎯 Бюджетные места</div><div class="detail-value" style="color:#28a745;">✓ Есть (уточняйте количество)</div></div>`;
         html += `<div style="margin-top:16px;text-align:center;"><button onclick="showConsultBookingDirect()" style="background:#28a745;margin-top:0;padding:12px;">📞 Записаться на консультацию</button></div>`;
         document.getElementById('detailContent').innerHTML = html;
         goToMainMenu();
@@ -577,7 +606,7 @@
         let html = `<div style="text-align:center;"><span style="font-size:48px;">✉️</span></div>
                     <p style="text-align:center;margin:8px 0;font-size:16px;"><strong>Ваши данные готовы к отправке!</strong></p>
                     <div style="background:#e3f2fd;border-radius:12px;padding:12px;margin:12px 0;">
-                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span><span>Нажмите <strong>«Отправить»</strong></span></div>
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span><span>Нажмите кнопку <strong>«Отправить»</strong> ниже</span></div>
                         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">2</span><span>Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span></div>
                         <div style="display:flex;align-items:center;gap:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">3</span><span>Нажмите <strong>«Отправить»</strong> в чате</span></div>
                     </div>
@@ -595,16 +624,16 @@
             if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
                 window.WebApp.shareMaxContent({ text: messageText }).then(result => {
                     if (result.status === 'shared') showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    else showAlert('ℹ️ Отправка не завершена.', 'info');
+                    else showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
                     clearForms();
                     goToMainMenu();
-                }).catch(() => { showAlert('❌ Ошибка при отправке', 'error'); clearForms(); goToMainMenu(); });
+                }).catch(() => { showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); clearForms(); goToMainMenu(); });
             } else {
                 navigator.clipboard.writeText(messageText).then(() => {
-                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст\n3. Отправьте', 'success');
+                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
                     clearForms();
                     goToMainMenu();
-                }).catch(() => { showAlert('❌ Не удалось скопировать', 'error'); clearForms(); goToMainMenu(); });
+                }).catch(() => { showAlert('❌ Не удалось скопировать данные', 'error'); clearForms(); goToMainMenu(); });
             }
         });
     }
@@ -663,7 +692,8 @@
         selectedTime = null;
         renderCalendar();
         const slots = generateTimeSlots(selectedDate);
-        document.getElementById('timeSlots').innerHTML = slots.map(slot => `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`).join('');
+        const timeHtml = slots.map(slot => `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`).join('');
+        document.getElementById('timeSlots').innerHTML = timeHtml;
         document.getElementById('timeSection').classList.remove('hidden');
         document.getElementById('formSection').classList.add('hidden');
     }
@@ -671,7 +701,11 @@
     function selectTime(time) {
         selectedTime = time;
         document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
-        event.target.classList.add('selected');
+        let targetSlot = null;
+        for (let slot of document.querySelectorAll('.time-slot')) {
+            if (slot.textContent === time) { targetSlot = slot; break; }
+        }
+        if (targetSlot) targetSlot.classList.add('selected');
         document.getElementById('formSection').classList.remove('hidden');
     }
 
@@ -692,13 +726,16 @@
         document.getElementById('fullPhone').value = '';
     }
 
-    function prepareFullBooking() {
-        if (!selectedDate) { showAlert('Выберите дату', 'warning'); return; }
-        if (!selectedTime) { showAlert('Выберите время', 'warning'); return; }
+    async function prepareFullBooking() {
+        if (!selectedDate) { await showAlert('Пожалуйста, выберите дату', 'warning'); return; }
+        if (!selectedTime) { await showAlert('Пожалуйста, выберите время', 'warning'); return; }
         const name = document.getElementById('fullUserName').value.trim();
-        if (!name) { showAlert('Введите имя', 'warning'); return; }
+        if (!name) { await showAlert('Пожалуйста, введите ваше имя', 'warning'); return; }
+        if (name.length < 2) { await showAlert('Имя должно содержать хотя бы 2 символа', 'warning'); return; }
         const phone = document.getElementById('fullPhone').value.trim();
-        if (!phone) { showAlert('Введите телефон', 'warning'); return; }
+        if (!phone) { await showAlert('Пожалуйста, введите номер телефона', 'warning'); return; }
+        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
         const text = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
         showInstructionWithData({ text: text }, 'full');
     }
@@ -712,35 +749,51 @@
         document.getElementById('consultPhone').value = '';
     }
 
-    function prepareConsultBooking() {
+    async function prepareConsultBooking() {
         const name = document.getElementById('consultUserName').value.trim();
-        if (!name) { showAlert('Введите имя', 'warning'); return; }
+        if (!name) { await showAlert('Пожалуйста, введите ваше имя', 'warning'); return; }
+        if (name.length < 2) { await showAlert('Имя должно содержать хотя бы 2 символа', 'warning'); return; }
         const phone = document.getElementById('consultPhone').value.trim();
-        if (!phone) { showAlert('Введите телефон', 'warning'); return; }
+        if (!phone) { await showAlert('Пожалуйста, введите номер телефона', 'warning'); return; }
+        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
         const text = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${name}\nТелефон: ${phone}\nВремя: ${new Date().toLocaleString('ru-RU')}`;
         showInstructionWithData({ text: text }, 'consult');
     }
 
     function initPhoneMask() {
-        const masks = ['phone', 'fullPhone', 'consultPhone'];
-        masks.forEach(id => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length > 11) value = value.slice(0, 11);
-                    let formatted = '';
-                    if (value.length > 0) {
-                        formatted = '+7';
-                        if (value.length > 1) formatted += ' ' + value.slice(1, 4);
-                        if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
-                        if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
-                        if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
-                    }
-                    e.target.value = formatted;
-                });
-            }
-        });
+        const fullPhone = document.getElementById('fullPhone');
+        if (fullPhone) {
+            fullPhone.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.slice(0, 11);
+                let formatted = '';
+                if (value.length > 0) {
+                    formatted = '+7';
+                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
+                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
+                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
+                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
+                }
+                e.target.value = formatted;
+            });
+        }
+        const consultPhone = document.getElementById('consultPhone');
+        if (consultPhone) {
+            consultPhone.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.slice(0, 11);
+                let formatted = '';
+                if (value.length > 0) {
+                    formatted = '+7';
+                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
+                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
+                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
+                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
+                }
+                e.target.value = formatted;
+            });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', initPhoneMask);
