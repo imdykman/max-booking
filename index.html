@@ -44,7 +44,7 @@
         }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
         .header p { font-size: 13px; opacity: 0.9; margin: 0; }
-        .info-page, .main-menu, .booking-section, .instruction-page, .direction-detail-page {
+        .info-page, .main-menu, .booking-section, .instruction-page, .direction-detail-page, .confirm-page {
             width: 100%;
             background: white;
             border-radius: 20px;
@@ -331,22 +331,6 @@
             padding-left: 12px;
             border-left: 2px solid #1a56db;
         }
-
-                @keyframes slideUpToast {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-        
-        .toast-notification {
-            animation: slideUpToast 0.3s ease;
-        }
-
     </style>
 </head>
 <body>
@@ -381,6 +365,24 @@
         </div>
         <div class="info-content" id="instructionContent"></div>
         <button class="instruction-btn" onclick="sendFinalRequest()" style="margin-top: 12px;">📨 Отправить</button>
+    </div>
+
+    <div id="confirmPage" class="confirm-page hidden">
+        <div class="info-header">
+            <div class="info-title">✅ Заявка отправлена</div>
+        </div>
+        <div class="info-content" style="text-align: center; padding: 20px 0;">
+            <div style="font-size: 64px; margin-bottom: 16px;">📨</div>
+            <p style="font-size: 16px; margin-bottom: 8px;"><strong>Данные скопированы в буфер обмена!</strong></p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 24px;">Вставьте текст в чат «ОТДИС приёмная комиссия» и отправьте</p>
+            
+            <div style="background: #f0fdf4; border-radius: 12px; padding: 12px; margin-bottom: 24px;">
+                <span style="font-size: 13px;">✅ Специалист свяжется с вами после получения сообщения</span>
+            </div>
+            
+            <button onclick="goToMainMenuFromConfirm()" style="background: #28a745; margin-bottom: 12px;">🏠 На главную</button>
+            <button onclick="closeApp()" style="background: #1a56db;">❌ Закрыть приложение</button>
+        </div>
     </div>
 
     <div id="infoPage" class="info-page hidden">
@@ -587,6 +589,7 @@
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('confirmPage').classList.add('hidden');
     }
 
     function showInfoPage(type) {
@@ -665,71 +668,59 @@
     }
 
     function sendFinalRequest() {
-    if (!pendingData) return;
-    const messageText = pendingData.text;
-    
-    // ПРОВЕРКА: Мы в приложении Max или в обычном браузере?
-    // В Max есть WebApp и функция shareMaxContent
-    const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
-    
-    if (isMaxApp) {
-        // ========== ДЛЯ ПРИЛОЖЕНИЯ MAX ==========
-        showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                if (result.status === 'shared') {
-                    showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                } else {
-                    showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                }
+        if (!pendingData) return;
+        const messageText = pendingData.text;
+        
+        // Проверяем, в приложении Max или в браузере
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            // Для приложения Max
+            showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
+                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
+                    if (result.status === 'shared') {
+                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                    } else {
+                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
+                    }
+                    clearForms();
+                    goToMainMenu();
+                }).catch(() => { 
+                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
+                    clearForms(); 
+                    goToMainMenu(); 
+                });
+            });
+        } else {
+            // Для веб-браузера - копируем и показываем страницу подтверждения
+            navigator.clipboard.writeText(messageText).then(function() {
+                clearForms();
+                showConfirmPage();
+            }).catch(function() {
+                alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
                 clearForms();
                 goToMainMenu();
-            }).catch(() => { 
-                showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
-                clearForms(); 
-                goToMainMenu(); 
             });
-        });
-    } else {
-        // ========== ДЛЯ ВЕБ-БРАУЗЕРА ==========
-        // Сразу копируем в буфер обмена
-        navigator.clipboard.writeText(messageText).then(function() {
-            // Показываем тост-уведомление
-            showToast('✅ Данные скопированы! Откройте чат и вставьте текст (Ctrl+V)');
-            // Очищаем форму
-            clearForms();
-            // Возвращаемся на главную через 1.5 секунды
-            setTimeout(function() {
-                goToMainMenu();
-            }, 1500);
-        }).catch(function() {
-            // Если копирование не удалось
-            alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
-            clearForms();
-            goToMainMenu();
-        });
+        }
     }
-}
-
-// Функция для тост-уведомления
-
-function showToast(message) {
-    // Удаляем старый тост
-    var oldToast = document.querySelector('.toast-notification');
-    if (oldToast) oldToast.remove();
     
-    // Создаём новый тост
-    var toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerHTML = message;
-    toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; max-width: 90%;';
+    // Страница подтверждения для веб-версии
+    function showConfirmPage() {
+        document.getElementById('fullBookingSection').classList.add('hidden');
+        document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('confirmPage').classList.remove('hidden');
+    }
     
-    document.body.appendChild(toast);
+    function goToMainMenuFromConfirm() {
+        clearForms();
+        goToMainMenu();
+    }
     
-    // Удаляем через 3 секунды
-    setTimeout(function() {
-        if (toast) toast.remove();
-    }, 3000);
-}
+    function closeApp() {
+        alert('Вы можете закрыть вкладку браузера');
+        window.close();
+    }
 
     function clearForms() {
         pendingData = null;
