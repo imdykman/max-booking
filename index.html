@@ -417,12 +417,12 @@
         ]}
     ];
 
-    let currentUser = { id: null, name: '' };
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
     let pendingBookingData = null;
 
+    // Кастомные окна для валидации
     function showAlert(message, type = 'info') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
@@ -643,56 +643,48 @@
         const isWebApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (!isWebApp) {
-            await shareBookingWeb();
-            clearBookingForm();
-            goToMainMenu();
+            // Веб-версия - стандартный alert
+            shareBookingWeb();
         } else {
+            // Телефон - показываем инструкцию
             document.getElementById('bookingSection').classList.add('hidden');
             document.getElementById('instructionPage').classList.remove('hidden');
         }
     }
 
-    async function shareBookingWeb() {
+    // Веб-версия: используем стандартный alert
+    function shareBookingWeb() {
         if (!pendingBookingData) return;
         
-        const messageText = `🏫 ОТДИС - Приёмная комиссия\n\n` +
-                           `📝 Новая запись\n\n` +
-                           `👤 Имя: ${pendingBookingData.user_name}\n` +
-                           `📞 Телефон: ${pendingBookingData.phone}\n` +
-                           `📅 Дата: ${pendingBookingData.date}\n` +
-                           `⏰ Время: ${pendingBookingData.time}`;
+        const messageText = `ОТДИС - Приёмная комиссия\n\nНовая запись\n\nИмя: ${pendingBookingData.user_name}\nТелефон: ${pendingBookingData.phone}\nДата: ${pendingBookingData.date}\nВремя: ${pendingBookingData.time}`;
         
-        try {
-            await navigator.clipboard.writeText(messageText);
-            await showAlert('✅ Данные скопированы!\n\nОткройте чат «ОТДИС приёмная комиссия»\nи вставьте текст (Ctrl+V)', 'success');
-        } catch(e) {
-            await showAlert('❌ Не удалось скопировать данные', 'error');
-        }
+        navigator.clipboard.writeText(messageText).then(() => {
+            alert('✅ Данные скопированы!\n\nОткройте чат "ОТДИС приёмная комиссия" и вставьте текст (Ctrl+V)');
+            clearBookingForm();
+            goToMainMenu();
+        }).catch(() => {
+            alert('❌ Не удалось скопировать данные');
+        });
     }
 
-    async function shareBooking() {
+    // Телефон: используем WebApp
+    function shareBooking() {
         if (!pendingBookingData) return;
         
-        const messageText = `🏫 ОТДИС - Приёмная комиссия\n\n` +
-                           `📝 Новая запись\n\n` +
-                           `👤 Имя: ${pendingBookingData.user_name}\n` +
-                           `📞 Телефон: ${pendingBookingData.phone}\n` +
-                           `📅 Дата: ${pendingBookingData.date}\n` +
-                           `⏰ Время: ${pendingBookingData.time}`;
+        const messageText = `ОТДИС - Приёмная комиссия\n\nНовая запись\n\nИмя: ${pendingBookingData.user_name}\nТелефон: ${pendingBookingData.phone}\nДата: ${pendingBookingData.date}\nВремя: ${pendingBookingData.time}`;
         
-        try {
-            if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-                const result = await window.WebApp.shareMaxContent({ text: messageText });
+        if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
+            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
                 if (result.status === 'shared') {
-                    await showAlert('✅ Заявка отправлена!\nСпециалист свяжется с вами.', 'success');
+                    alert('✅ Заявка отправлена! Специалист свяжется с вами.');
                 }
                 clearBookingForm();
                 goToMainMenu();
-            }
-        } catch(e) {
-            await showAlert('❌ Ошибка при отправке', 'error');
-            clearBookingForm();
-            goToMainMenu();
+            }).catch(() => {
+                alert('❌ Ошибка при отправке');
+                clearBookingForm();
+                goToMainMenu();
+            });
         }
     }
 
