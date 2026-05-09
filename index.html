@@ -211,6 +211,78 @@
             text-decoration: none;
             font-size: 12px;
         }
+
+        /* Стили для кастомных модальных окон */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 300px;
+            width: 85%;
+            padding: 24px 20px;
+            text-align: center;
+            animation: slideUp 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .modal-message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .modal-button {
+            background-color: #1a56db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0;
+        }
+        
+        .modal-button:hover {
+            background-color: #0e3a9e;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -233,7 +305,7 @@
         </div>
     </div>
 
-    <!-- Промежуточная страница-инструкция (компактная) -->
+    <!-- Промежуточная страница-инструкция -->
     <div id="instructionPage" class="instruction-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="hideInstruction()">← Назад</button>
@@ -356,6 +428,35 @@
     let selectedTime = null;
     let pendingBookingData = null;
     let isSubmitting = false;
+
+    // Кастомные всплывающие окна
+    function showAlert(message, type = 'info') {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            overlay.innerHTML = `
+                <div class="modal">
+                    <div class="modal-icon">${icon}</div>
+                    <div class="modal-title">ОТДИС</div>
+                    <div class="modal-message">${message}</div>
+                    <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Хорошо</button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            const button = overlay.querySelector('.modal-button');
+            button.onclick = () => {
+                overlay.remove();
+                resolve();
+            };
+        });
+    }
 
     // Основные функции навигации
     function goToMainMenu() {
@@ -502,14 +603,14 @@
         document.getElementById('formSection').classList.remove('hidden');
     }
 
-    function prepareBooking() {
+    async function prepareBooking() {
         if (!selectedDate) { 
-            alert('❌ Пожалуйста, выберите дату');
+            await showAlert('Пожалуйста, выберите дату', 'warning');
             return; 
         }
         
         if (!selectedTime) { 
-            alert('❌ Пожалуйста, выберите время');
+            await showAlert('Пожалуйста, выберите время', 'warning');
             return; 
         }
         
@@ -517,26 +618,26 @@
         const phone = document.getElementById('phone').value.trim();
         
         if (!userName) { 
-            alert('❌ Пожалуйста, введите ваше имя');
+            await showAlert('Пожалуйста, введите ваше имя', 'warning');
             document.getElementById('userName').focus();
             return; 
         }
         
         if (userName.length < 2) {
-            alert('❌ Имя должно содержать хотя бы 2 символа');
+            await showAlert('Имя должно содержать хотя бы 2 символа', 'warning');
             document.getElementById('userName').focus();
             return;
         }
         
         if (!phone) { 
-            alert('❌ Пожалуйста, введите номер телефона');
+            await showAlert('Пожалуйста, введите номер телефона', 'warning');
             document.getElementById('phone').focus();
             return; 
         }
         
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) {
-            alert('❌ Введите корректный номер телефона (например: +7 912 345 67 89)');
+            await showAlert('Введите корректный номер телефона (например: +7 912 345 67 89)', 'warning');
             document.getElementById('phone').focus();
             return;
         }
@@ -555,7 +656,7 @@
 
     async function shareBooking() {
         if (!pendingBookingData) {
-            alert('❌ Нет данных для отправки');
+            await showAlert('Нет данных для отправки', 'error');
             return;
         }
         
@@ -574,22 +675,22 @@
                 });
                 
                 if (result.status === 'shared') {
-                    alert('✅ Заявка успешно отправлена! Специалист свяжется с вами.');
+                    await showAlert('Заявка успешно отправлена! Специалист свяжется с вами.', 'success');
                     clearBookingForm();
                     goToMainMenu();
                 } else if (result.status === 'cancelled') {
-                    alert('❌ Отправка отменена');
+                    await showAlert('Отправка отменена', 'info');
                 }
             } else {
                 await navigator.clipboard.writeText(messageText);
-                alert('📋 Данные скопированы в буфер обмена!\n\nВставьте их в чат с приёмной комиссией (Ctrl+V или Cmd+V)');
+                await showAlert('Данные скопированы в буфер обмена!\n\nВставьте их в чат с приёмной комиссией', 'success');
                 clearBookingForm();
                 goToMainMenu();
             }
         } catch(e) {
             console.error('Ошибка при отправке:', e);
             await navigator.clipboard.writeText(messageText);
-            alert('📋 Данные скопированы в буфер обмена!\n\nВставьте их в чат с приёмной комиссией.');
+            await showAlert('Данные скопированы в буфер обмена!\n\nВставьте их в чат с приёмной комиссией', 'success');
             clearBookingForm();
             goToMainMenu();
         }
@@ -597,7 +698,7 @@
 
     async function shareBookingSafe() {
         if (isSubmitting) {
-            alert('⏳ Отправка уже выполняется, пожалуйста, подождите...');
+            await showAlert('Отправка уже выполняется, пожалуйста, подождите...', 'warning');
             return;
         }
         
