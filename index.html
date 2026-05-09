@@ -38,7 +38,6 @@
             width: 60px;
             height: 60px;
             object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
         .header-text {
             text-align: left;
@@ -343,7 +342,7 @@
                 Специалист свяжется с вами
             </p>
             
-            <button class="instruction-btn" onclick="shareBookingPhone()" style="margin-top: 12px; padding: 10px;">📨 Отправить заявку</button>
+            <button class="instruction-btn" onclick="shareBooking()" style="margin-top: 12px; padding: 10px;">📨 Отправить заявку</button>
         </div>
     </div>
 
@@ -610,7 +609,6 @@
     }
 
     async function prepareBooking() {
-        // Валидация
         if (!selectedDate) { 
             await showAlert('Пожалуйста, выберите дату', 'warning');
             return; 
@@ -656,20 +654,41 @@
             timestamp: new Date().toISOString()
         };
 
+        // Показываем страницу с инструкцией
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.remove('hidden');
+    }
+
+    // Функция для отправки через мессенджер
+    function shareBooking() {
+        if (!pendingBookingData) return;
+        
         const messageText = `ОТДИС - Приёмная комиссия\n\nНовая запись\n\nИмя: ${pendingBookingData.user_name}\nТелефон: ${pendingBookingData.phone}\nДата: ${pendingBookingData.date}\nВремя: ${pendingBookingData.time}`;
         
-        // Пытаемся скопировать в буфер
-        try {
-            await navigator.clipboard.writeText(messageText);
-            
-            // Показываем кастомное окно об успехе
-            await showAlert('✅ Данные скопированы!\n\nОткройте чат "ОТДИС приёмная комиссия"\nи вставьте текст (Ctrl+V)', 'success');
-            
-            // Очищаем форму и возвращаемся в главное меню
-            clearBookingForm();
-            goToMainMenu();
-        } catch(e) {
-            await showAlert('❌ Не удалось скопировать данные.\nПожалуйста, попробуйте ещё раз.', 'error');
+        // Пытаемся отправить через WebApp (для телефона и веб-версии Max)
+        if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
+            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
+                if (result.status === 'shared') {
+                    showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                }
+                clearBookingForm();
+                goToMainMenu();
+            }).catch(() => {
+                showAlert('❌ Ошибка при отправке', 'error');
+                clearBookingForm();
+                goToMainMenu();
+            });
+        } else {
+            // Для обычного браузера - копируем в буфер
+            navigator.clipboard.writeText(messageText).then(() => {
+                showAlert('✅ Данные скопированы!\n\nОткройте чат "ОТДИС приёмная комиссия" и вставьте текст (Ctrl+V)', 'success');
+                clearBookingForm();
+                goToMainMenu();
+            }).catch(() => {
+                showAlert('❌ Не удалось скопировать данные', 'error');
+                clearBookingForm();
+                goToMainMenu();
+            });
         }
     }
 
