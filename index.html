@@ -358,33 +358,37 @@
         </div>
     </div>
 
-    <div id="instructionPage" class="instruction-page hidden">
+        <div id="instructionPage" class="instruction-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="hideInstruction()">← Назад</button>
             <div class="info-title">📋 Отправка заявки</div>
         </div>
         <div class="info-content" style="padding: 0; margin: 0;">
             <div style="text-align: center;">
-                <span style="font-size: 36px;">✉️</span>
+                <span style="font-size: 48px;">✉️</span>
             </div>
-            <p style="text-align: center; margin: 4px 0 0 0; font-size: 15px;"><strong>Ваши данные готовы!</strong></p>
+            <p style="text-align: center; margin: 8px 0; font-size: 16px;"><strong>Ваши данные готовы к отправке!</strong></p>
             
-            <div style="background: #f8f9fa; border-radius: 12px; padding: 10px; margin-top: 8px;">
-                <div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">
-                    <span style="font-size: 18px;">1️⃣</span>
-                    <span style="font-size: 13px;">Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span>
+            <div style="background: #e3f2fd; border-radius: 12px; padding: 12px; margin: 12px 0;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span style="background: #1a56db; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">1</span>
+                    <span style="font-size: 14px;">Нажмите кнопку <strong>«Отправить»</strong> ниже</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">
-                    <span style="font-size: 18px;">2️⃣</span>
-                    <span style="font-size: 13px;">Нажмите <strong>«Отправить»</strong></span>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span style="background: #1a56db; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">2</span>
+                    <span style="font-size: 14px;">Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="background: #1a56db; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">3</span>
+                    <span style="font-size: 14px;">Нажмите <strong>«Отправить»</strong> в чате</span>
                 </div>
             </div>
             
-            <p style="font-size: 11px; color: #666; text-align: center; margin: 8px 0 0 0;">
-                Специалист свяжется с вами
-            </p>
+            <div style="background: #f0fdf4; border-radius: 12px; padding: 12px; margin: 12px 0; text-align: center;">
+                <span style="font-size: 14px;">✅ После отправки специалист свяжется с вами</span>
+            </div>
             
-            <button class="instruction-btn" onclick="shareBooking()" style="margin-top: 12px; padding: 10px;">📨 Отправить заявку</button>
+            <button class="instruction-btn" onclick="shareBooking()" style="margin-top: 8px; padding: 14px; font-size: 16px;">📨 Отправить заявку</button>
         </div>
     </div>
 
@@ -646,14 +650,7 @@
         }
     ];
 
-    // Переменные для полноценной записи
-    let currentDate = new Date();
-    let selectedDate = null;
-    let selectedTime = null;
-    let pendingFullBookingData = null;
-    
-    // Переменная для консультации
-    let pendingConsultData = null;
+    let pendingBookingData = null;
 
     function showAlert(message, type = 'info') {
         return new Promise((resolve) => {
@@ -688,9 +685,10 @@
         document.getElementById('infoPage').classList.add('hidden');
         document.getElementById('directionsPage').classList.add('hidden');
         document.getElementById('directionDetailPage').classList.add('hidden');
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
     }
 
     function showInfoPage(type) {
@@ -709,9 +707,10 @@
         document.getElementById('infoPage').classList.remove('hidden');
         document.getElementById('directionsPage').classList.add('hidden');
         document.getElementById('directionDetailPage').classList.add('hidden');
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
     }
     
     function showDirections() {
@@ -731,9 +730,10 @@
         document.getElementById('directionsPage').classList.remove('hidden');
         document.getElementById('infoPage').classList.add('hidden');
         document.getElementById('directionDetailPage').classList.add('hidden');
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
     }
 
     function showDirectionDetail(directionName) {
@@ -790,331 +790,134 @@
         document.getElementById('directionsPage').classList.add('hidden');
         document.getElementById('directionDetailPage').classList.remove('hidden');
         document.getElementById('infoPage').classList.add('hidden');
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
+    }
+
+    function hideInstruction() {
         document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('bookingSection').classList.remove('hidden');
     }
 
-    // ========== ФУНКЦИИ ДЛЯ ПОЛНОЦЕННОЙ ЗАПИСИ (с календарем) ==========
-    function generateTimeSlots(date) {
-        const dayOfWeek = new Date(date).getDay();
-        if (dayOfWeek === 0) return [];
-        let startHour = (dayOfWeek === 6) ? 10 : 9;
-        let endHour = (dayOfWeek === 6) ? 13 : 15;
-        const slots = [];
-        for (let hour = startHour; hour < endHour; hour++) {
-            slots.push(`${hour}:00`);
-            if (hour !== endHour - 1) slots.push(`${hour}:30`);
-        }
-        return slots;
-    }
-
-    function renderCalendar() {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const startDayOfWeek = firstDay.getDay();
-        const today = new Date(); 
-        today.setHours(0,0,0,0);
-        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-        
-        document.getElementById('monthDisplay').innerText = `${monthNames[month]} ${year}`;
-        
-        let html = '';
-        const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-        for (let i = 0; i < 7; i++) {
-            html += `<div class="weekday">${dayNames[i]}</div>`;
-        }
-        
-        const offset = (startDayOfWeek === 0 ? 6 : startDayOfWeek - 1);
-        for (let i = 0; i < offset; i++) {
-            html += `<div class="day disabled"></div>`;
-        }
-        
-        for (let day = 1; day <= lastDay.getDate(); day++) {
-            const date = new Date(year, month, day);
-            const isWeekend = date.getDay() === 0;
-            const isPast = date < today;
-            let className = 'day';
-            
-            if (isWeekend || isPast) {
-                className += ' disabled';
-            } else {
-                className += ' available';
-            }
-            
-            if (selectedDate && selectedDate.toDateString() === date.toDateString()) {
-                className += ' selected';
-            }
-            
-            if (!isWeekend && !isPast) {
-                html += `<div class="${className}" onclick="selectDateFromCalendar('${date.toISOString()}')">${day}</div>`;
-            } else {
-                html += `<div class="${className}">${day}</div>`;
-            }
-        }
-        
-        document.getElementById('calendar').innerHTML = html;
-    }
-
-    function selectDateFromCalendar(dateStr) {
-        selectedDate = new Date(dateStr);
-        selectedTime = null;
-        renderCalendar();
-        
-        const slots = generateTimeSlots(selectedDate);
-        const timeHtml = slots.map(slot => 
-            `<div class="time-slot" onclick="selectTime('${slot}')">${slot}</div>`
-        ).join('');
-        
-        document.getElementById('timeSlots').innerHTML = timeHtml;
-        document.getElementById('timeSection').classList.remove('hidden');
-        document.getElementById('formSection').classList.add('hidden');
-    }
-
-    function selectTime(time) {
-        selectedTime = time;
-        
-        const allTimeSlots = document.querySelectorAll('.time-slot');
-        allTimeSlots.forEach(el => el.classList.remove('selected'));
-        
-        let targetSlot = null;
-        for (let slot of allTimeSlots) {
-            if (slot.textContent === time) {
-                targetSlot = slot;
-                break;
-            }
-        }
-        
-        if (targetSlot) {
-            targetSlot.classList.add('selected');
-        }
-        
-        document.getElementById('formSection').classList.remove('hidden');
-    }
-
-    function showFullBooking() {
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('infoPage').classList.add('hidden');
-        document.getElementById('directionsPage').classList.add('hidden');
-        document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.remove('hidden');
-        document.getElementById('consultBookingSection').classList.add('hidden');
-        document.getElementById('instructionPage').classList.add('hidden');
-        renderCalendar();
-        
-        // Очищаем поля
-        document.getElementById('fullUserName').value = '';
-        document.getElementById('fullPhone').value = '';
-        selectedDate = null;
-        selectedTime = null;
-        document.getElementById('timeSection').classList.add('hidden');
-        document.getElementById('formSection').classList.add('hidden');
-    }
-
-    async function prepareFullBooking() {
-        if (!selectedDate) { 
-            await showAlert('Пожалуйста, выберите дату', 'warning');
-            return; 
-        }
-        
-        if (!selectedTime) { 
-            await showAlert('Пожалуйста, выберите время', 'warning');
-            return; 
-        }
-        
-        const userName = document.getElementById('fullUserName').value.trim();
+    async function prepareBooking() {
+        const userName = document.getElementById('userName').value.trim();
         if (!userName) { 
             await showAlert('Пожалуйста, введите ваше имя', 'warning');
-            document.getElementById('fullUserName').focus();
+            document.getElementById('userName').focus();
             return; 
         }
         
         if (userName.length < 2) {
             await showAlert('Имя должно содержать хотя бы 2 символа', 'warning');
-            document.getElementById('fullUserName').focus();
+            document.getElementById('userName').focus();
             return;
         }
         
-        const phone = document.getElementById('fullPhone').value.trim();
+        const phone = document.getElementById('phone').value.trim();
         if (!phone) { 
             await showAlert('Пожалуйста, введите номер телефона', 'warning');
-            document.getElementById('fullPhone').focus();
+            document.getElementById('phone').focus();
             return; 
         }
         
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) {
             await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning');
-            document.getElementById('fullPhone').focus();
+            document.getElementById('phone').focus();
             return;
         }
 
-        pendingFullBookingData = {
+        pendingBookingData = {
             user_name: userName,
             phone: phone,
-            date: selectedDate.toISOString().split('T')[0],
-            time: selectedTime,
+            date: "консультация",
+            time: "—",
             timestamp: new Date().toISOString()
         };
 
-        const messageText = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${pendingFullBookingData.user_name}\nТелефон: ${pendingFullBookingData.phone}\nДата: ${pendingFullBookingData.date}\nВремя: ${pendingFullBookingData.time}`;
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.remove('hidden');
+    }
+
+    function shareBooking() {
+        if (!pendingBookingData) return;
         
-        if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                if (result.status === 'shared') {
-                    showAlert('✅ Заявка отправлена! Специалист свяжется с вами для подтверждения.', 'success');
-                }
-                clearFullBookingForm();
-                goToMainMenu();
-            }).catch(() => {
-                showAlert('❌ Ошибка при отправке', 'error');
-                clearFullBookingForm();
-                goToMainMenu();
-            });
-        } else {
-            navigator.clipboard.writeText(messageText).then(() => {
-                showAlert('✅ Данные скопированы!\n\nОткройте чат "ОТДИС приёмная комиссия" и вставьте текст (Ctrl+V)\n\nСпециалист свяжется с вами.', 'success');
-                clearFullBookingForm();
-                goToMainMenu();
-            }).catch(() => {
-                showAlert('❌ Не удалось скопировать данные', 'error');
-                clearFullBookingForm();
-                goToMainMenu();
-            });
-        }
+        const messageText = `ОТДИС - Приёмная комиссия\n\nНОВАЯ ЗАЯВКА\n\nИмя: ${pendingBookingData.user_name}\nТелефон: ${pendingBookingData.phone}`;
+        
+        showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
+            
+            if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
+                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
+                    if (result.status === 'shared') {
+                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                    } else {
+                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
+                    }
+                    clearBookingForm();
+                    goToMainMenu();
+                }).catch(() => {
+                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error');
+                    clearBookingForm();
+                    goToMainMenu();
+                });
+            } else {
+                navigator.clipboard.writeText(messageText).then(() => {
+                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
+                    clearBookingForm();
+                    goToMainMenu();
+                }).catch(() => {
+                    showAlert('❌ Не удалось скопировать данные', 'error');
+                    clearBookingForm();
+                    goToMainMenu();
+                });
+            }
+        });
     }
 
-    function clearFullBookingForm() {
-        document.getElementById('fullUserName').value = '';
-        document.getElementById('fullPhone').value = '';
-        selectedDate = null;
-        selectedTime = null;
-        pendingFullBookingData = null;
-        document.getElementById('timeSection').classList.add('hidden');
-        document.getElementById('formSection').classList.add('hidden');
-        renderCalendar();
+    function clearBookingForm() {
+        document.getElementById('userName').value = '';
+        document.getElementById('phone').value = '';
+        pendingBookingData = null;
     }
 
-    // ========== ФУНКЦИИ ДЛЯ ЗАПИСИ НА КОНСУЛЬТАЦИЮ (упрощенная) ==========
-    function showConsultBooking() {
+    function showBooking() {
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('infoPage').classList.add('hidden');
         document.getElementById('directionsPage').classList.add('hidden');
         document.getElementById('directionDetailPage').classList.add('hidden');
-        document.getElementById('fullBookingSection').classList.add('hidden');
-        document.getElementById('consultBookingSection').classList.remove('hidden');
+        document.getElementById('bookingSection').classList.remove('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('fullBookingSection').classList.add('hidden');
+        document.getElementById('consultBookingSection').classList.add('hidden');
         
-        document.getElementById('consultUserName').value = '';
-        document.getElementById('consultPhone').value = '';
+        document.getElementById('userName').value = '';
+        document.getElementById('phone').value = '';
+    }
+    
+    function showFullBooking() {
+        goToMainMenu();
+        alert('Функция в разработке. Пожалуйста, используйте основную форму записи.');
+    }
+    
+    function showConsultBooking() {
+        showBooking();
     }
     
     function hideConsultBooking() {
         goToMainMenu();
     }
-
-    async function prepareConsultBooking() {
-        const userName = document.getElementById('consultUserName').value.trim();
-        if (!userName) { 
-            await showAlert('Пожалуйста, введите ваше имя', 'warning');
-            document.getElementById('consultUserName').focus();
-            return; 
-        }
-        
-        if (userName.length < 2) {
-            await showAlert('Имя должно содержать хотя бы 2 символа', 'warning');
-            document.getElementById('consultUserName').focus();
-            return;
-        }
-        
-        const phone = document.getElementById('consultPhone').value.trim();
-        if (!phone) { 
-            await showAlert('Пожалуйста, введите номер телефона', 'warning');
-            document.getElementById('consultPhone').focus();
-            return; 
-        }
-        
-        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
-        if (!phoneRegex.test(phone)) {
-            await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning');
-            document.getElementById('consultPhone').focus();
-            return;
-        }
-
-        pendingConsultData = {
-            user_name: userName,
-            phone: phone,
-            timestamp: new Date().toISOString()
-        };
-
-        const messageText = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${pendingConsultData.user_name}\nТелефон: ${pendingConsultData.phone}\nВремя: ${new Date(pendingConsultData.timestamp).toLocaleString('ru-RU')}`;
-        
-        if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                if (result.status === 'shared') {
-                    showAlert('✅ Заявка отправлена! Специалист свяжется с вами в ближайшее время.', 'success');
-                }
-                clearConsultBookingForm();
-                goToMainMenu();
-            }).catch(() => {
-                showAlert('❌ Ошибка при отправке', 'error');
-                clearConsultBookingForm();
-                goToMainMenu();
-            });
-        } else {
-            navigator.clipboard.writeText(messageText).then(() => {
-                showAlert('✅ Данные скопированы!\n\nОткройте чат "ОТДИС приёмная комиссия" и вставьте текст\n\nСпециалист свяжется с вами.', 'success');
-                clearConsultBookingForm();
-                goToMainMenu();
-            }).catch(() => {
-                showAlert('❌ Не удалось скопировать данные', 'error');
-                clearConsultBookingForm();
-                goToMainMenu();
-            });
-        }
-    }
-
-    function clearConsultBookingForm() {
-        document.getElementById('consultUserName').value = '';
-        document.getElementById('consultPhone').value = '';
-        pendingConsultData = null;
-    }
-
-    function nextMonth() { 
-        currentDate.setMonth(currentDate.getMonth() + 1); 
-        renderCalendar(); 
-    }
     
-    function prevMonth() { 
-        currentDate.setMonth(currentDate.getMonth() - 1); 
-        renderCalendar(); 
-    }
+    function prepareFullBooking() {}
+    function prepareConsultBooking() {}
+    function clearFullBookingForm() {}
+    function clearConsultBookingForm() {}
 
     function initPhoneMask() {
-        // Маска для телефона в полноценной записи
-        const fullPhoneInput = document.getElementById('fullPhone');
-        if (fullPhoneInput) {
-            fullPhoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                let formatted = '';
-                if (value.length > 0) {
-                    formatted = '+7';
-                    if (value.length > 1) formatted += ' ' + value.slice(1, 4);
-                    if (value.length >= 5) formatted += ' ' + value.slice(4, 7);
-                    if (value.length >= 8) formatted += ' ' + value.slice(7, 9);
-                    if (value.length >= 10) formatted += ' ' + value.slice(9, 11);
-                }
-                e.target.value = formatted;
-            });
-        }
-        
-        // Маска для телефона в консультации
-        const consultPhoneInput = document.getElementById('consultPhone');
-        if (consultPhoneInput) {
-            consultPhoneInput.addEventListener('input', function(e) {
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 11) value = value.slice(0, 11);
                 let formatted = '';
@@ -1134,6 +937,5 @@
         initPhoneMask();
     });
 </script>
-
 </body>
 </html>
