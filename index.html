@@ -654,6 +654,38 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
+        // Функция для подтверждения (да/нет)
+    function showConfirm(message) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            overlay.innerHTML = `
+                <div class="modal">
+                    <div class="modal-icon">❓</div>
+                    <div class="modal-title">ОТДИС</div>
+                    <div class="modal-message">${message}</div>
+                    <div style="display: flex; gap: 10px; margin-top: 0;">
+                        <button class="modal-button" id="confirmNo" style="background-color: #6c757d; flex: 1; margin-top: 0;">Отмена</button>
+                        <button class="modal-button" id="confirmYes" style="background-color: #28a745; flex: 1; margin-top: 0;">Отправить</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            document.getElementById('confirmYes').onclick = () => {
+                overlay.remove();
+                resolve(true);
+            };
+            
+            document.getElementById('confirmNo').onclick = () => {
+                overlay.remove();
+                resolve(false);
+            };
+        });
+    }
+
     async function shareBooking() {
         if (!pendingBookingData) {
             await showAlert('Нет данных для отправки', 'error');
@@ -669,13 +701,20 @@
                            `🕐 *Создано:* ${new Date(pendingBookingData.timestamp).toLocaleString('ru-RU')}`;
         
         try {
+            // Показываем подтверждение перед отправкой
+            const confirmed = await showConfirm('Отправить заявку в приёмную комиссию?');
+            if (!confirmed) {
+                await showAlert('Отправка отменена', 'info');
+                return;
+            }
+            
             if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
                 const result = await window.WebApp.shareMaxContent({ 
                     text: messageText 
                 });
                 
                 if (result.status === 'shared') {
-                    await showAlert('Заявка успешно отправлена! Специалист свяжется с вами.', 'success');
+                    await showAlert('✅ Заявка успешно отправлена!\n\nСпециалист свяжется с вами.', 'success');
                     clearBookingForm();
                     goToMainMenu();
                 } else if (result.status === 'cancelled') {
@@ -683,14 +722,14 @@
                 }
             } else {
                 await navigator.clipboard.writeText(messageText);
-                await showAlert('Данные скопированы в буфер обмена!\n\nВставьте их в чат с приёмной комиссией', 'success');
+                await showAlert('✅ Данные скопированы в буфер обмена!\n\n📋 Вставьте их в чат с приёмной комиссией (Ctrl+V)\n\nСпециалист свяжется с вами.', 'success');
                 clearBookingForm();
                 goToMainMenu();
             }
         } catch(e) {
             console.error('Ошибка при отправке:', e);
             await navigator.clipboard.writeText(messageText);
-            await showAlert('Данные скопированы в буфер обмена!\n\nВставьте их в чат с приёмной комиссией', 'success');
+            await showAlert('✅ Данные скопированы в буфер обмена!\n\n📋 Вставьте их в чат с приёмной комиссией\n\nСпециалист свяжется с вами.', 'success');
             clearBookingForm();
             goToMainMenu();
         }
