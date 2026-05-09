@@ -664,15 +664,16 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-function sendFinalRequest() {
+    function sendFinalRequest() {
     if (!pendingData) return;
     const messageText = pendingData.text;
     
-    // Проверяем, открыто ли приложение в Max
+    // ПРОВЕРКА: Мы в приложении Max или в обычном браузере?
+    // В Max есть WebApp и функция shareMaxContent
     const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
     
     if (isMaxApp) {
-        // Для приложения Max
+        // ========== ДЛЯ ПРИЛОЖЕНИЯ MAX ==========
         showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
             window.WebApp.shareMaxContent({ text: messageText }).then(result => {
                 if (result.status === 'shared') {
@@ -689,34 +690,38 @@ function sendFinalRequest() {
             });
         });
     } else {
-        // Для веб-браузера
-        navigator.clipboard.writeText(messageText).then(() => {
+        // ========== ДЛЯ ВЕБ-БРАУЗЕРА ==========
+        // Сразу копируем в буфер обмена
+        navigator.clipboard.writeText(messageText).then(function() {
             // Показываем тост-уведомление
-            showToast('✅ Данные скопированы! Вставьте в чат (Ctrl+V)');
+            showToast('✅ Данные скопированы! Откройте чат и вставьте текст (Ctrl+V)');
+            // Очищаем форму
             clearForms();
             // Возвращаемся на главную через 1.5 секунды
             setTimeout(function() {
                 goToMainMenu();
             }, 1500);
-        }).catch(function() { 
-            alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.'); 
-            clearForms(); 
-            goToMainMenu(); 
+        }).catch(function() {
+            // Если копирование не удалось
+            alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
+            clearForms();
+            goToMainMenu();
         });
     }
 }
 
 // Функция для тост-уведомления
+
 function showToast(message) {
-    // Удаляем старый тост, если есть
+    // Удаляем старый тост
     var oldToast = document.querySelector('.toast-notification');
     if (oldToast) oldToast.remove();
     
-    // Создаём тост
+    // Создаём новый тост
     var toast = document.createElement('div');
     toast.className = 'toast-notification';
     toast.innerHTML = message;
-    toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; white-space: nowrap; max-width: 90%; white-space: normal;';
+    toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; max-width: 90%;';
     
     document.body.appendChild(toast);
     
