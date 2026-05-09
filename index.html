@@ -355,7 +355,6 @@
             <button class="menu-btn" onclick="showInfoPage('contacts')"><span class="emoji">📍</span>Контакты</button>
             <button class="menu-btn" onclick="showInfoPage('prepCourses')"><span class="emoji">📚</span>Подготовительные курсы</button>
             <button class="menu-btn" onclick="showInfoPage('faq')"><span class="emoji">💬</span>Вопросы-ответы</button>
-            <button class="menu-btn" onclick="showConsultBookingDirect()"><span class="emoji">📞</span>Запись на консультацию</button>
         </div>
     </div>
 
@@ -603,14 +602,23 @@
     function showInstructionWithData(data, type) {
         currentBookingType = type;
         pendingData = data;
-        let html = `<div style="text-align:center;"><span style="font-size:48px;">✉️</span></div>
-                    <p style="text-align:center;margin:8px 0;font-size:16px;"><strong>Ваши данные готовы к отправке!</strong></p>
-                    <div style="background:#e3f2fd;border-radius:12px;padding:12px;margin:12px 0;">
-                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span><span>Нажмите кнопку <strong>«Отправить»</strong> ниже</span></div>
-                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">2</span><span>Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span></div>
-                        <div style="display:flex;align-items:center;gap:12px;"><span style="background:#1a56db;color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">3</span><span>Нажмите <strong>«Отправить»</strong> в чате</span></div>
+        let html = `<div style="text-align:center;"><span style="font-size: 48px;">✉️</span></div>
+                    <p style="text-align: center; margin: 12px 0; font-size: 16px;"><strong>Ваши данные готовы к отправке!</strong></p>
+                    
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 10px; margin: 12px 0;">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0;">
+                            <span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">1.</span>
+                            <span style="font-size: 14px;">Выберите чат <strong>«ОТДИС приёмная комиссия»</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0;">
+                            <span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">2.</span>
+                            <span style="font-size: 14px;">Нажмите <strong>«Отправить»</strong> в чате</span>
+                        </div>
                     </div>
-                    <div style="background:#f0fdf4;border-radius:12px;padding:12px;text-align:center;"><span>✅ После отправки специалист свяжется с вами</span></div>`;
+                    
+                    <div style="background: #f0fdf4; border-radius: 12px; padding: 12px; margin: 12px 0; text-align: center;">
+                        <span style="font-size: 14px;">✅ После отправки специалист свяжется с вами</span>
+                    </div>`;
         document.getElementById('instructionContent').innerHTML = html;
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
