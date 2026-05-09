@@ -649,25 +649,42 @@
     }
 
     function sendFinalRequest() {
-        if (!pendingData) return;
-        const messageText = pendingData.text;
+    if (!pendingData) return;
+    const messageText = pendingData.text;
+    
+    // Проверяем, открыто ли приложение в Max или в обычном браузере
+    const isMaxApp = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.shareMaxContent;
+    
+    if (isMaxApp) {
+        // Для приложения Max
         showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-            if (window.WebApp && typeof window.WebApp.shareMaxContent === 'function') {
-                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    if (result.status === 'shared') showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    else showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                    clearForms();
-                    goToMainMenu();
-                }).catch(() => { showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); clearForms(); goToMainMenu(); });
-            } else {
-                navigator.clipboard.writeText(messageText).then(() => {
-                    showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
-                    clearForms();
-                    goToMainMenu();
-                }).catch(() => { showAlert('❌ Не удалось скопировать данные', 'error'); clearForms(); goToMainMenu(); });
-            }
+            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
+                if (result.status === 'shared') {
+                    showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                } else {
+                    showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
+                }
+                clearForms();
+                goToMainMenu();
+            }).catch(() => { 
+                showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
+                clearForms(); 
+                goToMainMenu(); 
+            });
+        });
+    } else {
+        // Для веб-браузера - сразу копируем в буфер
+        navigator.clipboard.writeText(messageText).then(() => {
+            showAlert('✅ Данные скопированы!\n\n1. Откройте чат "ОТДИС приёмная комиссия"\n2. Вставьте текст (Ctrl+V)\n3. Отправьте сообщение', 'success');
+            clearForms();
+            goToMainMenu();
+        }).catch(() => { 
+            showAlert('❌ Не удалось скопировать данные. Попробуйте ещё раз.', 'error'); 
+            clearForms(); 
+            goToMainMenu(); 
         });
     }
+}
 
     function clearForms() {
         pendingData = null;
