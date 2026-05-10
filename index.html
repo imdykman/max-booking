@@ -331,6 +331,21 @@
             padding-left: 12px;
             border-left: 2px solid #1a56db;
         }
+        
+        @keyframes slideUpToast {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        .toast-notification {
+            animation: slideUpToast 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -375,11 +390,9 @@
             <div style="font-size: 64px; margin-bottom: 16px;">📨</div>
             <p style="font-size: 16px; margin-bottom: 8px;"><strong>Данные скопированы в буфер обмена!</strong></p>
             <p style="font-size: 14px; color: #666; margin-bottom: 24px;">Вставьте текст в чат «ОТДИС приёмная комиссия» и отправьте</p>
-            
             <div style="background: #f0fdf4; border-radius: 12px; padding: 12px; margin-bottom: 24px;">
                 <span style="font-size: 13px;">✅ Специалист свяжется с вами после получения сообщения</span>
             </div>
-            
             <button onclick="goToMainMenuFromConfirm()" style="background: #28a745; margin-bottom: 12px;">🏠 На главную</button>
             <button onclick="closeApp()" style="background: #1a56db;">❌ Закрыть приложение</button>
         </div>
@@ -409,6 +422,7 @@
         <div class="info-content" id="detailContent"></div>
     </div>
 
+    <!-- Форма для полноценной записи -->
     <div id="fullBookingSection" class="booking-section hidden">
         <div class="info-header">
             <button class="back-button" onclick="showFullBooking()">←</button>
@@ -437,6 +451,7 @@
         </div>
     </div>
 
+    <!-- Форма для консультации -->
     <div id="consultBookingSection" class="booking-section hidden">
         <div class="info-header">
             <button class="back-button" onclick="goToMainMenu()">←</button>
@@ -495,49 +510,36 @@
                   '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">12.</span> 📄 Приписное</div>' +
                   '</div><div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;">🗓️ Срок подачи: до 15 августа</div>' 
         },
-        prof: { 
-            title: 'Профессионалитет', 
-            text: '«Профессионалитет» — это федеральный проект, который готовит кадры для реального сектора экономики.\n\n' +
-                  '⚡ Ключевые преимущества:\n' +
-                  '• Сокращённые сроки обучения (от 1 года 10 мес.)\n' +
-                  '• Приоритет практики на реальном производстве\n' +
-                  '• Целевое обучение и гарантированное трудоустройство\n' +
-                  '• Современное оборудование и мастерские\n' +
-                  '• Наставничество от ведущих специалистов\n\n' +
-                  '📌 В ОТДИС программы Профессионалитета:\n' +
-                  '• Мастер по изготовлению швейных изделий\n' +
-                  '• Оператор швейного оборудования\n' +
-                  '• Конструирование, моделирование и технология изготовления швейных изделий\n' +
-                  '• Дизайнер в легкой промышленности\n\n' +
-                  '🌐 Подробнее: <a href="https://otdis.ru/professionalitet" target="_blank" style="color: #1a56db; text-decoration: none;">otdis.ru/professionalitet</a>' 
-        },
+        prof: { title: 'Профессионалитет', text: '«Профессионалитет» — федеральный проект подготовки кадров.\n\n⚡ Ключевые преимущества:\n• Сокращённые сроки обучения\n• Приоритет практики\n• Гарантированное трудоустройство' },
         contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' },
-        prepCourses: { 
-            title: '📚 Подготовительные курсы', 
-            text: '<div style="display: flex; flex-direction: column; gap: 16px;">' +
-                  '<div class="detail-block"><div class="detail-label">🎨 О курсе</div><div class="detail-value">Подготовка к вступительным испытаниям по изобразительному искусству (рисунок и живопись)</div></div>' +
-                  '<div class="detail-block"><div class="detail-label">📅 Программа</div><div class="detail-value">Занятия начинаются по мере комплектования группы.<br>Продолжительность: 48 часов (1-1.5 месяца в зависимости от графика).</div></div>' +
-                  '<div class="detail-block"><div class="detail-label">📍 Место проведения</div><div class="detail-value">Стахановская, д. 43</div></div>' +
-                  '</div>' +
-                  '<div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">' +
-                  '<strong>🎓 Координатор курсов:</strong> Лапина Анна Валерьевна<br><br>' +
-                  '📞 <strong>Телефон:</strong> (343) 378-17-25 (доб.15)<br>' +
-                  '✉️ <strong>E-mail:</strong> otdis66@yandex.ru' +
-                  '</div>' 
-        },
+       
+       prepCourses: { 
+    title: '📚 Подготовительные курсы', 
+    text: '<div style="display: flex; flex-direction: column; gap: 16px;">' +
+          '<div class="detail-block"><div class="detail-label">🎨 О курсе</div><div class="detail-value">Подготовка к вступительным испытаниям по изобразительному искусству (рисунок и живопись)</div></div>' +
+          '<div class="detail-block"><div class="detail-label">📅 Программа</div><div class="detail-value">Занятия начинаются по мере комплектования группы.<br>Продолжительность: 48 часов (1-1.5 месяца в зависимости от графика).</div></div>' +
+          '<div class="detail-block"><div class="detail-label">📍 Место проведения</div><div class="detail-value">Стахановская, д. 43</div></div>' +
+          '</div>' +
+          '<div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">' +
+          '<strong>🎓 Координатор курсов:</strong> Лапина Анна Валерьевна<br><br>' +
+          '📞 <strong>Телефон:</strong> (343) 378-17-25 (доб.15)<br>' +
+          '✉️ <strong>E-mail:</strong> otdis66@yandex.ru' +
+          '</div>' 
+},
+
         faq: { 
-            title: '💬 Часто задаваемые вопросы', 
-            text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div>' +
-                  '<div class="faq-answer">1. Паспорт + копия (страница с фото и прописка)<br>2. Аттестат (оригинал/заверенная копия)<br>3. Фото 3×4 — 4 шт<br>4. Медсправка 086 (с флюорографией за 2024 г.)<br>5. СНИЛС (2 копии)<br>6. Прививочный сертификат<br>7. Медицинский полис (2 копии)<br>8. Документы об инвалидности/ОВЗ<br>9. Заключение ПМПК (для лиц с ОВЗ)<br>10. Документы о льготах<br>11. ИНН (копия)<br>📌 Подробнее в разделе "Документы"</div>' +
-                  '<div class="faq-question">❓ Можно ли перевестись с платного на бюджет?</div>' +
-                  '<div class="faq-answer">Да. Если вы учитесь на &quot;отлично&quot; и на нужном курсе есть бюджетные места.</div>' +
-                  '<div class="faq-question">❓ Как направления обучения разделены по корпусам?</div>' +
-                  '<div class="faq-answer">Техникум имеет два корпуса: Стахановская, 43 и Красный пер., 3. Занятия могут проходить в обоих корпусах, но в течение дня студенты между ними не переезжают.</div>' +
-                  '<div class="faq-question">❓ Как выбрать дату творческого испытания при онлайн-подаче?</div>' +
-                  '<div class="faq-answer">При подаче заявления онлайн нужно выбрать дату. Если не получилось — свяжитесь с приёмной комиссией: (343) 378-17-25 (доб. 3), postupi@otdis.ru</div>' +
-                  '<div class="faq-question">❓ Как подать заявление дистанционно?</div>' +
-                  '<div class="faq-answer">Через личный кабинет абитуриента или портал Госуслуг. Подробнее в разделе "Правила подачи документов" на сайте оtdis.ru.</div>' 
-        }
+    title: '💬 Часто задаваемые вопросы', 
+    text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div>' +
+          '<div class="faq-answer">1. Паспорт + копия (страница с фото и прописка)<br>2. Аттестат (оригинал/заверенная копия)<br>3. Фото 3×4 — 4 шт<br>4. Медсправка 086 (с флюорографией за 2024 г.)<br>5. СНИЛС (2 копии)<br>6. Прививочный сертификат<br>7. Медицинский полис (2 копии)<br>8. Документы об инвалидности/ОВЗ<br>9. Заключение ПМПК (для лиц с ОВЗ)<br>10. Документы о льготах<br>11. ИНН (копия)<br>📌 Подробнее в разделе "Документы"</div>' +
+          '<div class="faq-question">❓ Можно ли перевестись с платного на бюджет?</div>' +
+          '<div class="faq-answer">Да. Если вы учитесь на &quot;отлично&quot; и на нужном курсе есть бюджетные места.</div>' +
+          '<div class="faq-question">❓ Как направления обучения разделены по корпусам?</div>' +
+          '<div class="faq-answer">Техникум имеет два корпуса: Стахановская, 43 и Красный пер., 3. Занятия могут проходить в обоих корпусах, но в течение дня студенты между ними не переезжают.</div>' +
+          '<div class="faq-question">❓ Как выбрать дату творческого испытания при онлайн-подаче?</div>' +
+          '<div class="faq-answer">При подаче заявления онлайн нужно выбрать дату. Если не получилось — свяжитесь с приёмной комиссией: (343) 378-17-25 (доб. 3), postupi@otdis.ru</div>' +
+          '<div class="faq-question">❓ Как подать заявление дистанционно?</div>' +
+          '<div class="faq-answer">Через личный кабинет абитуриента или портал Госуслуг. Подробнее в разделе "Правила подачи документов" на сайте оtdis.ru.</div>' 
+            },
     };
 
     const directionsCategories = [
