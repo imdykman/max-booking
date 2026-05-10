@@ -367,6 +367,24 @@
         <button class="instruction-btn" onclick="sendFinalRequest()" style="margin-top: 12px;">📨 Отправить</button>
     </div>
 
+    <div id="confirmPage" class="confirm-page hidden">
+        <div class="info-header">
+            <div class="info-title">✅ Заявка отправлена</div>
+        </div>
+        <div class="info-content" style="text-align: center; padding: 20px 0;">
+            <div style="font-size: 64px; margin-bottom: 16px;">📨</div>
+            <p style="font-size: 16px; margin-bottom: 8px;"><strong>Данные скопированы в буфер обмена!</strong></p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 24px;">Вставьте текст в чат «ОТДИС приёмная комиссия» и отправьте</p>
+            
+            <div style="background: #f0fdf4; border-radius: 12px; padding: 12px; margin-bottom: 24px;">
+                <span style="font-size: 13px;">✅ Специалист свяжется с вами после получения сообщения</span>
+            </div>
+            
+            <button onclick="goToMainMenuFromConfirm()" style="background: #28a745; margin-bottom: 12px;">🏠 На главную</button>
+            <button onclick="closeApp()" style="background: #1a56db;">❌ Закрыть приложение</button>
+        </div>
+    </div>
+
     <div id="infoPage" class="info-page hidden">
         <div class="info-header">
             <button class="back-button" onclick="goToMainMenu()">←</button>
@@ -661,31 +679,64 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-            function sendFinalRequest() {
+    function sendFinalRequest() {
         if (!pendingData) return;
         const messageText = pendingData.text;
         
+        // Проверяем, в приложении Max или в браузере
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (isMaxApp) {
+            // Для приложения Max - показываем инструкцию и отправляем
             showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
                 window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    // Закрываем страницу инструкции и возвращаемся на главную
-                    clearForms();
-                    goToMainMenu();
-                    
                     if (result.status === 'shared') {
                         showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    } else if (result.status === 'cancelled') {
-                        showAlert('ℹ️ Отправка отменена. Вы можете вернуться и попробовать снова.', 'info');
+                    } else {
+                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
                     }
-                }).catch(() => { 
                     clearForms();
                     goToMainMenu();
+                }).catch(() => { 
                     showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
+                    clearForms(); 
+                    goToMainMenu(); 
                 });
             });
+        } else {
+            // Для веб-браузера - копируем и показываем страницу подтверждения
+            navigator.clipboard.writeText(messageText).then(function() {
+                clearForms();
+                showConfirmPage();
+            }).catch(function() {
+                alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
+                clearForms();
+                goToMainMenu();
+            });
         }
+    }
+    
+    // Функция для страницы подтверждения (для веб-версии)
+    function showConfirmPage() {
+        document.getElementById('fullBookingSection').classList.add('hidden');
+        document.getElementById('consultBookingSection').classList.add('hidden');
+        document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('infoPage').classList.add('hidden');
+        document.getElementById('directionsPage').classList.add('hidden');
+        document.getElementById('directionDetailPage').classList.add('hidden');
+        document.getElementById('mainMenu').classList.add('hidden');
+        document.getElementById('confirmPage').classList.remove('hidden');
+    }
+    
+    function goToMainMenuFromConfirm() {
+        clearForms();
+        document.getElementById('confirmPage').classList.add('hidden');
+        goToMainMenu();
+    }
+    
+    function closeApp() {
+        alert('Вы можете закрыть вкладку браузера');
+        window.close();
     }
 
     function clearForms() {
@@ -823,7 +874,7 @@
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (isMaxApp) {
-            showInstructionWithData({ text: text }, 'consult');
+            showInstructionWithData({ text: text }, 'full');
         } else {
             await navigator.clipboard.writeText(text);
             clearForms();
