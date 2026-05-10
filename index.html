@@ -679,39 +679,28 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-    function sendFinalRequest() {
+        function sendFinalRequest() {
         if (!pendingData) return;
         const messageText = pendingData.text;
         
-        // Проверяем, в приложении Max или в браузере
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (isMaxApp) {
-            // Для приложения Max - показываем инструкцию и отправляем
             showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
                 window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    if (result.status === 'shared') {
-                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    } else {
-                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                    }
                     clearForms();
                     goToMainMenu();
+                    
+                    if (result.status === 'shared') {
+                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                    } else if (result.status === 'cancelled') {
+                        showAlert('ℹ️ Отправка отменена. Вы можете вернуться и попробовать снова.', 'info');
+                    }
                 }).catch(() => { 
+                    clearForms();
+                    goToMainMenu();
                     showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
-                    clearForms(); 
-                    goToMainMenu(); 
                 });
-            });
-        } else {
-            // Для веб-браузера - копируем и показываем страницу подтверждения
-            navigator.clipboard.writeText(messageText).then(function() {
-                clearForms();
-                showConfirmPage();
-            }).catch(function() {
-                alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
-                clearForms();
-                goToMainMenu();
             });
         }
     }
@@ -860,7 +849,7 @@
         document.getElementById('consultPhone').value = '';
     }
 
-    async function prepareConsultBooking() {
+        async function prepareConsultBooking() {
         const name = document.getElementById('consultUserName').value.trim();
         if (!name) { await showAlert('Пожалуйста, введите ваше имя', 'warning'); return; }
         if (name.length < 2) { await showAlert('Имя должно содержать хотя бы 2 символа', 'warning'); return; }
@@ -874,7 +863,7 @@
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (isMaxApp) {
-            showInstructionWithData({ text: text }, 'full');
+            showInstructionWithData({ text: text }, 'consult');  // ← ИСПРАВЛЕНО: было 'full'
         } else {
             await navigator.clipboard.writeText(text);
             clearForms();
