@@ -661,30 +661,7 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-    function sendFinalRequest() {
-        if (!pendingData) return;
-        const messageText = pendingData.text;
-        
-        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
-        
-        if (isMaxApp) {
-            showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    if (result.status === 'shared') {
-                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    } else {
-                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                    }
-                    clearForms();
-                    goToMainMenu();
-                }).catch(() => { 
-                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
-                    clearForms(); 
-                    goToMainMenu(); 
-                });
-            });
-        }
-    }
+    
 
     function clearForms() {
         pendingData = null;
@@ -792,7 +769,6 @@
         if (isMaxApp) {
             showInstructionWithData({ text: text }, 'full');
         } else {
-            // Для веб-браузера - копируем в буфер и сразу на главную
             await navigator.clipboard.writeText(text);
             clearForms();
             goToMainMenu();
@@ -824,7 +800,6 @@
         if (isMaxApp) {
             showInstructionWithData({ text: text }, 'consult');
         } else {
-            // Для веб-браузера - копируем в буфер и сразу на главную
             await navigator.clipboard.writeText(text);
             clearForms();
             goToMainMenu();
