@@ -765,7 +765,7 @@
         document.getElementById('fullPhone').value = '';
     }
 
-    async function prepareFullBooking() {
+        async function prepareFullBooking() {
         if (!selectedDate) { await showAlert('Пожалуйста, выберите дату', 'warning'); return; }
         if (!selectedTime) { await showAlert('Пожалуйста, выберите время', 'warning'); return; }
         const name = document.getElementById('fullUserName').value.trim();
@@ -775,30 +775,41 @@
         if (!phone) { await showAlert('Пожалуйста, введите номер телефона', 'warning'); return; }
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
-        const text = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
+        
+        const text = `ОТДИС - Приёмная комиссия\n\n✅ ЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n📅 Дата: ${selectedDate.toISOString().split('T')[0]}\n⏰ Время: ${selectedTime}\n\n━━━━━━━━━━━━━━━━━━━\n✅ Сообщение принято!\nСпециалист свяжется с вами\n━━━━━━━━━━━━━━━━━━━`;
         
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (isMaxApp) {
             showInstructionWithData({ text: text }, 'full');
         } else {
-            // Для веб-браузера - сразу копируем и показываем страницу подтверждения
-            navigator.clipboard.writeText(text).then(function() {
-                clearForms();
-                // Скрываем всё и показываем страницу подтверждения
-                document.getElementById('fullBookingSection').classList.add('hidden');
-                document.getElementById('consultBookingSection').classList.add('hidden');
-                document.getElementById('instructionPage').classList.add('hidden');
-                document.getElementById('infoPage').classList.add('hidden');
-                document.getElementById('directionsPage').classList.add('hidden');
-                document.getElementById('directionDetailPage').classList.add('hidden');
-                document.getElementById('mainMenu').classList.add('hidden');
-                document.getElementById('confirmPage').classList.remove('hidden');
-            }).catch(function() {
-                alert('❌ Не удалось скопировать данные');
-                clearForms();
-                goToMainMenu();
-            });
+            // Для веб-браузера - просто копируем и на главную
+            navigator.clipboard.writeText(text);
+            clearForms();
+            goToMainMenu();
+        }
+    }
+
+    async function prepareConsultBooking() {
+        const name = document.getElementById('consultUserName').value.trim();
+        if (!name) { await showAlert('Пожалуйста, введите ваше имя', 'warning'); return; }
+        if (name.length < 2) { await showAlert('Имя должно содержать хотя бы 2 символа', 'warning'); return; }
+        const phone = document.getElementById('consultPhone').value.trim();
+        if (!phone) { await showAlert('Пожалуйста, введите номер телефона', 'warning'); return; }
+        const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
+        
+        const text = `ОТДИС - Приёмная комиссия\n\n✅ ЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n🕐 Время: ${new Date().toLocaleString('ru-RU')}\n\n━━━━━━━━━━━━━━━━━━━\n✅ Сообщение принято!\nСпециалист свяжется с вами\n━━━━━━━━━━━━━━━━━━━`;
+        
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            showInstructionWithData({ text: text }, 'consult');
+        } else {
+            // Для веб-браузера - просто копируем и на главную
+            navigator.clipboard.writeText(text);
+            clearForms();
+            goToMainMenu();
         }
     }
 
