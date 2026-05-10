@@ -44,7 +44,7 @@
         }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
         .header p { font-size: 13px; opacity: 0.9; margin: 0; }
-        .info-page, .main-menu, .booking-section, .instruction-page, .direction-detail-page {
+        .info-page, .main-menu, .booking-section, .instruction-page, .direction-detail-page, .confirm-page {
             width: 100%;
             background: white;
             border-radius: 20px;
@@ -409,7 +409,6 @@
         <div class="info-content" id="detailContent"></div>
     </div>
 
-    <!-- Форма для полноценной записи (с календарем) -->
     <div id="fullBookingSection" class="booking-section hidden">
         <div class="info-header">
             <button class="back-button" onclick="showFullBooking()">←</button>
@@ -438,7 +437,6 @@
         </div>
     </div>
 
-    <!-- Форма для консультации (упрощенная) -->
     <div id="consultBookingSection" class="booking-section hidden">
         <div class="info-header">
             <button class="back-button" onclick="goToMainMenu()">←</button>
@@ -602,6 +600,7 @@
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
         document.getElementById('instructionPage').classList.add('hidden');
+        document.getElementById('confirmPage').classList.add('hidden');
     }
 
     function showInfoPage(type) {
@@ -679,7 +678,7 @@
         document.getElementById('instructionPage').classList.remove('hidden');
     }
 
-        function sendFinalRequest() {
+    function sendFinalRequest() {
         if (!pendingData) return;
         const messageText = pendingData.text;
         
@@ -688,24 +687,31 @@
         if (isMaxApp) {
             showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
                 window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                    clearForms();
-                    goToMainMenu();
-                    
                     if (result.status === 'shared') {
                         showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                    } else if (result.status === 'cancelled') {
-                        showAlert('ℹ️ Отправка отменена. Вы можете вернуться и попробовать снова.', 'info');
+                    } else {
+                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
                     }
-                }).catch(() => { 
                     clearForms();
                     goToMainMenu();
+                }).catch(() => { 
                     showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
+                    clearForms(); 
+                    goToMainMenu(); 
                 });
+            });
+        } else {
+            navigator.clipboard.writeText(messageText).then(function() {
+                clearForms();
+                showConfirmPage();
+            }).catch(function() {
+                alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
+                clearForms();
+                goToMainMenu();
             });
         }
     }
     
-    // Функция для страницы подтверждения (для веб-версии)
     function showConfirmPage() {
         document.getElementById('fullBookingSection').classList.add('hidden');
         document.getElementById('consultBookingSection').classList.add('hidden');
@@ -849,7 +855,7 @@
         document.getElementById('consultPhone').value = '';
     }
 
-        async function prepareConsultBooking() {
+    async function prepareConsultBooking() {
         const name = document.getElementById('consultUserName').value.trim();
         if (!name) { await showAlert('Пожалуйста, введите ваше имя', 'warning'); return; }
         if (name.length < 2) { await showAlert('Имя должно содержать хотя бы 2 символа', 'warning'); return; }
@@ -863,7 +869,7 @@
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
         if (isMaxApp) {
-            showInstructionWithData({ text: text }, 'consult');  // ← ИСПРАВЛЕНО: было 'full'
+            showInstructionWithData({ text: text }, 'consult');
         } else {
             await navigator.clipboard.writeText(text);
             clearForms();
