@@ -332,7 +332,7 @@
             border-left: 2px solid #1a56db;
         }
 
-                @keyframes slideUpToast {
+        @keyframes slideUpToast {
             from {
                 opacity: 0;
                 transform: translateX(-50%) translateY(20px);
@@ -346,7 +346,6 @@
         .toast-notification {
             animation: slideUpToast 0.3s ease;
         }
-
     </style>
 </head>
 <body>
@@ -465,7 +464,7 @@
 </div>
 
 <script>
-    // ========== ДАННЫЕ ==========
+    // ========== ДАННЫЕ (из 6.12) ==========
     const contentData = {
         scores: { 
             title: '📊 Средние баллы 2025', 
@@ -495,36 +494,49 @@
                   '<div><span style="display: inline-block; width: 28px; text-align: right; font-weight: 700; color: #1a56db; margin-right: 8px;">12.</span> 📄 Приписное</div>' +
                   '</div><div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;">🗓️ Срок подачи: до 15 августа</div>' 
         },
-        prof: { title: 'Профессионалитет', text: '«Профессионалитет» — федеральный проект подготовки кадров.\n\n⚡ Ключевые преимущества:\n• Сокращённые сроки обучения\n• Приоритет практики\n• Гарантированное трудоустройство' },
+        prof: { 
+            title: 'Профессионалитет', 
+            text: '«Профессионалитет» — это федеральный проект, который готовит кадры для реального сектора экономики.\n\n' +
+                  '⚡ Ключевые преимущества:\n' +
+                  '• Сокращённые сроки обучения (от 1 года 10 мес.)\n' +
+                  '• Приоритет практики на реальном производстве\n' +
+                  '• Целевое обучение и гарантированное трудоустройство\n' +
+                  '• Современное оборудование и мастерские\n' +
+                  '• Наставничество от ведущих специалистов\n\n' +
+                  '📌 В ОТДИС программы Профессионалитета:\n' +
+                  '• Мастер по изготовлению швейных изделий\n' +
+                  '• Оператор швейного оборудования\n' +
+                  '• Конструирование, моделирование и технология изготовления швейных изделий\n' +
+                  '• Дизайнер в легкой промышленности\n\n' +
+                  '🌐 Подробнее: <a href="https://otdis.ru/professionalitet" target="_blank" style="color: #1a56db; text-decoration: none;">otdis.ru/professionalitet</a>' 
+        },
         contacts: { title: '📍 Контакты', text: '📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\nПн-Пт 09:00—16:00\nСб 10:00—14:00' },
-       
-       prepCourses: { 
-    title: '📚 Подготовительные курсы', 
-    text: '<div style="display: flex; flex-direction: column; gap: 16px;">' +
-          '<div class="detail-block"><div class="detail-label">🎨 О курсе</div><div class="detail-value">Подготовка к вступительным испытаниям по изобразительному искусству (рисунок и живопись)</div></div>' +
-          '<div class="detail-block"><div class="detail-label">📅 Программа</div><div class="detail-value">Занятия начинаются по мере комплектования группы.<br>Продолжительность: 48 часов (1-1.5 месяца в зависимости от графика).</div></div>' +
-          '<div class="detail-block"><div class="detail-label">📍 Место проведения</div><div class="detail-value">Стахановская, д. 43</div></div>' +
-          '</div>' +
-          '<div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">' +
-          '<strong>🎓 Координатор курсов:</strong> Лапина Анна Валерьевна<br><br>' +
-          '📞 <strong>Телефон:</strong> (343) 378-17-25 (доб.15)<br>' +
-          '✉️ <strong>E-mail:</strong> otdis66@yandex.ru' +
-          '</div>' 
-},
-
+        prepCourses: { 
+            title: '📚 Подготовительные курсы', 
+            text: '<div style="display: flex; flex-direction: column; gap: 16px;">' +
+                  '<div class="detail-block"><div class="detail-label">🎨 О курсе</div><div class="detail-value">Подготовка к вступительным испытаниям по изобразительному искусству (рисунок и живопись)</div></div>' +
+                  '<div class="detail-block"><div class="detail-label">📅 Программа</div><div class="detail-value">Занятия начинаются по мере комплектования группы.<br>Продолжительность: 48 часов (1-1.5 месяца в зависимости от графика).</div></div>' +
+                  '<div class="detail-block"><div class="detail-label">📍 Место проведения</div><div class="detail-value">Стахановская, д. 43</div></div>' +
+                  '</div>' +
+                  '<div style="margin-top: 16px; padding: 12px; background: #e3f2fd; border-radius: 12px; text-align: center;">' +
+                  '<strong>🎓 Координатор курсов:</strong> Лапина Анна Валерьевна<br><br>' +
+                  '📞 <strong>Телефон:</strong> (343) 378-17-25 (доб.15)<br>' +
+                  '✉️ <strong>E-mail:</strong> otdis66@yandex.ru' +
+                  '</div>' 
+        },
         faq: { 
-    title: '💬 Часто задаваемые вопросы', 
-    text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div>' +
-          '<div class="faq-answer">1. Паспорт + копия (страница с фото и прописка)<br>2. Аттестат (оригинал/заверенная копия)<br>3. Фото 3×4 — 4 шт<br>4. Медсправка 086 (с флюорографией за 2024 г.)<br>5. СНИЛС (2 копии)<br>6. Прививочный сертификат<br>7. Медицинский полис (2 копии)<br>8. Документы об инвалидности/ОВЗ<br>9. Заключение ПМПК (для лиц с ОВЗ)<br>10. Документы о льготах<br>11. ИНН (копия)<br>📌 Подробнее в разделе "Документы"</div>' +
-          '<div class="faq-question">❓ Можно ли перевестись с платного на бюджет?</div>' +
-          '<div class="faq-answer">Да. Если вы учитесь на &quot;отлично&quot; и на нужном курсе есть бюджетные места.</div>' +
-          '<div class="faq-question">❓ Как направления обучения разделены по корпусам?</div>' +
-          '<div class="faq-answer">Техникум имеет два корпуса: Стахановская, 43 и Красный пер., 3. Занятия могут проходить в обоих корпусах, но в течение дня студенты между ними не переезжают.</div>' +
-          '<div class="faq-question">❓ Как выбрать дату творческого испытания при онлайн-подаче?</div>' +
-          '<div class="faq-answer">При подаче заявления онлайн нужно выбрать дату. Если не получилось — свяжитесь с приёмной комиссией: (343) 378-17-25 (доб. 3), postupi@otdis.ru</div>' +
-          '<div class="faq-question">❓ Как подать заявление дистанционно?</div>' +
-          '<div class="faq-answer">Через личный кабинет абитуриента или портал Госуслуг. Подробнее в разделе "Правила подачи документов" на сайте оtdis.ru.</div>' 
-            },
+            title: '💬 Часто задаваемые вопросы', 
+            text: '<div class="faq-question">❓ Какие документы нужны для поступления?</div>' +
+                  '<div class="faq-answer">1. Паспорт + копия (страница с фото и прописка)<br>2. Аттестат (оригинал/заверенная копия)<br>3. Фото 3×4 — 4 шт<br>4. Медсправка 086 (с флюорографией за 2024 г.)<br>5. СНИЛС (2 копии)<br>6. Прививочный сертификат<br>7. Медицинский полис (2 копии)<br>8. Документы об инвалидности/ОВЗ<br>9. Заключение ПМПК (для лиц с ОВЗ)<br>10. Документы о льготах<br>11. ИНН (копия)<br>📌 Подробнее в разделе "Документы"</div>' +
+                  '<div class="faq-question">❓ Можно ли перевестись с платного на бюджет?</div>' +
+                  '<div class="faq-answer">Да. Если вы учитесь на &quot;отлично&quot; и на нужном курсе есть бюджетные места.</div>' +
+                  '<div class="faq-question">❓ Как направления обучения разделены по корпусам?</div>' +
+                  '<div class="faq-answer">Техникум имеет два корпуса: Стахановская, 43 и Красный пер., 3. Занятия могут проходить в обоих корпусах, но в течение дня студенты между ними не переезжают.</div>' +
+                  '<div class="faq-question">❓ Как выбрать дату творческого испытания при онлайн-подаче?</div>' +
+                  '<div class="faq-answer">При подаче заявления онлайн нужно выбрать дату. Если не получилось — свяжитесь с приёмной комиссией: (343) 378-17-25 (доб. 3), postupi@otdis.ru</div>' +
+                  '<div class="faq-question">❓ Как подать заявление дистанционно?</div>' +
+                  '<div class="faq-answer">Через личный кабинет абитуриента или портал Госуслуг. Подробнее в разделе "Правила подачи документов" на сайте оtdis.ru.</div>' 
+        }
     };
 
     const directionsCategories = [
@@ -665,71 +677,50 @@
     }
 
     function sendFinalRequest() {
-    if (!pendingData) return;
-    const messageText = pendingData.text;
-    
-    // ПРОВЕРКА: Мы в приложении Max или в обычном браузере?
-    // В Max есть WebApp и функция shareMaxContent
-    const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
-    
-    if (isMaxApp) {
-        // ========== ДЛЯ ПРИЛОЖЕНИЯ MAX ==========
-        showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
-            window.WebApp.shareMaxContent({ text: messageText }).then(result => {
-                if (result.status === 'shared') {
-                    showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
-                } else {
-                    showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
-                }
+        if (!pendingData) return;
+        const messageText = pendingData.text;
+        
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            showAlert('📨 Сейчас откроется список чатов.\n\nВыберите "ОТДИС приёмная комиссия" и отправьте сообщение.', 'info').then(() => {
+                window.WebApp.shareMaxContent({ text: messageText }).then(result => {
+                    if (result.status === 'shared') {
+                        showAlert('✅ Заявка отправлена! Специалист свяжется с вами.', 'success');
+                    } else {
+                        showAlert('ℹ️ Отправка не завершена. Вы можете вернуться и попробовать снова.', 'info');
+                    }
+                    clearForms();
+                    goToMainMenu();
+                }).catch(() => { 
+                    showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
+                    clearForms(); 
+                    goToMainMenu(); 
+                });
+            });
+        } else {
+            navigator.clipboard.writeText(messageText).then(function() {
+                showToast('✅ Данные скопированы! Откройте чат и вставьте текст (Ctrl+V)');
+                clearForms();
+                setTimeout(function() { goToMainMenu(); }, 1500);
+            }).catch(function() {
+                alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
                 clearForms();
                 goToMainMenu();
-            }).catch(() => { 
-                showAlert('❌ Ошибка при отправке. Попробуйте ещё раз.', 'error'); 
-                clearForms(); 
-                goToMainMenu(); 
             });
-        });
-    } else {
-        // ========== ДЛЯ ВЕБ-БРАУЗЕРА ==========
-        // Сразу копируем в буфер обмена
-        navigator.clipboard.writeText(messageText).then(function() {
-            // Показываем тост-уведомление
-            showToast('✅ Данные скопированы! Откройте чат и вставьте текст (Ctrl+V)');
-            // Очищаем форму
-            clearForms();
-            // Возвращаемся на главную через 1.5 секунды
-            setTimeout(function() {
-                goToMainMenu();
-            }, 1500);
-        }).catch(function() {
-            // Если копирование не удалось
-            alert('❌ Не удалось скопировать данные. Попробуйте ещё раз.');
-            clearForms();
-            goToMainMenu();
-        });
+        }
     }
-}
-
-// Функция для тост-уведомления
-
-function showToast(message) {
-    // Удаляем старый тост
-    var oldToast = document.querySelector('.toast-notification');
-    if (oldToast) oldToast.remove();
     
-    // Создаём новый тост
-    var toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerHTML = message;
-    toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; max-width: 90%;';
-    
-    document.body.appendChild(toast);
-    
-    // Удаляем через 3 секунды
-    setTimeout(function() {
-        if (toast) toast.remove();
-    }, 3000);
-}
+    function showToast(message) {
+        var oldToast = document.querySelector('.toast-notification');
+        if (oldToast) oldToast.remove();
+        var toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = message;
+        toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; max-width: 90%;';
+        document.body.appendChild(toast);
+        setTimeout(function() { if (toast) toast.remove(); }, 3000);
+    }
 
     function clearForms() {
         pendingData = null;
@@ -829,8 +820,18 @@ function showToast(message) {
         if (!phone) { await showAlert('Пожалуйста, введите номер телефона', 'warning'); return; }
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
+        
         const text = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
-        showInstructionWithData({ text: text }, 'full');
+        
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            showInstructionWithData({ text: text }, 'full');
+        } else {
+            await navigator.clipboard.writeText(text);
+            clearForms();
+            goToMainMenu();
+        }
     }
 
     // ========== ЗАПИСЬ НА КОНСУЛЬТАЦИЮ ==========
@@ -850,8 +851,18 @@ function showToast(message) {
         if (!phone) { await showAlert('Пожалуйста, введите номер телефона', 'warning'); return; }
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
+        
         const text = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${name}\nТелефон: ${phone}\nВремя: ${new Date().toLocaleString('ru-RU')}`;
-        showInstructionWithData({ text: text }, 'consult');
+        
+        const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
+        
+        if (isMaxApp) {
+            showInstructionWithData({ text: text }, 'consult');
+        } else {
+            await navigator.clipboard.writeText(text);
+            clearForms();
+            goToMainMenu();
+        }
     }
 
     function initPhoneMask() {
