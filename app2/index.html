@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Практика СПО — Платформа практики</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f2f5;
+            padding: 12px;
+        }
+        
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+        
+        /* Шапка */
+        .header {
+            background: linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        /* Карточки ролей и направлений */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .role-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .role-card:active {
+            transform: scale(0.97);
+            background-color: #e8eef9;
+        }
+        
+        .role-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .role-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a56db;
+        }
+        
+        /* Общие стили для страниц */
+        .page {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 6px;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a56db;
+        }
+        
+        /* Формы */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn {
+            width: 100%;
+            background: #1a56db;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        .btn-green {
+            background: #28a745;
+        }
+        
+        .btn-red {
+            background: #dc3545;
+        }
+        
+        /* Список заявок */
+        .request-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-left: 4px solid #1a56db;
+        }
+        
+        .request-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1a56db;
+        }
+        
+        .request-info {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .request-info span {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        
+        .request-contact {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .badge {
+            background: #28a745;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        
+        /* Нижняя навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px;
+            border-top: 1px solid #eee;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 20px;
+            flex: 1;
+        }
+        
+        .nav-item.active {
+            background: #e8eef9;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #1a56db;
+            font-weight: 500;
+        }
+        
+        /* Добавим отступ снизу для навигации */
+        .content-with-nav {
+            padding-bottom: 80px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ШАПКА -->
+    <div class="header">
+        <h1>📋 Практика СПО</h1>
+        <p>Платформа для поиска и предложения практики</p>
+    </div>
+
+    <!-- ГЛАВНАЯ С ВЫБОРОМ РОЛИ -->
+    <div id="rolePage" class="page active">
+        <div class="roles-grid">
+            <div class="role-card" onclick="selectRole('student')">
+                <div class="role-icon">🎓</div>
+                <div class="role-title">Студент</div>
+                <div style="font-size: 12px; color: #888; margin-top: 5px;">Ищу практику</div>
+            </div>
+            <div class="role-card" onclick="selectRole('employer')">
+                <div class="role-icon">🏢</div>
+                <div class="role-title">Работодатель</div>
+                <div style="font-size: 12px; color: #888; margin-top: 5px;">Предлагаю практику</div>
+            </div>
+            <div class="role-card" onclick="selectRole('college')">
+                <div class="role-icon">👨‍🏫</div>
+                <div class="role-title">Сотрудник колледжа</div>
+                <div style="font-size: 12px; color: #888; margin-top: 5px;">Контроль и модерация</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРОМЕЖУТОЧНАЯ СТРАНИЦА ВЫБОРА НАПРАВЛЕНИЯ (для студента) -->
+    <div id="studentDirectionPage" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBackToRole('student')">←</button>
+            <div class="page-title">🎓 Выберите направление</div>
+        </div>
+        <div class="roles-grid" id="studentDirectionsGrid">
+            <!-- Направления будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- ПРОМЕЖУТОЧНАЯ СТРАНИЦА ВЫБОРА НАПРАВЛЕНИЯ (для работодателя) -->
+    <div id="employerDirectionPage" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBackToRole('employer')">←</button>
+            <div class="page-title">🏢 Выберите направление</div>
+        </div>
+        <div class="roles-grid" id="employerDirectionsGrid">
+            <!-- Направления будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА СТУДЕНТА (после выбора направления) -->
+    <div id="studentPage" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBackToDirections('student')">←</button>
+            <div class="page-title" id="studentPageTitle">🎓 Вакансии на практику</div>
+        </div>
+        <div id="studentRequestsList">
+            <!-- Список заявок от работодателей будет здесь -->
+        </div>
+        <button class="btn btn-green" onclick="showStudentRequestForm()">➕ Создать заявку (ищу практику)</button>
+    </div>
+
+    <!-- ФОРМА СОЗДАНИЯ ЗАЯВКИ СТУДЕНТОМ -->
+    <div id="studentRequestForm" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="hideStudentRequestForm()">←</button>
+            <div class="page-title">📝 Создание заявки (студент)</div>
+        </div>
+        <div class="form-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="studentName" placeholder="Иванов Иван">
+        </div>
+        <div class="form-group">
+            <label>🎓 Направление/Профессия</label>
+            <input type="text" id="studentProfession" placeholder="Например: Программист, Швея, Дизайнер">
+        </div>
+        <div class="form-group">
+            <label>📅 Желаемые даты практики</label>
+            <input type="text" id="studentDates" placeholder="Например: Июнь-Август 2026">
+        </div>
+        <div class="form-group">
+            <label>📍 Желаемое место</label>
+            <input type="text" id="studentLocation" placeholder="Город/район">
+        </div>
+        <div class="form-group">
+            <label>📞 Контактный телефон</label>
+            <input type="tel" id="studentPhone" placeholder="+7 999 123 45 67">
+        </div>
+        <div class="form-group">
+            <label>💬 Дополнительная информация</label>
+            <textarea id="studentInfo" placeholder="Ваши навыки, опыт, пожелания..."></textarea>
+        </div>
+        <button class="btn" onclick="createStudentRequest()">✅ Опубликовать заявку</button>
+    </div>
+
+    <!-- СТРАНИЦА РАБОТОДАТЕЛЯ (после выбора направления) -->
+    <div id="employerPage" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBackToDirections('employer')">←</button>
+            <div class="page-title" id="employerPageTitle">🏢 Мои заявки</div>
+        </div>
+        <button class="btn btn-green" onclick="showEmployerRequestForm()">➕ Создать заявку на практикантов</button>
+        <div style="margin-top: 16px;">
+            <div id="employerRequestsList">
+                <!-- Список заявок работодателя будет здесь -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ФОРМА СОЗДАНИЯ ЗАЯВКИ РАБОТОДАТЕЛЕМ -->
+    <div id="employerRequestForm" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="hideEmployerRequestForm()">←</button>
+            <div class="page-title">📝 Создание заявки (работодатель)</div>
+        </div>
+        <div class="form-group">
+            <label>🏢 Название организации</label>
+            <input type="text" id="companyName" placeholder="ООО «Ромашка»">
+        </div>
+        <div class="form-group">
+            <label>🎓 Требуемая профессия/направление</label>
+            <input type="text" id="requiredProfession" placeholder="Например: Программист, Швея">
+        </div>
+        <div class="form-group">
+            <label>👥 Количество мест</label>
+            <input type="number" id="positions" placeholder="Количество практикантов">
+        </div>
+        <div class="form-group">
+            <label>📅 Период практики</label>
+            <input type="text" id="practiceDates" placeholder="Например: Июнь-Август 2026">
+        </div>
+        <div class="form-group">
+            <label>📍 Адрес</label>
+            <input type="text" id="companyAddress" placeholder="г. Екатеринбург, ул. Примерная, 1">
+        </div>
+        <div class="form-group">
+            <label>📞 Контактный телефон</label>
+            <input type="tel" id="companyPhone" placeholder="+7 999 123 45 67">
+        </div>
+        <div class="form-group">
+            <label>✉️ Email</label>
+            <input type="email" id="companyEmail" placeholder="info@example.ru">
+        </div>
+        <div class="form-group">
+            <label>💬 Дополнительная информация</label>
+            <textarea id="companyInfo" placeholder="Условия, требования, преимущества..."></textarea>
+        </div>
+        <button class="btn" onclick="createEmployerRequest()">✅ Опубликовать заявку</button>
+    </div>
+
+    <!-- СТРАНИЦА СОТРУДНИКА КОЛЛЕДЖА -->
+    <div id="collegePage" class="page">
+        <div class="page-header">
+            <button class="back-btn" onclick="goToMain()">←</button>
+            <div class="page-title">👨‍🏫 Сотрудник колледжа — Модерация</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+            <button class="btn" onclick="showAllRequests()" style="background: #17a2b8;">📋 Все заявки</button>
+        </div>
+        <div id="collegeStats" style="background: #e3f2fd; border-radius: 12px; padding: 12px; margin-bottom: 16px; text-align: center;">
+            <!-- Статистика -->
+        </div>
+        <div id="collegeRequestsList">
+            <!-- Все заявки для модерации -->
+        </div>
+    </div>
+
+    <!-- Нижняя навигация (для студента и работодателя) -->
+    <div id="bottomNav" class="bottom-nav hidden">
+        <div class="nav-item" onclick="navTo('requests')">
+            <div class="nav-icon">📋</div>
+            <div class="nav-label">Заявки</div>
+        </div>
+        <div class="nav-item" onclick="navTo('my')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Мои заявки</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== ХРАНЕНИЕ ДАННЫХ (localStorage) ==========
+    let currentUser = null; // 'student', 'employer', 'college'
+    let currentDirection = null;
+    let currentView = 'requests'; // 'requests' или 'my' для навигации
+    
+    // Заявки студентов (кто ищет практику)
+    let studentRequests = [];
+    // Заявки работодателей (кто предлагает практику)
+    let employerRequests = [];
+    
+    // ========== НАПРАВЛЕНИЯ ==========
+    const directions = [
+        { id: 'light', name: '🧵 Легкая промышленность', icon: '🧵' },
+        { id: 'bank', name: '🏦 Банк / Страховая компания', icon: '🏦' },
+        { id: 'advert', name: '📢 Реклама / СМИ', icon: '📢' },
+        { id: 'food', name: '🍽️ Общепит', icon: '🍽️' }
+    ];
+    
+    // Загрузка данных из localStorage
+    function loadData() {
+        const storedStudents = localStorage.getItem('practice_student_requests');
+        const storedEmployers = localStorage.getItem('practice_employer_requests');
+        
+        if (storedStudents) studentRequests = JSON.parse(storedStudents);
+        if (storedEmployers) employerRequests = JSON.parse(storedEmployers);
+    }
+    
+    // Сохранение данных
+    function saveData() {
+        localStorage.setItem('practice_student_requests', JSON.stringify(studentRequests));
+        localStorage.setItem('practice_employer_requests', JSON.stringify(employerRequests));
+    }
+    
+    // ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+    function goToMain() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('rolePage').classList.add('active');
+        document.getElementById('bottomNav').classList.add('hidden');
+        currentUser = null;
+        currentDirection = null;
+    }
+    
+    function goBackToRole(role) {
+        currentDirection = null;
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('rolePage').classList.add('active');
+        currentUser = null;
+    }
+    
+    function goBackToDirections(role) {
+        if (role === 'student') {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('studentDirectionPage').classList.add('active');
+        } else if (role === 'employer') {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('employerDirectionPage').classList.add('active');
+        }
+    }
+    
+    function selectRole(role) {
+        currentUser = role;
+        currentDirection = null;
+        
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        
+        if (role === 'student') {
+            showStudentDirections();
+            document.getElementById('studentDirectionPage').classList.add('active');
+        } else if (role === 'employer') {
+            showEmployerDirections();
+            document.getElementById('employerDirectionPage').classList.add('active');
+        } else if (role === 'college') {
+            document.getElementById('collegePage').classList.add('active');
+            document.getElementById('bottomNav').classList.add('hidden');
+            loadCollegeData();
+        }
+    }
+    
+    function showStudentDirections() {
+        const container = document.getElementById('studentDirectionsGrid');
+        container.innerHTML = directions.map(dir => `
+            <div class="role-card" onclick="selectStudentDirection('${dir.id}', '${dir.name}')">
+                <div class="role-icon">${dir.icon}</div>
+                <div class="role-title">${dir.name}</div>
+            </div>
+        `).join('');
+    }
+    
+    function showEmployerDirections() {
+        const container = document.getElementById('employerDirectionsGrid');
+        container.innerHTML = directions.map(dir => `
+            <div class="role-card" onclick="selectEmployerDirection('${dir.id}', '${dir.name}')">
+                <div class="role-icon">${dir.icon}</div>
+                <div class="role-title">${dir.name}</div>
+            </div>
+        `).join('');
+    }
+    
+    function selectStudentDirection(directionId, directionName) {
+        currentDirection = directionId;
+        document.getElementById('studentPageTitle').innerHTML = `🎓 ${directionName} — Предложения практики`;
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('studentPage').classList.add('active');
+        document.getElementById('bottomNav').classList.remove('hidden');
+        loadStudentRequests();
+        navTo('requests');
+    }
+    
+    function selectEmployerDirection(directionId, directionName) {
+        currentDirection = directionId;
+        document.getElementById('employerPageTitle').innerHTML = `🏢 ${directionName} — Мои заявки`;
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('employerPage').classList.add('active');
+        document.getElementById('bottomNav').classList.remove('hidden');
+        loadEmployerRequests();
+        navTo('requests');
+    }
+    
+    // ========== СТУДЕНТ ==========
+    function loadStudentRequests() {
+        let filteredRequests = employerRequests;
+        
+        if (currentDirection === 'light') {
+            filteredRequests = employerRequests.filter(r => r.direction === 'light');
+        } else if (currentDirection === 'bank') {
+            filteredRequests = employerRequests.filter(r => r.direction === 'bank');
+        } else if (currentDirection === 'advert') {
+            filteredRequests = employerRequests.filter(r => r.direction === 'advert');
+        } else if (currentDirection === 'food') {
+            filteredRequests = employerRequests.filter(r => r.direction === 'food');
+        }
+        
+        const container = document.getElementById('studentRequestsList');
+        
+        if (filteredRequests.length === 0) {
+            container.innerHTML = '<div class="empty-message">📭 Пока нет предложений от работодателей в этом направлении</div>';
+            return;
+        }
+        
+        container.innerHTML = filteredRequests.map(req => `
+            <div class="request-card">
+                <div class="request-title">${escapeHtml(req.companyName)}</div>
+                <div class="request-info">
+                    <span>🎓 ${escapeHtml(req.profession)}</span>
+                    <span>👥 ${req.positions} мест</span>
+                    <span>📅 ${escapeHtml(req.dates)}</span>
+                </div>
+                <div class="request-info">📍 ${escapeHtml(req.address)}</div>
+                <div class="request-contact">
+                    📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}<br>
+                    💬 ${escapeHtml(req.info) || '—'}
+                </div>
+                <button class="btn btn-green" style="margin-top: 10px; font-size: 13px;" onclick="applyForPosition(${req.id})">📝 Откликнуться</button>
+            </div>
+        `).join('');
+    }
+    
+    function showStudentRequestForm() {
+        document.getElementById('studentPage').classList.remove('active');
+        document.getElementById('studentRequestForm').classList.add('active');
+    }
+    
+    function hideStudentRequestForm() {
+        document.getElementById('studentRequestForm').classList.remove('active');
+        document.getElementById('studentPage').classList.add('active');
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentProfession').value = '';
+        document.getElementById('studentDates').value = '';
+        document.getElementById('studentLocation').value = '';
+        document.getElementById('studentPhone').value = '';
+        document.getElementById('studentInfo').value = '';
+    }
+    
+    function createStudentRequest() {
+        const name = document.getElementById('studentName').value.trim();
+        const profession = document.getElementById('studentProfession').value.trim();
+        const dates = document.getElementById('studentDates').value.trim();
+        const location = document.getElementById('studentLocation').value.trim();
+        const phone = document.getElementById('studentPhone').value.trim();
+        const info = document.getElementById('studentInfo').value.trim();
+        
+        if (!name || !profession || !dates || !phone) {
+            alert('Пожалуйста, заполните обязательные поля');
+            return;
+        }
+        
+        const newRequest = {
+            id: Date.now(),
+            type: 'student',
+            direction: currentDirection,
+            name: name,
+            profession: profession,
+            dates: dates,
+            location: location,
+            phone: phone,
+            info: info,
+            createdAt: new Date().toISOString(),
+            status: 'active'
+        };
+        
+        studentRequests.push(newRequest);
+        saveData();
+        
+        alert('✅ Заявка создана! Специалист колледжа рассмотрит её.');
+        hideStudentRequestForm();
+        
+        if (currentUser === 'student') {
+            loadStudentRequests();
+        }
+    }
+    
+    function applyForPosition(employerId) {
+        const employer = employerRequests.find(r => r.id === employerId);
+        if (employer) {
+            alert(`📨 Отклик отправлен!\n\nВы заинтересованы в практике в компании "${employer.companyName}".\n\nСвяжитесь по телефону: ${employer.phone} или email: ${employer.email}\n\nУкажите, что вы откликаетесь на их заявку.`);
+        }
+    }
+    
+    // ========== РАБОТОДАТЕЛЬ ==========
+    function loadEmployerRequests() {
+        let filteredRequests = employerRequests.filter(r => r.direction === currentDirection);
+        
+        const container = document.getElementById('employerRequestsList');
+        
+        if (filteredRequests.length === 0) {
+            container.innerHTML = '<div class="empty-message">📭 У вас пока нет созданных заявок в этом направлении</div>';
+            return;
+        }
+        
+        container.innerHTML = filteredRequests.map(req => `
+            <div class="request-card">
+                <div class="request-title">${escapeHtml(req.companyName)}</div>
+                <div class="request-info">
+                    <span>🎓 ${escapeHtml(req.profession)}</span>
+                    <span>👥 ${req.positions} мест</span>
+                    <span>📅 ${escapeHtml(req.dates)}</span>
+                </div>
+                <div class="request-info">📍 ${escapeHtml(req.address)}</div>
+                <div class="request-contact">
+                    📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}
+                </div>
+                <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>
+            </div>
+        `).join('');
+    }
+    
+    function showEmployerRequestForm() {
+        document.getElementById('employerPage').classList.remove('active');
+        document.getElementById('employerRequestForm').classList.add('active');
+    }
+    
+    function hideEmployerRequestForm() {
+        document.getElementById('employerRequestForm').classList.remove('active');
+        document.getElementById('employerPage').classList.add('active');
+        document.getElementById('companyName').value = '';
+        document.getElementById('requiredProfession').value = '';
+        document.getElementById('positions').value = '';
+        document.getElementById('practiceDates').value = '';
+        document.getElementById('companyAddress').value = '';
+        document.getElementById('companyPhone').value = '';
+        document.getElementById('companyEmail').value = '';
+        document.getElementById('companyInfo').value = '';
+    }
+    
+    function createEmployerRequest() {
+        const companyName = document.getElementById('companyName').value.trim();
+        const profession = document.getElementById('requiredProfession').value.trim();
+        const positions = document.getElementById('positions').value.trim();
+        const dates = document.getElementById('practiceDates').value.trim();
+        const address = document.getElementById('companyAddress').value.trim();
+        const phone = document.getElementById('companyPhone').value.trim();
+        const email = document.getElementById('companyEmail').value.trim();
+        const info = document.getElementById('companyInfo').value.trim();
+        
+        if (!companyName || !profession || !positions || !dates || !address || !phone) {
+            alert('Пожалуйста, заполните обязательные поля');
+            return;
+        }
+        
+        const newRequest = {
+            id: Date.now(),
+            direction: currentDirection,
+            companyName: companyName,
+            profession: profession,
+            positions: parseInt(positions),
+            dates: dates,
+            address: address,
+            phone: phone,
+            email: email,
+            info: info,
+            createdAt: new Date().toISOString(),
+            status: 'active'
+        };
+        
+        employerRequests.push(newRequest);
+        saveData();
+        
+        alert('✅ Заявка опубликована! Студенты увидят ваше предложение.');
+        hideEmployerRequestForm();
+        loadEmployerRequests();
+    }
+    
+    function deleteEmployerRequest(id) {
+        if (confirm('Удалить эту заявку?')) {
+            employerRequests = employerRequests.filter(r => r.id !== id);
+            saveData();
+            loadEmployerRequests();
+            if (currentUser === 'student') loadStudentRequests();
+            if (currentUser === 'college') loadCollegeData();
+        }
+    }
+    
+    // ========== СОТРУДНИК КОЛЛЕДЖА ==========
+    function loadCollegeData() {
+        const statsHtml = `
+            <strong>📊 Статистика</strong><br>
+            🎓 Заявок от студентов: ${studentRequests.length}<br>
+            🏢 Заявок от работодателей: ${employerRequests.length}
+        `;
+        document.getElementById('collegeStats').innerHTML = statsHtml;
+        
+        showAllRequests();
+    }
+    
+    function showAllRequests() {
+        const container = document.getElementById('collegeRequestsList');
+        
+        let html = '<div style="margin-bottom: 12px;"><strong>📋 Заявки от студентов:</strong></div>';
+        
+        if (studentRequests.length === 0) {
+            html += '<div class="empty-message">Нет заявок от студентов</div>';
+        } else {
+            studentRequests.forEach(req => {
+                const dirName = getDirectionName(req.direction);
+                html += `
+                    <div class="request-card" style="border-left-color: #28a745;">
+                        <div class="request-title">🎓 ${escapeHtml(req.name)}</div>
+                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>📅 ${escapeHtml(req.dates)}</span></div>
+                        <div class="request-info">📍 ${escapeHtml(req.location)}</div>
+                        <div class="request-contact">📞 ${escapeHtml(req.phone)}<br>💬 ${escapeHtml(req.info) || '—'}</div>
+                        <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteStudentRequest(${req.id})">🗑️ Удалить</button>
+                    </div>
+                `;
+            });
+        }
+        
+        html += '<div style="margin: 16px 0 12px;"><strong>🏢 Заявки от работодателей:</strong></div>';
+        
+        if (employerRequests.length === 0) {
+            html += '<div class="empty-message">Нет заявок от работодателей</div>';
+        } else {
+            employerRequests.forEach(req => {
+                const dirName = getDirectionName(req.direction);
+                html += `
+                    <div class="request-card">
+                        <div class="request-title">🏢 ${escapeHtml(req.companyName)}</div>
+                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>👥 ${req.positions} мест</span><span>📅 ${escapeHtml(req.dates)}</span></div>
+                        <div class="request-info">📍 ${escapeHtml(req.address)}</div>
+                        <div class="request-contact">📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}<br>💬 ${escapeHtml(req.info) || '—'}</div>
+                        <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>
+                    </div>
+                `;
+            });
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    function getDirectionName(directionId) {
+        const dir = directions.find(d => d.id === directionId);
+        return dir ? dir.name : 'Не указано';
+    }
+    
+    function deleteStudentRequest(id) {
+        if (confirm('Удалить заявку студента?')) {
+            studentRequests = studentRequests.filter(r => r.id !== id);
+            saveData();
+            loadCollegeData();
+        }
+    }
+    
+    // ========== НАВИГАЦИЯ ==========
+    function navTo(view) {
+        currentView = view;
+        
+        if (currentUser === 'student') {
+            if (view === 'requests') {
+                loadStudentRequests();
+            } else if (view === 'my') {
+                showStudentMyRequests();
+            }
+        } else if (currentUser === 'employer') {
+            if (view === 'requests') {
+                loadEmployerRequests();
+            } else if (view === 'my') {
+                showEmployerMyRequests();
+            }
+        }
+        
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        const activeIndex = view === 'requests' ? 0 : 1;
+        if (document.querySelectorAll('.nav-item')[activeIndex]) {
+            document.querySelectorAll('.nav-item')[activeIndex].classList.add('active');
+        }
+    }
+    
+    function showStudentMyRequests() {
+        const container = document.getElementById('studentRequestsList');
+        const myRequests = studentRequests.filter(r => r.direction === currentDirection);
+        
+        if (myRequests.length === 0) {
+            container.innerHTML = '<div class="empty-message">📭 У вас пока нет созданных заявок в этом направлении</div>';
+            return;
+        }
+        
+        container.innerHTML = myRequests.map(req => `
+            <div class="request-card">
+                <div class="request-title">🎓 Моя заявка</div>
+                <div class="request-info">
+                    <span>${escapeHtml(req.profession)}</span>
+                    <span>📅 ${escapeHtml(req.dates)}</span>
+                </div>
+                <div class="request-info">📍 ${escapeHtml(req.location)}</div>
+                <div class="request-contact">
+                    📞 ${escapeHtml(req.phone)}<br>
+                    💬 ${escapeHtml(req.info) || '—'}
+                </div>
+                <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteStudentRequest(${req.id})">🗑️ Удалить</button>
+            </div>
+        `).join('');
+    }
+    
+    function showEmployerMyRequests() {
+        loadEmployerRequests();
+    }
+    
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Инициализация
+    loadData();
+</script>
+</body>
+</html>
