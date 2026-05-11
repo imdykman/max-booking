@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Тест дизайна — Практика СПО</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        /* Карточка */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+        }
+        
+        /* Заголовок */
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        /* Кнопки */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:active {
+            background: #5a67d8;
+            transform: scale(0.97);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-outline:active {
+            background: #f0f0f0;
+            transform: scale(0.97);
+        }
+        
+        /* Список */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .list-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .list-text {
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+        }
+        
+        .badge {
+            background: #e8eef9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #667eea;
+        }
+        
+        /* Анимация */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate {
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Карточка приветствия -->
+        <div class="card animate">
+            <div class="title">🎨 Практика СПО</div>
+            <div class="subtitle">Тестовая страница для экспериментов с дизайном</div>
+            
+            <button class="btn btn-primary" onclick="showMessage()">👋 Нажми меня</button>
+            <button class="btn btn-outline" onclick="changeTheme()">🎨 Сменить тему</button>
+        </div>
+        
+        <!-- Карточка со списком -->
+        <div class="card animate">
+            <div class="title">📋 Будущие фичи</div>
+            <div class="subtitle">Что планируем добавить</div>
+            
+            <div class="list-item">
+                <div class="list-icon">🤖</div>
+                <div class="list-text">ИИ-помощник для студентов</div>
+                <div class="badge">Скоро</div>
+            </div>
+            <div class="list-item">
+                <div class="list-icon">📊</div>
+                <div class="list-text">Google Sheets интеграция</div>
+                <div class="badge">В плане</div>
+            </div>
+            <div class="list-item">
+                <div class="list-icon">💬</div>
+                <div class="list-text">Чат с работодателями</div>
+                <div class="badge">Идея</div>
+            </div>
+        </div>
+        
+        <!-- Карточка статистики -->
+        <div class="card animate">
+            <div class="title">📈 Статистика</div>
+            <div class="subtitle" id="stats">Кликов пока нет</div>
+        </div>
+    </div>
+    
+    <script>
+        let clickCount = 0;
+        
+        function showMessage() {
+            clickCount++;
+            document.getElementById('stats').innerHTML = `✅ Кликов: ${clickCount}`;
+            
+            // Создаём временное уведомление
+            const toast = document.createElement('div');
+            toast.innerHTML = '🎉 Привет! Дизайн работает!';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 30px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+        
+        function changeTheme() {
+            const body = document.body;
+            const currentBg = body.style.background;
+            
+            if (currentBg.includes('667eea')) {
+                body.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            } else if (currentBg.includes('f093fb')) {
+                body.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            } else {
+                body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+        }
+    </script>
+</body>
+</html>
