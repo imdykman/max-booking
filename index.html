@@ -821,7 +821,7 @@
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
         
-        const text = `ОТДИС - Приёмная комиссия\n\nЗАПИСЬ НА ПОДАЧУ ДОКУМЕНТОВ\n\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
+        const text = `ЗАПИСЬ:\nИмя: ${name}\nТелефон: ${phone}\nДата: ${selectedDate.toISOString().split('T')[0]}\nВремя: ${selectedTime}`;
         
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
@@ -852,7 +852,7 @@
         const phoneRegex = /^[\+\d\s\-\(\)]{10,}$/;
         if (!phoneRegex.test(phone)) { await showAlert('Введите корректный номер телефона\n(пример: +7 912 345 67 89)', 'warning'); return; }
         
-        const text = `ОТДИС - Приёмная комиссия\n\nЗАЯВКА НА КОНСУЛЬТАЦИЮ\n\nИмя: ${name}\nТелефон: ${phone}\nВремя: ${new Date().toLocaleString('ru-RU')}`;
+        const text = `ЗАПИСЬ:\nИмя: ${name}\nТелефон: ${phone}\nДата: консультация\nВремя: ${new Date().toLocaleString('ru-RU')}`;
         
         const isMaxApp = window.WebApp && typeof window.WebApp.shareMaxContent === 'function';
         
