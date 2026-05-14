@@ -6,7 +6,6 @@ const axios = require('axios');
 require('dotenv').config();
 
 // ========== КЛЮЧ YANDEXGPT ==========
-// ВРЕМЕННО: ключ прямо в коде для теста
 const YANDEX_API_KEY = process.env.YANDEX_API_KEY;
 console.log('🔑 Ключ загружен?', YANDEX_API_KEY ? 'ДА' : 'НЕТ');
 
@@ -45,10 +44,10 @@ function generateTimeSlots(date) {
     const dayOfWeek = new Date(date).getDay();
     let startHour, endHour;
     
-    if (dayOfWeek === 6) { // Суббота
+    if (dayOfWeek === 6) {
         startHour = 10;
         endHour = 13;
-    } else if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Пн-Пт
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 5) {
         startHour = 9;
         endHour = 15;
     } else {
@@ -83,7 +82,7 @@ function getDayName(date) {
 
 function isWorkingDay(date) {
     const dayOfWeek = date.getDay();
-    return dayOfWeek >= 1 && dayOfWeek <= 6; // Пн-Сб
+    return dayOfWeek >= 1 && dayOfWeek <= 6;
 }
 
 function hasFreeSlots(dateISO) {
@@ -102,7 +101,6 @@ function getAvailableDatesKeyboard(offset = 0) {
     
     const buttons = [];
     
-    // Показываем 14 дней (2 недели)
     for (let i = 0; i < 14; i++) {
         const date = new Date(startDate);
         date.setDate(startDate.getDate() + i);
@@ -111,7 +109,7 @@ function getAvailableDatesKeyboard(offset = 0) {
         const isWork = isWorkingDay(date);
         const isToday = dateISO === formatDateISO(today);
         
-        if (!isWork) continue; // пропускаем выходные
+        if (!isWork) continue;
         
         let emoji = hasSlots ? '✅' : '🔴';
         if (isToday) emoji = '🔘';
@@ -127,14 +125,12 @@ function getAvailableDatesKeyboard(offset = 0) {
         }
     }
     
-    // Кнопки навигации
     const navRow = [];
     if (offset > 0) {
         navRow.push({ text: "◀️ Назад", callback_data: `nav_${offset - 14}` });
     }
     navRow.push({ text: "Вперед ▶️", callback_data: `nav_${offset + 14}` });
     buttons.push(navRow);
-    
     buttons.push([{ text: "❌ Отмена", callback_data: "cancel_booking" }]);
     
     return { inline_keyboard: buttons };
@@ -146,16 +142,8 @@ const userStates = new Map();
 // ========== ФУНКЦИИ ДЛЯ ЗАПИСИ ==========
 async function showAvailableDates(ctx, userId, offset = 0) {
     const keyboard = getAvailableDatesKeyboard(offset);
-    
-    const message = 
-        '📅 *Доступные даты для записи*\n\n' +
-        '✅ — есть свободное время\n' +
-        '🔴 — всё занято\n' +
-        '🔘 — сегодня\n\n' +
-        'Выберите дату:';
-    
+    const message = '📅 *Доступные даты для записи*\n\n✅ — есть свободное время\n🔴 — всё занято\n🔘 — сегодня\n\nВыберите дату:';
     userStates.set(userId, { step: 'awaiting_date', calendarOffset: offset });
-    
     await ctx.reply(message, { reply_markup: keyboard });
 }
 
@@ -165,7 +153,7 @@ async function showTimeSlots(ctx, userId, dateISO) {
     const freeSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
     
     if (freeSlots.length === 0) {
-        await ctx.reply('❌ На эту дату нет свободных слотов. Выберите другую дату.');
+        await ctx.reply(`❌ На эту дату нет свободных слотов. Выберите другую дату.`);
         await showAvailableDates(ctx, userId);
         return;
     }
@@ -181,23 +169,15 @@ async function showTimeSlots(ctx, userId, dateISO) {
     buttons.push([{ text: "◀️ Назад к датам", callback_data: "back_to_dates" }]);
     
     userStates.set(userId, { step: 'awaiting_time', selectedDate: dateISO });
-    
     const dateObj = new Date(dateISO);
     const dateReadable = `${getDayName(dateObj)} ${dateObj.getDate()}.${dateObj.getMonth() + 1}`;
     
-    await ctx.reply(
-        `📅 *Дата:* ${dateReadable}\n\n🕐 *Выберите время:*`,
-        { reply_markup: { inline_keyboard: buttons } }
-    );
+    await ctx.reply(`📅 *Дата:* ${dateReadable}\n\n🕐 *Выберите время:*`, { reply_markup: { inline_keyboard: buttons } });
 }
 
 async function askForPhone(ctx, userId, dateISO, time) {
     userStates.set(userId, { step: 'awaiting_phone', selectedDate: dateISO, selectedTime: time });
-    await ctx.reply(
-        '📞 *Укажите номер телефона для связи*\n\n' +
-        'Пример: +7 912 345 67 89\n\n' +
-        'Или отправьте "пропустить"'
-    );
+    await ctx.reply(`📞 *Укажите номер телефона для связи*\n\nПример: +7 912 345 67 89\n\nИли отправьте "пропустить"`);
 }
 
 async function saveBookingFinal(ctx, userId, userName, phone) {
@@ -214,23 +194,17 @@ async function saveBookingFinal(ctx, userId, userName, phone) {
     const dateObj = new Date(state.selectedDate);
     const dateReadable = `${getDayName(dateObj)} ${dateObj.getDate()}.${dateObj.getMonth() + 1}`;
     
-    await ctx.reply(
-        '✅ *Вы успешно записаны!*\n\n' +
-        `📅 *Дата:* ${dateReadable}\n` +
-        `🕐 *Время:* ${state.selectedTime}\n` +
-        `📞 *Телефон:* ${phone || 'не указан'}\n\n` +
-        'Специалист свяжется с вами для подтверждения.'
-    );
+    await ctx.reply(`✅ *Вы успешно записаны!*\n\n📅 *Дата:* ${dateReadable}\n🕐 *Время:* ${state.selectedTime}\n📞 *Телефон:* ${phone || 'не указан'}\n\nСпециалист свяжется с вами для подтверждения.`);
     userStates.delete(userId);
 }
 
 // ========== АДМИН-ФУНКЦИЯ ==========
 async function showAdminCalendar(ctx) {
-    const adminIds = ['18245428']; // ЗАМЕНИ НА СВОЙ ID
+    const adminIds = ['18245428'];
     const userId = ctx.message?.sender?.user_id?.toString();
     
     if (!adminIds.includes(userId)) {
-        await ctx.reply('⛔ У вас нет доступа');
+        await ctx.reply(`⛔ У вас нет доступа`);
         return;
     }
     
@@ -239,37 +213,22 @@ async function showAdminCalendar(ctx) {
     const futureBookings = bookings.filter(b => b.date >= today).sort((a, b) => a.date.localeCompare(b.date));
     
     if (futureBookings.length === 0) {
-        await ctx.reply('📭 *Нет активных записей*');
+        await ctx.reply(`📭 *Нет активных записей*`);
         return;
     }
     
     let message = '📅 *ЗАПИСИ*\n\n';
     for (const b of futureBookings) {
         const d = new Date(b.date);
-        message += `📆 ${d.getDate()}.${d.getMonth() + 1} ${b.time} | ${b.user_name}\n`;
-        message += `   📞 ${b.phone}\n\n`;
+        message += `📆 ${d.getDate()}.${d.getMonth() + 1} ${b.time} | ${b.user_name}\n   📞 ${b.phone}\n\n`;
     }
     await ctx.reply(message);
 }
 
 // ========== ОСНОВНЫЕ ФУНКЦИИ БОТА ==========
 const sendMainMenu = (ctx, customMessage = null) => {
-    // Если передано своё сообщение — используем его, иначе стандартное приветствие
-    const message = customMessage || (
-        `🎓 *ОТДИС — Приёмная комиссия*\n\n` +
-        `👋 *Добро пожаловать, ${ctx.message?.sender?.name || 'Абитуриент'}!*\n\n` +
-        `👇 *Отправьте номер нужного пункта (1-5)*`
-    );
-    
-    ctx.reply(
-        message + '\n\n' +
-        '1️⃣ 📊 Средние баллы\n' +
-        '2️⃣ 📋 Список документов\n' +
-        '3️⃣ 📅 Запись на подачу документов или на консультацию\n' +
-        '4️⃣ 📍 Контакты\n' +
-        '5️⃣ ❓ Задать вопрос\n\n' +
-        '💡 *Совет:* Напишите "меню" или "0", чтобы вернуться'
-    );
+    const message = customMessage || (`🎓 *ОТДИС — Приёмная комиссия*\n\n👋 *Добро пожаловать, ${ctx.message?.sender?.name || 'Абитуриент'}!*\n\n👇 *Отправьте номер нужного пункта (1-5)*`);
+    ctx.reply(message + '\n\n1️⃣ 📊 Средние баллы\n2️⃣ 📋 Список документов\n3️⃣ 📅 Запись на подачу документов или на консультацию\n4️⃣ 📍 Контакты\n5️⃣ ❓ Задать вопрос\n\n💡 *Совет:* Напишите "меню" или "0", чтобы вернуться');
 };
 
 const shouldShowMenu = (text) => {
@@ -278,117 +237,30 @@ const shouldShowMenu = (text) => {
     return variants.includes(text.toLowerCase().trim());
 };
 
-// ========== ОБРАБОТЧИКИ ==========
-
-bot.command('admin', async (ctx) => {
-    await showAdminCalendar(ctx);
-});
-
-bot.command('start', (ctx) => {
-    const userName = ctx.message?.sender?.name || 'Абитуриент';
-    ctx.reply(
-        `🎓 *ОТДИС — Приёмная комиссия*\n\n` +
-        `👋 *Добро пожаловать, ${userName}!*\n\n` +
-        '👇 *Отправьте номер нужного пункта (1-5)*'
-    );
-    sendMainMenu(ctx);
-});
-// ===== ОБРАБОТКА ДИПЛИНКА (передача данных из мини-приложения) =====
-bot.command('startapp', async (ctx) => {
-    // Получаем полный текст команды
-    const fullText = ctx.message?.body?.text || '';
-    
-    // Извлекаем payload (часть после /startapp )
-    const payload = fullText.replace('/startapp', '').trim();
-    
-    console.log(`📥 Получен диплинк. Payload: "${payload}"`);
-    
-    if (!payload) {
-        await ctx.reply('👋 Добро пожаловать! Напишите "меню" или "0", чтобы начать.');
-        return;
-    }
-    
-    // Декодируем данные из URL-формата
-    const decodedText = decodeURIComponent(payload);
-    console.log(`📄 Расшифровано: ${decodedText}`);
-    
-    // Проверяем, что это запись
-    if (decodedText.includes('ЗАПИСЬ:')) {
-        // Парсим данные
-        const lines = decodedText.split('\n');
-        let bookingData = {};
-        
-        for (const line of lines) {
-            if (line.includes('Имя:')) bookingData.user_name = line.replace('Имя:', '').trim();
-            if (line.includes('Телефон:')) bookingData.phone = line.replace('Телефон:', '').trim();
-            if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
-            if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
-        }
-        
-        // Добавляем ID пользователя
-        bookingData.user_id = ctx.message?.sender?.user_id?.toString();
-        bookingData.purpose = 'Запись через мини-приложение';
-        
-        // Сохраняем
-        addBooking(bookingData);
-        
-        // Подтверждаем пользователю
-        await ctx.reply(
-            '✅ *Вы успешно записаны!*\n\n' +
-            `📅 *Дата:* ${bookingData.date}\n` +
-            `🕐 *Время:* ${bookingData.time}\n` +
-            `📞 *Телефон:* ${bookingData.phone || 'не указан'}\n\n` +
-            'Специалист свяжется с вами для подтверждения.\n\n' +
-            '🔹 Напишите "меню" или "0", чтобы вернуться в главное меню'
-        );
-        
-        console.log(`💾 Сохранена запись: ${bookingData.user_name} на ${bookingData.date} ${bookingData.time}`);
-    } else {
-        await ctx.reply(
-            '📝 *Данные получены*\n\n' +
-            'Но формат не распознан. Пожалуйста, попробуйте ещё раз или напишите "меню", чтобы вернуться в главное меню.'
-        );
-    }
-});
-// Добавь эту команду сразу после bot.command('start')
-bot.command('запись', async (ctx) => {
-    const text = ctx.message?.body?.text || '';
-    const userName = ctx.message?.sender?.name || 'Абитуриент';
-    const userId = ctx.message?.sender?.user_id?.toString();
-    
-    // Парсим данные из сообщения (формат: ЗАПИСЬ:\nИмя: ...\nТелефон: ...\nДата: ...\nВремя: ...)
-    if (text.startsWith('ЗАПИСЬ:')) {
-        const lines = text.split('\n');
-        let bookingData = {};
-        
-        for (const line of lines) {
-            if (line.includes('Имя:')) bookingData.user_name = line.replace('Имя:', '').trim();
-            if (line.includes('Телефон:')) bookingData.phone = line.replace('Телефон:', '').trim();
-            if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
-            if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
-        }
-        
-        bookingData.user_id = userId;
-        bookingData.purpose = 'Запись через мини-приложение';
-        
-        addBooking(bookingData);
-        
-        await ctx.reply(
-            '✅ *Вы успешно записаны!*\n\n' +
-            `📅 *Дата:* ${bookingData.date}\n` +
-            `🕐 *Время:* ${bookingData.time}\n` +
-            `📞 *Телефон:* ${bookingData.phone || 'не указан'}\n\n` +
-            'Специалист свяжется с вами для подтверждения.\n\n' +
-            '🔹 Напишите "меню" или "0", чтобы вернуться в главное меню'
-        );
-        
-        console.log(`💾 Сохранена запись: ${bookingData.user_name} на ${bookingData.date} ${bookingData.time}`);
-    }
-});
-// Основная обработка сообщений
+// ========== ФУНКЦИЯ YANDEXGPT ==========
 async function askYandexGPT(question) {
     const API_KEY = process.env.YANDEX_API_KEY;
     const FOLDER_ID = process.env.FOLDER_ID;
+    
+    const q = question.toLowerCase();
+    let localAnswer = null;
+    
+    if (q.includes('как поступить') || q.includes('поступление')) {
+        localAnswer = '🎓 *Как поступить в ОТДИС:*\n\n1. Выберите направление на сайте otdis.ru\n2. Подготовьте документы: паспорт, аттестат, 4 фото 3×4, медсправку 086, СНИЛС\n3. Подайте заявление в приёмной комиссии (каб. 101) или через Госуслуги\n4. Вступительные испытания — по среднему баллу аттестата\n\n📞 По вопросам: +7 (343) 378-17-25 (доб. 3)';
+    } 
+    else if (q.includes('документ') || q.includes('список документов')) {
+        localAnswer = '📋 *Список документов:*\n\n1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медполис\n7️⃣ СНИЛС\n8️⃣ ИНН (при наличии)\n9️⃣ Документы о льготах\n🔟 Приписное (для юношей)\n\n🗓️ Срок подачи: до 15 августа';
+    }
+    else if (q.includes('средний балл') || q.includes('проходной балл')) {
+        localAnswer = '📊 *Средние баллы аттестата 2025:*\n\n• Реклама — 4.1\n• Банковское дело — 3.9\n• Дизайн в СМИ — 4.03\n• Коммерция и технология — 4.3\n• Мастер швейных изделий — 3.9\n• Оператор швейного оборудования — 3.79';
+    }
+    else if (q.includes('контакты') || q.includes('телефон') || q.includes('адрес')) {
+        localAnswer = '📍 *Контакты приёмной комиссии:*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n🕒 Пн-Пт 09:00-16:00, Сб 10:00-14:00';
+    }
+    
+    if (localAnswer) {
+        return localAnswer;
+    }
     
     try {
         const response = await axios({
@@ -400,26 +272,57 @@ async function askYandexGPT(question) {
             },
             data: {
                 modelUri: `gpt://${FOLDER_ID}/yandexgpt-lite`,
-                completionOptions: {
-                    stream: false,
-                    temperature: 0.7,
-                    maxTokens: 1000
-                },
+                completionOptions: { stream: false, temperature: 0.7, maxTokens: 500 },
                 messages: [
-                    { role: "system", text: "Ты помощник приёмной комиссии ОТДИС. Отвечай кратко и дружелюбно." },
+                    { role: "system", text: "Ты помощник приёмной комиссии ОТДИС. Отвечай конкретно, дружелюбно. НЕ отправляй на сайт, давай ответ сам. Если не знаешь — скажи 'Уточню у приёмной комиссии'." },
                     { role: "user", text: question }
                 ]
             }
         });
-        
         return response.data.result.alternatives[0].message.text;
     } catch (e) {
         console.error('Ошибка YandexGPT:', e.message);
-        if (e.response) console.log('Статус:', e.response.status);
-        if (e.response) console.log('Данные:', JSON.stringify(e.response.data, null, 2));
-        return null;
+        return '❓ Извините, я временно не могу ответить. Напишите свой вопрос, и специалист свяжется с вами.';
     }
 }
+
+// ========== ОБРАБОТЧИКИ ==========
+bot.command('admin', async (ctx) => { await showAdminCalendar(ctx); });
+
+bot.command('start', (ctx) => {
+    const userName = ctx.message?.sender?.name || 'Абитуриент';
+    ctx.reply(`🎓 *ОТДИС — Приёмная комиссия*\n\n👋 *Добро пожаловать, ${userName}!*\n\n👇 *Отправьте номер нужного пункта (1-5)*`);
+    sendMainMenu(ctx);
+});
+
+bot.command('startapp', async (ctx) => {
+    const fullText = ctx.message?.body?.text || '';
+    const payload = fullText.replace('/startapp', '').trim();
+    console.log(`📥 Получен диплинк. Payload: "${payload}"`);
+    if (!payload) {
+        await ctx.reply(`👋 Добро пожаловать! Напишите "меню" или "0", чтобы начать.`);
+        return;
+    }
+    const decodedText = decodeURIComponent(payload);
+    console.log(`📄 Расшифровано: ${decodedText}`);
+    if (decodedText.includes('ЗАПИСЬ:')) {
+        const lines = decodedText.split('\n');
+        let bookingData = {};
+        for (const line of lines) {
+            if (line.includes('Имя:')) bookingData.user_name = line.replace('Имя:', '').trim();
+            if (line.includes('Телефон:')) bookingData.phone = line.replace('Телефон:', '').trim();
+            if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
+            if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
+        }
+        bookingData.user_id = ctx.message?.sender?.user_id?.toString();
+        bookingData.purpose = 'Запись через мини-приложение';
+        addBooking(bookingData);
+        await ctx.reply(`✅ *Вы успешно записаны!*\n\n📅 *Дата:* ${bookingData.date}\n🕐 *Время:* ${bookingData.time}\n📞 *Телефон:* ${bookingData.phone || 'не указан'}\n\nСпециалист свяжется с вами для подтверждения.\n\n🔹 Напишите "меню" или "0", чтобы вернуться в главное меню`);
+        console.log(`💾 Сохранена запись: ${bookingData.user_name} на ${bookingData.date} ${bookingData.time}`);
+    } else {
+        await ctx.reply(`📝 *Данные получены*\n\nНо формат не распознан. Пожалуйста, попробуйте ещё раз или напишите "меню", чтобы вернуться в главное меню.`);
+    }
+});
 
 bot.on('message_created', async (ctx) => {
     const text = ctx.message?.body?.text || '';
@@ -429,52 +332,30 @@ bot.on('message_created', async (ctx) => {
     const userId = ctx.message?.sender?.user_id?.toString();
     
     const state = userStates.get(userId);
-    
     if (state && state.step === 'awaiting_phone') {
         const phone = text === 'пропустить' ? null : text;
         await saveBookingFinal(ctx, userId, userName, phone);
         return;
     }
-    // ===== ОБРАБОТКА ЗАПИСИ ИЗ МИНИ-ПРИЛОЖЕНИЯ =====
-if (text.startsWith('ЗАПИСЬ:')) {
-    console.log(`📝 Получена запись из мини-приложения от ${userName}`);
     
-    // Парсим данные из сообщения
-    const lines = text.split('\n');
-    let bookingData = {};
-    
-    for (const line of lines) {
-        if (line.includes('Имя:')) bookingData.user_name = line.replace('Имя:', '').trim();
-        if (line.includes('Телефон:')) bookingData.phone = line.replace('Телефон:', '').trim();
-        if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
-        if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
+    if (text.startsWith('ЗАПИСЬ:')) {
+        console.log(`📝 Получена запись из мини-приложения от ${userName}`);
+        const lines = text.split('\n');
+        let bookingData = {};
+        for (const line of lines) {
+            if (line.includes('Имя:')) bookingData.user_name = line.replace('Имя:', '').trim();
+            if (line.includes('Телефон:')) bookingData.phone = line.replace('Телефон:', '').trim();
+            if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
+            if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
+        }
+        bookingData.user_id = userId;
+        bookingData.purpose = 'Запись через мини-приложение';
+        addBooking(bookingData);
+        await ctx.reply(`✅ *Вы успешно записаны!*\n\n📅 *Дата:* ${bookingData.date}\n🕐 *Время:* ${bookingData.time}\n📞 *Телефон:* ${bookingData.phone || 'не указан'}\n\nСпециалист свяжется с вами для подтверждения.\n\n🔹 Напишите "меню" или "0", чтобы вернуться в главное меню`);
+        console.log(`💾 Сохранена запись: ${bookingData.user_name} на ${bookingData.date} ${bookingData.time}`);
+        return;
     }
     
-    // Добавляем ID пользователя и цель записи
-    bookingData.user_id = userId;
-    bookingData.purpose = 'Запись через мини-приложение';
-    
-    // Сохраняем в базу данных (JSON файл)
-    addBooking(bookingData);
-    
-    // Подтверждаем пользователю
-    await ctx.reply(
-        '✅ *Вы успешно записаны!*\n\n' +
-        `📅 *Дата:* ${bookingData.date}\n` +
-        `🕐 *Время:* ${bookingData.time}\n` +
-        `📞 *Телефон:* ${bookingData.phone || 'не указан'}\n\n` +
-        'Специалист свяжется с вами для подтверждения.\n\n' +
-        '🔹 Напишите "меню" или "0", чтобы вернуться в главное меню'
-    );
-    
-    // Отправляем уведомление админу (если нужно)
-    console.log(`💾 Сохранена запись: ${bookingData.user_name} на ${bookingData.date} ${bookingData.time}`);
-    
-    return; // Прерываем дальнейшую обработку
-}
-
-
-
     if (shouldShowMenu(text)) {
         sendMainMenu(ctx);
         userStates.delete(userId);
@@ -484,50 +365,25 @@ if (text.startsWith('ЗАПИСЬ:')) {
     let reply = '';
     
     if (text === '1' || textLower.includes('балл')) {
-        reply = '📊 *СРЕДНИЕ БАЛЛЫ 2025*\n\n' +
-                '• Реклама — 4,1\n• Банковское дело — 3,9\n' +
-                '• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n' +
-                '• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79';
+        reply = '📊 *СРЕДНИЕ БАЛЛЫ 2025*\n\n• Реклама — 4,1\n• Банковское дело — 3,9\n• Дизайн в СМИ — 4,03\n• КМ и технология — 4,3\n• Мастер швейных изделий — 3,9\n• Оператор швейного оборудования — 3,79';
     }
     else if (text === '2' || textLower.includes('документ')) {
-        reply = '📋 *СПИСОК ДОКУМЕНТОВ*\n\n' +
-                '1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n' +
-                '4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n' +
-                '6️⃣ Медполис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n' +
-                '9️⃣ ИНН\n🔟 Документы об инвалидности\n' +
-                '1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n' +
-                '🗓️ Срок подачи: до 15 августа';
+        reply = '📋 *СПИСОК ДОКУМЕНТОВ*\n\n1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медполис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа';
     }
-  else if (text === '3' || textLower.includes('запись')) {
-    // ССЫЛКА НА ТВОЙ HTML ФАЙЛ (ЗАМЕНИ НА РЕАЛЬНУЮ)
-    const appUrl = `https://imdykman.github.io/max-booking/`;
-    
-    // Отправляем кнопку для открытия мини-приложения
-    await ctx.reply(
-        '📅 *Запись на подачу документов или на консультацию*\n\n' +
-        'Нажмите на кнопку ниже, чтобы открыть календарь и выбрать удобное время:',
-        {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "📅 Открыть календарь", web_app: { url: appUrl } }]
-                ]
-            }
-        }
-    );
-    return;
-}
+    else if (text === '3' || textLower.includes('запись')) {
+        const appUrl = `https://imdykman.github.io/max-booking/`;
+        await ctx.reply(`📅 *Запись на подачу документов или на консультацию*\n\nНажмите на кнопку ниже, чтобы открыть календарь и выбрать удобное время:`, {
+            reply_markup: { inline_keyboard: [[{ text: "📅 Открыть календарь", web_app: { url: appUrl } }]] }
+        });
+        return;
+    }
     else if (text === '4' || textLower.includes('контакт')) {
-        reply = '📍 *КОНТАКТЫ*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n' +
-                '🏢 г. Екатеринбург, пер. Красный, д. 3\n🕒 Пн-Пт 09:00-16:00, Сб 10:00-14:00';
+        reply = '📍 *КОНТАКТЫ*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n🕒 Пн-Пт 09:00-16:00, Сб 10:00-14:00';
     }
     else if (text === '5' || (text && !text.startsWith('/') && !text.startsWith('ЗАПИСЬ:'))) {
-    const aiAnswer = await askYandexGPT(text);
-    if (aiAnswer) {
-        reply = aiAnswer;
-    } else {
-        reply = '❓ Извините, я временно не могу ответить. Напишите свой вопрос, и специалист свяжется с вами.';
+        const aiAnswer = await askYandexGPT(text);
+        reply = aiAnswer || '❓ Извините, я временно не могу ответить. Напишите свой вопрос, и специалист свяжется с вами.';
     }
-}
     else if (text && !text.startsWith('/')) {
         console.log(`📝 Вопрос от ${userName}: ${text}`);
         reply = `❓ *Спасибо, ${userName}!* Ваш вопрос принят.`;
@@ -545,34 +401,29 @@ bot.on('callback_query', async (ctx) => {
         await ctx.answerCallbackQuery({ text: 'На эту дату все слоты заняты', show_alert: true });
         return;
     }
-    
     if (data === 'cancel_booking') {
         userStates.delete(userId);
         sendMainMenu(ctx);
         await ctx.answerCallbackQuery();
         return;
     }
-    
     if (data === 'back_to_dates') {
         await showAvailableDates(ctx, userId);
         await ctx.answerCallbackQuery();
         return;
     }
-    
     if (data.startsWith('nav_')) {
         const offset = parseInt(data.replace('nav_', ''));
         await showAvailableDates(ctx, userId, offset);
         await ctx.answerCallbackQuery();
         return;
     }
-    
     if (data.startsWith('date_')) {
         const dateISO = data.replace('date_', '');
         await showTimeSlots(ctx, userId, dateISO);
         await ctx.answerCallbackQuery();
         return;
     }
-    
     if (data.startsWith('time_')) {
         const parts = data.replace('time_', '').split('_');
         const time = parts[0].replace(/(\d{2})(\d{2})/, '$1:$2');
@@ -581,7 +432,6 @@ bot.on('callback_query', async (ctx) => {
         await ctx.answerCallbackQuery();
         return;
     }
-    
     await ctx.answerCallbackQuery();
 });
 
