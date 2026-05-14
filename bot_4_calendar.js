@@ -1,9 +1,17 @@
-const { Bot } = require('@maxhub/max-bot-api');
+// ========== ПОДКЛЮЧЕНИЕ БИБЛИОТЕК ==========
 const fs = require('fs');
+const path = require('path');
+const { Bot } = require('@maxhub/max-bot-api');
+const axios = require('axios');
+require('dotenv').config();
 
-// ТВОЙ ТОКЕН
-const BOT_TOKEN = "f9LHodD0cOK7C73bhw4-GujuXyDXhZNYIRG0Se9Qe6dMyzHbx9kF8rC9QHKp2CSrSyGXy-rX1LyhYSoVkPzg";
+// ========== КЛЮЧ YANDEXGPT ==========
+// ВРЕМЕННО: ключ прямо в коде для теста
+const YANDEX_API_KEY = process.env.YANDEX_API_KEY;
+console.log('🔑 Ключ загружен?', YANDEX_API_KEY ? 'ДА' : 'НЕТ');
 
+// ========== ТОКЕН БОТА ==========
+const BOT_TOKEN = process.env.BOT_TOKEN;
 const bot = new Bot(BOT_TOKEN);
 
 // ========== ХРАНЕНИЕ ЗАПИСЕЙ ==========
@@ -378,6 +386,41 @@ bot.command('запись', async (ctx) => {
     }
 });
 // Основная обработка сообщений
+async function askYandexGPT(question) {
+    const API_KEY = process.env.YANDEX_API_KEY;
+    const FOLDER_ID = process.env.FOLDER_ID;
+    
+    try {
+        const response = await axios({
+            method: 'post',
+            url: 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion',
+            headers: {
+                'Authorization': `Api-Key ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                modelUri: `gpt://${FOLDER_ID}/yandexgpt-lite`,
+                completionOptions: {
+                    stream: false,
+                    temperature: 0.7,
+                    maxTokens: 1000
+                },
+                messages: [
+                    { role: "system", text: "Ты помощник приёмной комиссии ОТДИС. Отвечай кратко и дружелюбно." },
+                    { role: "user", text: question }
+                ]
+            }
+        });
+        
+        return response.data.result.alternatives[0].message.text;
+    } catch (e) {
+        console.error('Ошибка YandexGPT:', e.message);
+        if (e.response) console.log('Статус:', e.response.status);
+        if (e.response) console.log('Данные:', JSON.stringify(e.response.data, null, 2));
+        return null;
+    }
+}
+
 bot.on('message_created', async (ctx) => {
     const text = ctx.message?.body?.text || '';
     console.log(`🔍 ВСЕ СООБЩЕНИЯ: "${text}"`);
@@ -477,9 +520,14 @@ if (text.startsWith('ЗАПИСЬ:')) {
         reply = '📍 *КОНТАКТЫ*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n' +
                 '🏢 г. Екатеринбург, пер. Красный, д. 3\n🕒 Пн-Пт 09:00-16:00, Сб 10:00-14:00';
     }
-    else if (text === '5' || textLower.includes('вопрос')) {
-        reply = '❓ Напишите ваш вопрос. Специалист ответит.';
+    else if (text === '5' || (text && !text.startsWith('/') && !text.startsWith('ЗАПИСЬ:'))) {
+    const aiAnswer = await askYandexGPT(text);
+    if (aiAnswer) {
+        reply = aiAnswer;
+    } else {
+        reply = '❓ Извините, я временно не могу ответить. Напишите свой вопрос, и специалист свяжется с вами.';
     }
+}
     else if (text && !text.startsWith('/')) {
         console.log(`📝 Вопрос от ${userName}: ${text}`);
         reply = `❓ *Спасибо, ${userName}!* Ваш вопрос принят.`;
