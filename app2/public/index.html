@@ -390,7 +390,7 @@
         <button class="btn" onclick="createEmployerRequest()">✅ Опубликовать заявку</button>
     </div>
 
-    <!-- СТРАНИЦА СОТРУДНИКА КОЛЛЕДЖА -->
+       <!-- СТРАНИЦА СОТРУДНИКА КОЛЛЕДЖА -->
     <div id="collegePage" class="page">
         <div class="page-header">
             <button class="back-btn" onclick="goToMain()">←</button>
@@ -398,6 +398,7 @@
         </div>
         <div style="margin-bottom: 16px;">
             <button class="btn" onclick="showAllRequests()" style="background: #17a2b8;">📋 Все заявки</button>
+            <button class="btn" onclick="showPendingRequests()" style="background: #ffc107; color: #333;">⏳ На модерации</button>
         </div>
         <div id="collegeStats" style="background: #e3f2fd; border-radius: 12px; padding: 12px; margin-bottom: 16px; text-align: center;"></div>
         <div id="collegeRequestsList"></div>
@@ -422,6 +423,7 @@
     let currentView = 'requests';
     let studentRequests = [];
     let employerRequests = [];
+    let currentCollegeFilter = 'all'; // 'all' или 'pending'
     
     const directions = [
         { id: 'light', name: '🧵 Легкая промышленность', icon: '🧵' },
@@ -480,6 +482,7 @@
         } else if (role === 'college') {
             document.getElementById('collegePage').classList.add('active');
             document.getElementById('bottomNav').classList.add('hidden');
+            currentCollegeFilter = 'all';
             loadCollegeData();
         }
     }
@@ -524,12 +527,13 @@
         navTo('requests');
     }
     
+    // ========== ДЛЯ СТУДЕНТОВ (видят только одобренные заявки) ==========
     function loadStudentRequests() {
-        let filteredRequests = employerRequests;
-        if (currentDirection === 'light') filteredRequests = employerRequests.filter(r => r.direction === 'light');
-        else if (currentDirection === 'bank') filteredRequests = employerRequests.filter(r => r.direction === 'bank');
-        else if (currentDirection === 'advert') filteredRequests = employerRequests.filter(r => r.direction === 'advert');
-        else if (currentDirection === 'food') filteredRequests = employerRequests.filter(r => r.direction === 'food');
+        let filteredRequests = employerRequests.filter(r => r.status === 'approved');
+        if (currentDirection === 'light') filteredRequests = filteredRequests.filter(r => r.direction === 'light');
+        else if (currentDirection === 'bank') filteredRequests = filteredRequests.filter(r => r.direction === 'bank');
+        else if (currentDirection === 'advert') filteredRequests = filteredRequests.filter(r => r.direction === 'advert');
+        else if (currentDirection === 'food') filteredRequests = filteredRequests.filter(r => r.direction === 'food');
         
         const container = document.getElementById('studentRequestsList');
         if (filteredRequests.length === 0) {
@@ -559,6 +563,31 @@
         if (employer) {
             alert(`📨 Отклик отправлен!\n\nВы заинтересованы в практике в компании "${employer.companyName}".\n\nСвяжитесь по телефону: ${employer.phone} или email: ${employer.email}\n\nУкажите, что вы откликаетесь на их заявку.`);
         }
+    }
+    
+    // ========== ДЛЯ РАБОТОДАТЕЛЕЙ (видят только свои одобренные заявки) ==========
+    function loadEmployerRequests() {
+        let filteredRequests = employerRequests.filter(r => r.direction === currentDirection && r.status === 'approved');
+        const container = document.getElementById('employerRequestsList');
+        if (filteredRequests.length === 0) {
+            container.innerHTML = '<div class="empty-message">📭 У вас пока нет созданных заявок в этом направлении</div>';
+            return;
+        }
+        container.innerHTML = filteredRequests.map(req => `
+            <div class="request-card">
+                <div class="request-title">${escapeHtml(req.companyName)}</div>
+                <div class="request-info">
+                    <span>🎓 ${escapeHtml(req.profession)}</span>
+                    <span>👥 ${req.positions} мест</span>
+                    <span>📅 ${escapeHtml(req.dates)}</span>
+                </div>
+                <div class="request-info">📍 ${escapeHtml(req.address)}</div>
+                <div class="request-contact">
+                    📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}
+                </div>
+                <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>
+            </div>
+        `).join('');
     }
     
     function showStudentRequestForm() {
@@ -599,37 +628,13 @@
             phone: phone,
             info: info,
             createdAt: new Date().toISOString(),
-            status: 'active'
+            status: 'pending'
         };
         studentRequests.push(newRequest);
         saveData();
-        alert('✅ Заявка создана! Специалист колледжа рассмотрит её.');
+        alert('✅ Заявка создана и отправлена на модерацию! После одобрения она появится у работодателей.');
         hideStudentRequestForm();
         if (currentUser === 'student') loadStudentRequests();
-    }
-    
-    function loadEmployerRequests() {
-        let filteredRequests = employerRequests.filter(r => r.direction === currentDirection);
-        const container = document.getElementById('employerRequestsList');
-        if (filteredRequests.length === 0) {
-            container.innerHTML = '<div class="empty-message">📭 У вас пока нет созданных заявок в этом направлении</div>';
-            return;
-        }
-        container.innerHTML = filteredRequests.map(req => `
-            <div class="request-card">
-                <div class="request-title">${escapeHtml(req.companyName)}</div>
-                <div class="request-info">
-                    <span>🎓 ${escapeHtml(req.profession)}</span>
-                    <span>👥 ${req.positions} мест</span>
-                    <span>📅 ${escapeHtml(req.dates)}</span>
-                </div>
-                <div class="request-info">📍 ${escapeHtml(req.address)}</div>
-                <div class="request-contact">
-                    📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}
-                </div>
-                <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>
-            </div>
-        `).join('');
     }
     
     function showEmployerRequestForm() {
@@ -675,11 +680,11 @@
             email: email,
             info: info,
             createdAt: new Date().toISOString(),
-            status: 'active'
+            status: 'pending'
         };
         employerRequests.push(newRequest);
         saveData();
-        alert('✅ Заявка опубликована! Студенты увидят ваше предложение.');
+        alert('✅ Заявка опубликована и отправлена на модерацию! После одобрения она появится у студентов.');
         hideEmployerRequestForm();
         loadEmployerRequests();
     }
@@ -694,49 +699,163 @@
         }
     }
     
+    // ========== ДЛЯ СОТРУДНИКА КОЛЛЕДЖА (модерация) ==========
     function loadCollegeData() {
-        const statsHtml = `<strong>📊 Статистика</strong><br>🎓 Заявок от студентов: ${studentRequests.length}<br>🏢 Заявок от работодателей: ${employerRequests.length}`;
+        const pendingStudents = studentRequests.filter(r => r.status === 'pending').length;
+        const pendingEmployers = employerRequests.filter(r => r.status === 'pending').length;
+        const statsHtml = `<strong>📊 Статистика</strong><br>
+            🎓 Заявок от студентов: ${studentRequests.length} (на модерации: ${pendingStudents})<br>
+            🏢 Заявок от работодателей: ${employerRequests.length} (на модерации: ${pendingEmployers})`;
         document.getElementById('collegeStats').innerHTML = statsHtml;
-        showAllRequests();
+        
+        if (currentCollegeFilter === 'all') {
+            showAllRequests();
+        } else {
+            showPendingRequests();
+        }
     }
     
     function showAllRequests() {
+        currentCollegeFilter = 'all';
         const container = document.getElementById('collegeRequestsList');
+        
         let html = '<div style="margin-bottom: 12px;"><strong>📋 Заявки от студентов:</strong></div>';
         if (studentRequests.length === 0) {
             html += '<div class="empty-message">Нет заявок от студентов</div>';
         } else {
             studentRequests.forEach(req => {
                 const dirName = getDirectionName(req.direction);
+                const statusText = req.status === 'pending' ? '⏳ На модерации' : (req.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено');
                 html += `
-                    <div class="request-card" style="border-left-color: #28a745;">
+                    <div class="request-card" style="border-left-color: ${req.status === 'approved' ? '#28a745' : (req.status === 'rejected' ? '#dc3545' : '#ffc107')}">
                         <div class="request-title">🎓 ${escapeHtml(req.name)}</div>
-                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>📅 ${escapeHtml(req.dates)}</span></div>
+                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>📅 ${escapeHtml(req.dates)}</span><span>${statusText}</span></div>
                         <div class="request-info">📍 ${escapeHtml(req.location)}</div>
                         <div class="request-contact">📞 ${escapeHtml(req.phone)}<br>💬 ${escapeHtml(req.info) || '—'}</div>
-                        <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteStudentRequest(${req.id})">🗑️ Удалить</button>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            ${req.status !== 'approved' ? `<button class="btn btn-green" style="margin-top: 0; font-size: 13px;" onclick="approveStudentRequest(${req.id})">✅ Одобрить</button>` : ''}
+                            ${req.status !== 'rejected' ? `<button class="btn btn-red" style="margin-top: 0; font-size: 13px;" onclick="rejectStudentRequest(${req.id})">❌ Отклонить</button>` : ''}
+                            <button class="btn btn-red" style="margin-top: 0; font-size: 13px;" onclick="deleteStudentRequest(${req.id})">🗑️ Удалить</button>
+                        </div>
                     </div>
                 `;
             });
         }
+        
         html += '<div style="margin: 16px 0 12px;"><strong>🏢 Заявки от работодателей:</strong></div>';
         if (employerRequests.length === 0) {
             html += '<div class="empty-message">Нет заявок от работодателей</div>';
         } else {
             employerRequests.forEach(req => {
                 const dirName = getDirectionName(req.direction);
+                const statusText = req.status === 'pending' ? '⏳ На модерации' : (req.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено');
                 html += `
-                    <div class="request-card">
+                    <div class="request-card" style="border-left-color: ${req.status === 'approved' ? '#28a745' : (req.status === 'rejected' ? '#dc3545' : '#ffc107')}">
                         <div class="request-title">🏢 ${escapeHtml(req.companyName)}</div>
-                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>👥 ${req.positions} мест</span><span>📅 ${escapeHtml(req.dates)}</span></div>
+                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>👥 ${req.positions} мест</span><span>📅 ${escapeHtml(req.dates)}</span><span>${statusText}</span></div>
                         <div class="request-info">📍 ${escapeHtml(req.address)}</div>
                         <div class="request-contact">📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}<br>💬 ${escapeHtml(req.info) || '—'}</div>
-                        <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            ${req.status !== 'approved' ? `<button class="btn btn-green" style="margin-top: 0; font-size: 13px;" onclick="approveEmployerRequest(${req.id})">✅ Одобрить</button>` : ''}
+                            ${req.status !== 'rejected' ? `<button class="btn btn-red" style="margin-top: 0; font-size: 13px;" onclick="rejectEmployerRequest(${req.id})">❌ Отклонить</button>` : ''}
+                            <button class="btn btn-red" style="margin-top: 0; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>
+                        </div>
                     </div>
                 `;
             });
         }
         container.innerHTML = html;
+    }
+    
+    function showPendingRequests() {
+        currentCollegeFilter = 'pending';
+        const container = document.getElementById('collegeRequestsList');
+        const pendingStudents = studentRequests.filter(r => r.status === 'pending');
+        const pendingEmployers = employerRequests.filter(r => r.status === 'pending');
+        
+        let html = '<div style="margin-bottom: 12px;"><strong>⏳ Заявки на модерации (студенты):</strong></div>';
+        if (pendingStudents.length === 0) {
+            html += '<div class="empty-message">Нет заявок на модерации</div>';
+        } else {
+            pendingStudents.forEach(req => {
+                const dirName = getDirectionName(req.direction);
+                html += `
+                    <div class="request-card" style="border-left-color: #ffc107">
+                        <div class="request-title">🎓 ${escapeHtml(req.name)}</div>
+                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>📅 ${escapeHtml(req.dates)}</span></div>
+                        <div class="request-info">📍 ${escapeHtml(req.location)}</div>
+                        <div class="request-contact">📞 ${escapeHtml(req.phone)}<br>💬 ${escapeHtml(req.info) || '—'}</div>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <button class="btn btn-green" style="margin-top: 0; font-size: 13px;" onclick="approveStudentRequest(${req.id})">✅ Одобрить</button>
+                            <button class="btn btn-red" style="margin-top: 0; font-size: 13px;" onclick="rejectStudentRequest(${req.id})">❌ Отклонить</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        html += '<div style="margin: 16px 0 12px;"><strong>⏳ Заявки на модерации (работодатели):</strong></div>';
+        if (pendingEmployers.length === 0) {
+            html += '<div class="empty-message">Нет заявок на модерации</div>';
+        } else {
+            pendingEmployers.forEach(req => {
+                const dirName = getDirectionName(req.direction);
+                html += `
+                    <div class="request-card" style="border-left-color: #ffc107">
+                        <div class="request-title">🏢 ${escapeHtml(req.companyName)}</div>
+                        <div class="request-info"><span>📌 ${dirName}</span><span>🎓 ${escapeHtml(req.profession)}</span><span>👥 ${req.positions} мест</span><span>📅 ${escapeHtml(req.dates)}</span></div>
+                        <div class="request-info">📍 ${escapeHtml(req.address)}</div>
+                        <div class="request-contact">📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}<br>💬 ${escapeHtml(req.info) || '—'}</div>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <button class="btn btn-green" style="margin-top: 0; font-size: 13px;" onclick="approveEmployerRequest(${req.id})">✅ Одобрить</button>
+                            <button class="btn btn-red" style="margin-top: 0; font-size: 13px;" onclick="rejectEmployerRequest(${req.id})">❌ Отклонить</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        container.innerHTML = html;
+    }
+    
+    // Функции модерации
+    function approveStudentRequest(id) {
+        const request = studentRequests.find(r => r.id === id);
+        if (request) {
+            request.status = 'approved';
+            saveData();
+            alert('✅ Заявка одобрена! Она станет видна работодателям.');
+            loadCollegeData();
+        }
+    }
+    
+    function rejectStudentRequest(id) {
+        const request = studentRequests.find(r => r.id === id);
+        if (request) {
+            request.status = 'rejected';
+            saveData();
+            alert('❌ Заявка отклонена. Студент увидит уведомление при входе.');
+            loadCollegeData();
+        }
+    }
+    
+    function approveEmployerRequest(id) {
+        const request = employerRequests.find(r => r.id === id);
+        if (request) {
+            request.status = 'approved';
+            saveData();
+            alert('✅ Заявка одобрена! Она станет видна студентам.');
+            loadCollegeData();
+        }
+    }
+    
+    function rejectEmployerRequest(id) {
+        const request = employerRequests.find(r => r.id === id);
+        if (request) {
+            request.status = 'rejected';
+            saveData();
+            alert('❌ Заявка отклонена. Работодатель увидит уведомление при входе.');
+            loadCollegeData();
+        }
     }
     
     function getDirectionName(directionId) {
@@ -747,6 +866,14 @@
     function deleteStudentRequest(id) {
         if (confirm('Удалить заявку студента?')) {
             studentRequests = studentRequests.filter(r => r.id !== id);
+            saveData();
+            loadCollegeData();
+        }
+    }
+    
+    function deleteEmployerRequest(id) {
+        if (confirm('Удалить заявку работодателя?')) {
+            employerRequests = employerRequests.filter(r => r.id !== id);
             saveData();
             loadCollegeData();
         }
@@ -775,25 +902,51 @@
             container.innerHTML = '<div class="empty-message">📭 У вас пока нет созданных заявок в этом направлении</div>';
             return;
         }
-        container.innerHTML = myRequests.map(req => `
+        container.innerHTML = myRequests.map(req => {
+            const statusText = req.status === 'pending' ? '⏳ На модерации' : (req.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено');
+            return `
             <div class="request-card">
                 <div class="request-title">🎓 Моя заявка</div>
                 <div class="request-info">
                     <span>${escapeHtml(req.profession)}</span>
                     <span>📅 ${escapeHtml(req.dates)}</span>
+                    <span>${statusText}</span>
                 </div>
                 <div class="request-info">📍 ${escapeHtml(req.location)}</div>
                 <div class="request-contact">
                     📞 ${escapeHtml(req.phone)}<br>
                     💬 ${escapeHtml(req.info) || '—'}
                 </div>
-                <button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteStudentRequest(${req.id})">🗑️ Удалить</button>
+                ${req.status === 'pending' ? `<button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteStudentRequest(${req.id})">🗑️ Удалить</button>` : ''}
             </div>
-        `).join('');
+        `}).join('');
     }
     
     function showEmployerMyRequests() {
-        loadEmployerRequests();
+        const container = document.getElementById('employerRequestsList');
+        const myRequests = employerRequests.filter(r => r.direction === currentDirection);
+        if (myRequests.length === 0) {
+            container.innerHTML = '<div class="empty-message">📭 У вас пока нет созданных заявок в этом направлении</div>';
+            return;
+        }
+        container.innerHTML = myRequests.map(req => {
+            const statusText = req.status === 'pending' ? '⏳ На модерации' : (req.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено');
+            return `
+            <div class="request-card">
+                <div class="request-title">🏢 ${escapeHtml(req.companyName)}</div>
+                <div class="request-info">
+                    <span>🎓 ${escapeHtml(req.profession)}</span>
+                    <span>👥 ${req.positions} мест</span>
+                    <span>📅 ${escapeHtml(req.dates)}</span>
+                    <span>${statusText}</span>
+                </div>
+                <div class="request-info">📍 ${escapeHtml(req.address)}</div>
+                <div class="request-contact">
+                    📞 ${escapeHtml(req.phone)} | ✉️ ${escapeHtml(req.email)}
+                </div>
+                ${req.status === 'pending' ? `<button class="btn btn-red" style="margin-top: 10px; font-size: 13px;" onclick="deleteEmployerRequest(${req.id})">🗑️ Удалить</button>` : ''}
+            </div>
+        `}).join('');
     }
     
     function escapeHtml(str) {
