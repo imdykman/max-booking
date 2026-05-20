@@ -268,6 +268,16 @@
 </head>
 <body>
 <div class="container">
+    <!-- ШАПКА С КНОПКОЙ СТАРТ -->
+    <div class="header" onclick="goToMain()">
+        <h1>📋 Практика СПО</h1>
+        <p>Платформа для поиска и предложения практики</p>
+    </div>
+
+    <!-- ГЛАВНАЯ С ВЫБОРОМ РОЛИ -->
+    <div id="rolePage" class="page active">
+        <div class="roles-grid">
+<div class="container">
     <!-- ШАПКА -->
     <div class="header">
         <h1>📋 Практика СПО</h1>
@@ -897,6 +907,16 @@
     
     // Инициализация
     loadData();
+
+    // Сброс к главной странице (для кнопки "Старт")
+function goToMain() {
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById('rolePage').classList.add('active');
+    document.getElementById('bottomNav').classList.add('hidden');
+    currentUser = null;
+    currentDirection = null;
+}
+
 </script>
 </body>
 </html>
