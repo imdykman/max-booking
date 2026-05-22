@@ -277,6 +277,118 @@
                 font-size: 16px;
             }
         }
+                /* Адаптация для маленьких экранов */
+        @media (max-width: 480px) {
+            /* Главные кнопки ролей */
+            .role-card {
+                padding: 16px 8px;
+            }
+            .role-title {
+                font-size: 13px;
+            }
+            .role-icon {
+                font-size: 32px;
+            }
+            
+            /* Кнопки направлений (они такие же .role-card) */
+            .roles-grid {
+                gap: 8px;
+            }
+            
+            /* Общие кнопки */
+            .btn {
+                font-size: 13px;
+                padding: 10px;
+                white-space: normal;
+                word-break: break-word;
+            }
+            
+            /* Карточки заявок */
+            .request-card {
+                padding: 10px;
+            }
+            .request-title {
+                font-size: 14px;
+            }
+            .request-info {
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            .request-info span {
+                font-size: 10px;
+                padding: 2px 6px;
+                white-space: normal;
+                word-break: break-word;
+            }
+            .request-contact {
+                font-size: 11px;
+            }
+            
+            /* Кнопки внутри карточек */
+            .request-card .btn {
+                font-size: 11px;
+                padding: 6px 10px;
+                margin-top: 8px;
+            }
+            
+            /* Блок с кнопками модерации */
+            .request-card div[style*="display: flex"] {
+                flex-wrap: wrap;
+            }
+            .request-card .btn-green, 
+            .request-card .btn-red {
+                flex: 1;
+                min-width: 80px;
+            }
+            
+            /* Шапка */
+            .header {
+                padding: 14px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .header p {
+                font-size: 11px;
+            }
+            
+            /* Страницы */
+            .page {
+                padding: 12px;
+            }
+            .page-header {
+                gap: 8px;
+            }
+            .back-btn {
+                font-size: 20px;
+            }
+            .page-title {
+                font-size: 15px;
+            }
+            
+            /* Формы */
+            .form-group {
+                margin-bottom: 12px;
+            }
+            label {
+                font-size: 12px;
+            }
+            input, textarea, select {
+                font-size: 13px;
+                padding: 8px;
+            }
+            
+            /* Навигация */
+            .bottom-nav {
+                padding: 8px 12px;
+            }
+            .nav-icon {
+                font-size: 20px;
+            }
+            .nav-label {
+                font-size: 10px;
+            }
+        }
     </style>
 </head>
 <body>
