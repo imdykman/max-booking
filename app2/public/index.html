@@ -530,16 +530,27 @@
                 font-size: 28px !important;
             }
         }    
-        /* Отступы для страниц с кнопкой создания заявки */
+         /* Отступы для страниц с кнопкой создания заявки */
         #studentPage,
         #employerPage {
-            padding-bottom: 80px;
+            min-height: 100vh;
+            padding-bottom: 120px;
+            display: flex;
+            flex-direction: column;
+        }
+ 
+        /* Чтобы кнопка была внизу страницы */
+        #studentPage .btn-green,
+        #employerPage .btn-green {
+            margin-top: auto;
+            margin-bottom: 20px;
         }
         
         /* Дополнительный отступ для мобильных */
         @media (max-width: 480px) {
             #studentPage,
             #employerPage {
+                min-height: 100vh;
                 padding-bottom: 100px;
             }
         }
