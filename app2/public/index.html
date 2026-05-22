@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Практика СПО — Платформа практики</title>
     <style>
-        * {
+                * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -245,27 +245,31 @@
         .hidden {
             display: none;
         }
-         /* Адаптация для маленьких экранов */
+        
+        /* Адаптация для мобильных устройств */
         @media (max-width: 480px) {
             .role-card {
                 padding: 16px 8px;
+                min-height: 110px;
             }
             .role-title {
-                font-size: 14px;
+                font-size: 13px;
             }
             .role-icon {
-                font-size: 36px;
+                font-size: 32px;
             }
             .btn {
-                font-size: 14px;
+                font-size: 13px;
                 padding: 10px;
             }
-            .request-info {
-                gap: 6px;
+            .request-card {
+                padding: 10px;
+            }
+            .request-title {
+                font-size: 14px;
             }
             .request-info span {
-                font-size: 11px;
-                padding: 2px 6px;
+                font-size: 10px;
             }
             .page-header {
                 gap: 8px;
@@ -277,281 +281,17 @@
                 font-size: 16px;
             }
         }
-                      /* Адаптация для маленьких экранов */
-        @media (max-width: 480px) {
-            /* Главные кнопки ролей - одинаковые */
-            .role-card {
-                padding: 16px 8px;
-                min-height: 110px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-            .role-title {
-                font-size: 13px;
-            }
-            .role-icon {
-                font-size: 32px;
-            }
-            
-            /* Кнопки направлений */
-            .roles-grid {
-                gap: 8px;
-            }
-            
-            /* Все кнопки .btn одинаковые */
-            .btn {
-                font-size: 13px;
-                padding: 10px;
-                white-space: normal;
-                word-break: break-word;
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            /* Карточки заявок - одинаковые отступы и размер текста */
-            .request-card {
-                padding: 12px;
-                margin-bottom: 10px;
-            }
-            .request-title {
-                font-size: 14px;
-            }
-            .request-info {
-                gap: 6px;
-                flex-wrap: wrap;
-            }
-            .request-info span {
-                font-size: 11px;
-                padding: 3px 8px;
-            }
-            .request-contact {
-                font-size: 11px;
-            }
-            
-            /* Группы кнопок в карточках (Одобрить/Отклонить/Удалить) - одинаковые */
-            .request-card div[style*="display: flex"] {
-                display: flex !important;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .request-card .btn-green, 
-            .request-card .btn-red,
-            .request-card .btn {
-                flex: 1;
-                min-width: 80px;
-                margin-top: 0;
-                font-size: 11px;
-                padding: 8px 6px;
-            }
-            
-            /* Шапка */
-            .header {
-                padding: 14px;
-            }
-            .header h1 {
-                font-size: 20px;
-            }
-            .header p {
-                font-size: 11px;
-            }
-            
-            /* Страницы */
-            .page {
-                padding: 12px;
-            }
-            .page-header {
-                gap: 8px;
-            }
-            .back-btn {
-                font-size: 20px;
-            }
-            .page-title {
-                font-size: 15px;
-            }
-            
-            /* Формы */
-            .form-group {
-                margin-bottom: 12px;
-            }
-            label {
-                font-size: 12px;
-            }
-            input, textarea, select {
-                font-size: 13px;
-                padding: 8px;
-            }
-            
-            /* Навигация */
-            .bottom-nav {
-                padding: 8px 12px;
-            }
-            .nav-icon {
-                font-size: 20px;
-            }
-            .nav-label {
-                font-size: 10px;
-            }
-        }
         
-        /* Дополнительно: для всех экранов сделаем кнопки в карточках одинаковыми */
-        .request-card .btn-green, 
-        .request-card .btn-red,
-        .request-card .btn {
-            flex: 1;
-            text-align: center;
-        }
-        
-        .request-card div[style*="display: flex"] {
-            display: flex !important;
-            gap: 8px;
-        }
-            
-            /* Страницы */
-            .page {
-                padding: 12px;
-            }
-            .page-header {
-                gap: 8px;
-            }
-            .back-btn {
-                font-size: 20px;
-            }
-            .page-title {
-                font-size: 15px;
-            }
-            
-            /* Формы */
-            .form-group {
-                margin-bottom: 12px;
-            }
-            label {
-                font-size: 12px;
-            }
-            input, textarea, select {
-                font-size: 13px;
-                padding: 8px;
-            }
-            
-            /* Навигация */
-            .bottom-nav {
-                padding: 8px 12px;
-            }
-            .nav-icon {
-                font-size: 20px;
-            }
-            .nav-label {
-                font-size: 10px;
-            }
-            /* Принудительное выравнивание ВСЕХ кнопок на всех страницах */
-        .btn, 
-        button:not(.back-btn),
-        .request-card .btn,
-        .request-card .btn-green,
-        .request-card .btn-red,
-        .collegePage .btn,
-        #collegePage .btn,
-        .page .btn {
-            min-width: 100px !important;
-            width: auto !important;
-            flex: 1 1 auto !important;
-            text-align: center !important;
-            white-space: normal !important;
-            word-break: break-word !important;
-        }
-        
-        /* Группы кнопок в карточках — равномерное распределение */
-        .request-card div[style*="display: flex"] {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            gap: 8px !important;
-            justify-content: center !important;
-        }
-        
-        .request-card .btn-green, 
-        .request-card .btn-red {
-            flex: 1 1 0px !important;
-            min-width: 70px !important;
-            margin: 0 !important;
-        }
-        
-        /* Все карточки заявок — одинаковые */
-        .request-card {
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* Сетка ролей и направлений — одинаковые ячейки */
-        .roles-grid {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
-            gap: 12px !important;
-        }
-        
-        .role-card {
-            width: 100% !important;
-            box-sizing: border-box !important;
-            min-height: 110px !important;
-        }
-        
-        /* Адаптация для маленьких экранов */
-        @media (max-width: 480px) {
-            .btn, 
-            button:not(.back-btn),
-            .page .btn {
-                font-size: 12px !important;
-                padding: 8px 6px !important;
-                min-width: 70px !important;
-            }
-            
-            .request-card .btn-green, 
-            .request-card .btn-red {
-                font-size: 11px !important;
-                padding: 6px 4px !important;
-                min-width: 60px !important;
-            }
-            
-            .roles-grid {
-                gap: 8px !important;
-            }
-            
-            .role-card {
-                min-height: 100px !important;
-                padding: 12px 6px !important;
-            }
-            
-            .role-title {
-                font-size: 12px !important;
-            }
-            
-            .role-icon {
-                font-size: 28px !important;
-            }
-        }    
-         /* Отступы для страниц с кнопкой создания заявки */
+        /* Отступ снизу для страниц с кнопкой создания заявки */
         #studentPage,
         #employerPage {
-            min-height: 100vh;
-            padding-bottom: 120px;
-            display: flex;
-            flex-direction: column;
-        }
- 
-        /* Чтобы кнопка была внизу страницы */
-        #studentPage .btn-green,
-        #employerPage .btn-green {
-            margin-top: auto;
-            margin-bottom: 20px;
+            padding-bottom: 100px;
         }
         
-        /* Дополнительный отступ для мобильных */
         @media (max-width: 480px) {
             #studentPage,
             #employerPage {
-                min-height: 100vh;
-                padding-bottom: 100px;
+                padding-bottom: 80px;
             }
         }
     </style>
