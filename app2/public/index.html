@@ -277,11 +277,15 @@
                 font-size: 16px;
             }
         }
-                /* Адаптация для маленьких экранов */
+                      /* Адаптация для маленьких экранов */
         @media (max-width: 480px) {
-            /* Главные кнопки ролей */
+            /* Главные кнопки ролей - одинаковые */
             .role-card {
                 padding: 16px 8px;
+                min-height: 110px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
             .role-title {
                 font-size: 13px;
@@ -290,22 +294,27 @@
                 font-size: 32px;
             }
             
-            /* Кнопки направлений (они такие же .role-card) */
+            /* Кнопки направлений */
             .roles-grid {
                 gap: 8px;
             }
             
-            /* Общие кнопки */
+            /* Все кнопки .btn одинаковые */
             .btn {
                 font-size: 13px;
                 padding: 10px;
                 white-space: normal;
                 word-break: break-word;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             
-            /* Карточки заявок */
+            /* Карточки заявок - одинаковые отступы и размер текста */
             .request-card {
-                padding: 10px;
+                padding: 12px;
+                margin-bottom: 10px;
             }
             .request-title {
                 font-size: 14px;
@@ -315,30 +324,27 @@
                 flex-wrap: wrap;
             }
             .request-info span {
-                font-size: 10px;
-                padding: 2px 6px;
-                white-space: normal;
-                word-break: break-word;
+                font-size: 11px;
+                padding: 3px 8px;
             }
             .request-contact {
                 font-size: 11px;
             }
             
-            /* Кнопки внутри карточек */
-            .request-card .btn {
-                font-size: 11px;
-                padding: 6px 10px;
-                margin-top: 8px;
-            }
-            
-            /* Блок с кнопками модерации */
+            /* Группы кнопок в карточках (Одобрить/Отклонить/Удалить) - одинаковые */
             .request-card div[style*="display: flex"] {
+                display: flex !important;
                 flex-wrap: wrap;
+                gap: 8px;
             }
             .request-card .btn-green, 
-            .request-card .btn-red {
+            .request-card .btn-red,
+            .request-card .btn {
                 flex: 1;
                 min-width: 80px;
+                margin-top: 0;
+                font-size: 11px;
+                padding: 8px 6px;
             }
             
             /* Шапка */
@@ -351,6 +357,57 @@
             .header p {
                 font-size: 11px;
             }
+            
+            /* Страницы */
+            .page {
+                padding: 12px;
+            }
+            .page-header {
+                gap: 8px;
+            }
+            .back-btn {
+                font-size: 20px;
+            }
+            .page-title {
+                font-size: 15px;
+            }
+            
+            /* Формы */
+            .form-group {
+                margin-bottom: 12px;
+            }
+            label {
+                font-size: 12px;
+            }
+            input, textarea, select {
+                font-size: 13px;
+                padding: 8px;
+            }
+            
+            /* Навигация */
+            .bottom-nav {
+                padding: 8px 12px;
+            }
+            .nav-icon {
+                font-size: 20px;
+            }
+            .nav-label {
+                font-size: 10px;
+            }
+        }
+        
+        /* Дополнительно: для всех экранов сделаем кнопки в карточках одинаковыми */
+        .request-card .btn-green, 
+        .request-card .btn-red,
+        .request-card .btn {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .request-card div[style*="display: flex"] {
+            display: flex !important;
+            gap: 8px;
+        }
             
             /* Страницы */
             .page {
