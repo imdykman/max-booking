@@ -445,7 +445,92 @@
             .nav-label {
                 font-size: 10px;
             }
+            /* Принудительное выравнивание ВСЕХ кнопок на всех страницах */
+        .btn, 
+        button:not(.back-btn),
+        .request-card .btn,
+        .request-card .btn-green,
+        .request-card .btn-red,
+        .collegePage .btn,
+        #collegePage .btn,
+        .page .btn {
+            min-width: 100px !important;
+            width: auto !important;
+            flex: 1 1 auto !important;
+            text-align: center !important;
+            white-space: normal !important;
+            word-break: break-word !important;
         }
+        
+        /* Группы кнопок в карточках — равномерное распределение */
+        .request-card div[style*="display: flex"] {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            justify-content: center !important;
+        }
+        
+        .request-card .btn-green, 
+        .request-card .btn-red {
+            flex: 1 1 0px !important;
+            min-width: 70px !important;
+            margin: 0 !important;
+        }
+        
+        /* Все карточки заявок — одинаковые */
+        .request-card {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Сетка ролей и направлений — одинаковые ячейки */
+        .roles-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 12px !important;
+        }
+        
+        .role-card {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            min-height: 110px !important;
+        }
+        
+        /* Адаптация для маленьких экранов */
+        @media (max-width: 480px) {
+            .btn, 
+            button:not(.back-btn),
+            .page .btn {
+                font-size: 12px !important;
+                padding: 8px 6px !important;
+                min-width: 70px !important;
+            }
+            
+            .request-card .btn-green, 
+            .request-card .btn-red {
+                font-size: 11px !important;
+                padding: 6px 4px !important;
+                min-width: 60px !important;
+            }
+            
+            .roles-grid {
+                gap: 8px !important;
+            }
+            
+            .role-card {
+                min-height: 100px !important;
+                padding: 12px 6px !important;
+            }
+            
+            .role-title {
+                font-size: 12px !important;
+            }
+            
+            .role-icon {
+                font-size: 28px !important;
+            }
+        }    
+
     </style>
 </head>
 <body>
