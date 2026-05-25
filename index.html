@@ -89,8 +89,8 @@
 }
         .menu-btn:active { transform: scale(0.97); background-color: #a8c4d4; }
         .menu-icon {
-    width: 28px;   /* ← увеличены иконки */
-    height: 28px;
+    width: 32px;   /* ← увеличены иконки */
+    height: 32px;
     object-fit: contain;
     display: block;
     margin: 0 auto;
@@ -193,16 +193,27 @@
         }
 
         .title-icon {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     vertical-align: middle;
     margin-right: 8px;
 }
 .contact-icon {
-    width: 16px;
-    height: 16px;
+    width: 22px;   /* ← было 16px */
+    height: 22px;
     vertical-align: middle;
-    margin-right: 6px;
+    margin-right: 8px;
+}
+.info-title::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url('images/icons/contacts.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    margin-right: 8px;
 }
     </style>
 </head>
