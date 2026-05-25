@@ -199,8 +199,8 @@
     margin-right: 8px;
 }
 .contact-icon {
-    width: 22px;   /* ← было 16px */
-    height: 22px;
+    width: 26px;   /* ← было 16px */
+    height: 26px;
     vertical-align: middle;
     margin-right: 8px;
 }
@@ -501,7 +501,7 @@
     function showInfoPage(type) {
         const data = contentData[type];
         if (!data) return;
-        document.getElementById('infoTitle').innerText = data.title;
+        document.getElementById('infoTitle').innerHTML = data.title;
         document.getElementById('infoContent').innerHTML = data.text;
         goToMainMenu();
         document.getElementById('infoPage').classList.remove('hidden');
