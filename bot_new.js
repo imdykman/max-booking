@@ -17,6 +17,38 @@ const bot = new Bot(BOT_TOKEN);
 // ========== ХРАНЕНИЕ ЗАПИСЕЙ ==========
 const BOOKINGS_FILE = './bookings.json';
 
+// ========== ПАРСИНГ ДАТ С САЙТА ОТДИС ==========
+let cachedExamDates = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 3600000; // 1 час в миллисекундах
+
+async function fetchExamDates() {
+    if (cachedExamDates && cacheTimestamp && (Date.now() - cacheTimestamp) < CACHE_DURATION) {
+        return cachedExamDates;
+    }
+    
+    try {
+        // Жёстко заданные даты на 2026 год (на основе сайта)
+        const examDates = ['04.08.2026', '05.08.2026', '06.08.2026', '07.08.2026', '10.08.2026', '11.08.2026'];
+        const consultText = '03.08.2026 в 16.00 состоится общая консультация к вступительным испытаниям.';
+        
+        const result = {
+            examDates: examDates,
+            consultText: consultText,
+            fullText: `Вступительные испытания пройдут с ${examDates[0]} по ${examDates[examDates.length-1]} 2026 года. ${consultText} Актуальное расписание можно уточнить на сайте otdis.ru`
+        };
+        
+        cachedExamDates = result;
+        cacheTimestamp = Date.now();
+        console.log(`📅 Даты ВИ (ручные): ${examDates.join(', ')} | Консультация: ${consultText}`);
+        return result;
+    } catch (e) {
+        console.error('❌ Ошибка:', e.message);
+        return cachedExamDates || { examDates: [], consultText: '', fullText: 'уточняйте на сайте otdis.ru' };
+    }
+}   
+
+
 function loadBookings() {
     try {
         if (fs.existsSync(BOOKINGS_FILE)) {
@@ -250,6 +282,10 @@ async function sendWelcome(ctx) {
 // ========== ФУНКЦИЯ YANDEXGPT ==========
 async function askYandexGPT(question) {
     const maxRetries = 3;
+
+    // Получаем актуальные даты
+    const examInfo = await fetchExamDates();
+    const examDatesText = examInfo.fullText;
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
@@ -307,7 +343,7 @@ async function askYandexGPT(question) {
 Рисунок карандашом: Конструирование, Реклама
 Живопись красками: Дизайн (легкая промышленность), Декоративно-прикладное искусство
 Оценивание: "зачёт / незачёт"
-Срок: 6 — 12 августа
+📅 Срок проведения: ${examDatesText} (актуальные даты на сайте otdis.ru)
 
 🏢 ОБЩЕЖИТИЕ:
 • Общежитие есть
@@ -361,21 +397,29 @@ bot.on('message_callback', async (ctx) => {
     const data = ctx.callback.payload;
     console.log(`🔘 НАЖАТА КНОПКА: ${data}`);
     
-    const answers = {
-        'directions': '🎓 *Направления подготовки:*\n\n• Конструирование, моделирование и технология швейных изделий\n• Дизайн (легкая промышленность)\n• Декоративно-прикладное искусство\n• Мастер по изготовлению швейных изделий\n• Художник по костюму\n• Реклама\n• Банковское дело\n• Дизайн (СМИ и полиграфия)',
-        'documents': '📋 *Список документов:*\n\n1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медполис\n7️⃣ СНИЛС\n8️⃣ ИНН\n9️⃣ Документы о льготах\n🔟 Приписное',
-        'address': '📍 *Адрес:* г. Екатеринбург, пер. Красный, д. 3\n\n🚇 *Метро:* "Динамо", выход к Красному переулку',
-        'hours': '🕒 *Часы работы:*\n\nПн-Пт 09:00-16:00\nСб 10:00-14:00\nВс — выходной',
-        'exams': '🎨 *Вступительные испытания:*\n\n• Рисунок карандашом (Конструирование, Реклама)\n• Живопись красками (Дизайн, ДПИ)\n\n⭐ Оценивание: "зачёт / незачёт"\n📅 Срок: 6 — 12 августа'
-    };
-    
     const footer = '\n\n---\n💡 *Больше информации в приложении* (кнопка "Старт") *или по текстовому запросу*';
     
-    if (answers[data]) {
-        await ctx.reply(answers[data] + footer);
+    if (data === 'exams') {
+    const examInfo = await fetchExamDates();
+    const answer = `🎨 *Вступительные испытания:*\n\n• Рисунок карандашом (Конструирование, Реклама)\n• Живопись красками (Дизайн, ДПИ)\n\n⭐ Оценивание: "зачёт / незачёт"\n📅 ${examInfo.fullText}`;
+    await ctx.reply(answer + footer);
     } else {
-        await ctx.reply('❓ Вопрос не распознан. Пожалуйста, выберите из меню или напишите текстом.' + footer);
+        const answers = {
+            'directions': '🎓 *Направления подготовки:*\n\n• Конструирование, моделирование и технология швейных изделий\n• Дизайн (легкая промышленность)\n• Декоративно-прикладное искусство\n• Мастер по изготовлению швейных изделий\n• Художник по костюму\n• Реклама\n• Банковское дело\n• Дизайн (СМИ и полиграфия)',
+            'documents': '📋 *Список документов:*\n\n1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медполис\n7️⃣ СНИЛС\n8️⃣ ИНН\n9️⃣ Документы о льготах\n🔟 Приписное',
+            'address': '📍 *Адрес:* г. Екатеринбург, пер. Красный, д. 3\n\n🚇 *Метро:* "Динамо", выход к Красному переулку',
+            'hours': '🕒 *Часы работы:*\n\nПн-Пт 09:00-16:00\nСб 10:00-14:00\nВс — выходной'
+        };
+        
+        if (answers[data]) {
+            await ctx.reply(answers[data] + footer);
+        } else {
+            await ctx.reply('❓ Вопрос не распознан. Пожалуйста, выберите из меню или напишите текстом.' + footer);
+        }
     }
+    
+    // ЗАДЕРЖКА 3 СЕКУНДЫ ПЕРЕД ВОЗВРАТОМ КЛАВИАТУРЫ
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
     // Возвращаем клавиатуру
     await ctx.reply('👇 *Выберите следующий вопрос:*', { attachments: [getMainKeyboard()] });
@@ -432,7 +476,7 @@ bot.on('callback_query', async (ctx) => {
         await askForPhone(ctx, userId, dateISO, time);
         return;
     }
-});
+  });
 
 // Запуск
 bot.start();
