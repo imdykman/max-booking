@@ -126,7 +126,6 @@ function addBooking(booking) {
     saveBookings(bookings);
 }
 
-
 // ========== ФУНКЦИИ ДЛЯ КАЛЕНДАРЯ ==========
 function generateTimeSlots(date) {
     const dayOfWeek = new Date(date).getDay();
@@ -261,13 +260,12 @@ async function saveBookingFinal(ctx, userId, userName, phone) {
         time: state.selectedTime,
         purpose: 'Запись'
     });
-    // Отправляем email
-await sendEmailNotification({
-    user_name: userName,
-    phone: phone || 'не указан',
-    date: state.selectedDate,
-    time: state.selectedTime
-});
+    await sendEmailNotification({
+        user_name: userName,
+        phone: phone || 'не указан',
+        date: state.selectedDate,
+        time: state.selectedTime
+    });
     const dateObj = new Date(state.selectedDate);
     const dateReadable = `${getDayName(dateObj)} ${dateObj.getDate()}.${dateObj.getMonth() + 1}`;
     await ctx.reply(`✅ *Вы успешно записаны!*\n\n📅 *Дата:* ${dateReadable}\n🕐 *Время:* ${state.selectedTime}\n📞 *Телефон:* ${phone || 'не указан'}\n\nСпециалист свяжется с вами для подтверждения.`);
@@ -318,7 +316,7 @@ function getDirectionsCategories() {
         [Keyboard.button.callback('Бюджетные места', 'cat_budget')],
         [Keyboard.button.callback('Платное обучение', 'cat_paid')],
         [Keyboard.button.callback('Для лиц с ОВЗ', 'cat_ovz')],
-        [Keyboard.button.callback('← Назад', 'back_to_main')]
+        [Keyboard.button.callback('🏠 Главное меню', 'back_to_main')]
     ]);
 }
 
@@ -330,7 +328,7 @@ function getBudgetSpecialties() {
         [Keyboard.button.callback('Оператор швейного оборудования', 'spec_operator')],
         [Keyboard.button.callback('Художник по костюму', 'spec_artist')],
         [Keyboard.button.callback('Декоративно-прикладное искусство', 'spec_dpi')],
-        [Keyboard.button.callback('← Назад', 'back_to_directions')]
+        [Keyboard.button.callback('🏠 Главное меню', 'back_to_main')]
     ]);
 }
 
@@ -339,14 +337,14 @@ function getPaidSpecialties() {
         [Keyboard.button.callback('Реклама', 'spec_advert')],
         [Keyboard.button.callback('Банковское дело', 'spec_bank')],
         [Keyboard.button.callback('Дизайн (СМИ и полиграфия)', 'spec_design_media')],
-        [Keyboard.button.callback('← Назад', 'back_to_directions')]
+        [Keyboard.button.callback('🏠 Главное меню', 'back_to_main')]
     ]);
 }
 
 function getOzvSpecialties() {
     return Keyboard.inlineKeyboard([
         [Keyboard.button.callback('Оператор швейного оборудования (швея)', 'spec_seamstress')],
-        [Keyboard.button.callback('← Назад', 'back_to_directions')]
+        [Keyboard.button.callback('🏠 Главное меню', 'back_to_main')]
     ]);
 }
 
@@ -355,7 +353,7 @@ function getExamsSubmenu() {
         [Keyboard.button.callback('Рисунок карандашом', 'exam_drawing')],
         [Keyboard.button.callback('Живопись красками', 'exam_painting')],
         [Keyboard.button.callback('Даты проведения', 'exam_dates')],
-        [Keyboard.button.callback('← Назад', 'back_to_main')]
+        [Keyboard.button.callback('🏠 Главное меню', 'back_to_main')]
     ]);
 }
 
@@ -428,82 +426,102 @@ bot.on('bot_started', async (ctx) => { await sendWelcome(ctx); });
 bot.command('start', async (ctx) => { await sendWelcome(ctx); });
 bot.command('admin', async (ctx) => { await showAdminCalendar(ctx); });
 
+// Кнопка "Главное меню" (одна кнопка, а не всё меню)
+function getBackToMainButton() {
+    return Keyboard.inlineKeyboard([
+        [Keyboard.button.callback('🏠 Главное меню', 'back_to_main')]
+    ]);
+}
+
 bot.on('message_callback', async (ctx) => {
     const data = ctx.callback.payload;
     console.log(`🔘 НАЖАТА КНОПКА: ${data}`);
     
-    // Игнорируем старые/неизвестные кнопки без ответа
-const knownButtons = [
-    'back_to_main', 'back_to_directions', 'main_directions', 'cat_budget', 'cat_paid', 'cat_ovz',
-    'main_exams', 'exam_drawing', 'exam_painting', 'exam_dates',
-    'spec_construction', 'spec_design_light', 'spec_master', 'spec_operator', 'spec_artist', 'spec_dpi',
-    'spec_advert', 'spec_bank', 'spec_design_media', 'spec_seamstress',
-    'main_scores', 'main_documents', 'main_prof', 'main_contacts', 'main_prepcourses', 'main_faq'
-];
-
-if (!knownButtons.includes(data)) {
-    console.log(`⚠️ Игнорируем неизвестную кнопку: ${data}`);
-    return; // просто выходим, без ответа
-}
-
+    const knownButtons = [
+        'back_to_main', 'main_directions', 'cat_budget', 'cat_paid', 'cat_ovz',
+        'main_exams', 'exam_drawing', 'exam_painting', 'exam_dates',
+        'spec_construction', 'spec_design_light', 'spec_master', 'spec_operator', 'spec_artist', 'spec_dpi',
+        'spec_advert', 'spec_bank', 'spec_design_media', 'spec_seamstress',
+        'main_scores', 'main_documents', 'main_prof', 'main_contacts', 'main_prepcourses', 'main_faq'
+    ];
+    
+    if (!knownButtons.includes(data)) {
+        console.log(`⚠️ Игнорируем неизвестную кнопку: ${data}`);
+        return;
+    }
+    
     // Навигация
     if (data === 'back_to_main') { await ctx.reply('Главное меню:', { attachments: [getMainMenu()] }); return; }
-    if (data === 'back_to_directions') { await ctx.reply('Выберите категорию:', { attachments: [getDirectionsCategories()] }); return; }
     if (data === 'main_directions') { await ctx.reply('Выберите категорию:', { attachments: [getDirectionsCategories()] }); return; }
     if (data === 'cat_budget') { await ctx.reply('Бюджетные специальности:', { attachments: [getBudgetSpecialties()] }); return; }
     if (data === 'cat_paid') { await ctx.reply('Платные специальности:', { attachments: [getPaidSpecialties()] }); return; }
     if (data === 'cat_ovz') { await ctx.reply('Специальности для лиц с ОВЗ:', { attachments: [getOzvSpecialties()] }); return; }
     if (data === 'main_exams') { await ctx.reply('Выберите раздел:', { attachments: [getExamsSubmenu()] }); return; }
-    if (data === 'exam_drawing') { await ctx.reply('✏️ *Рисунок карандашом*\n\nДля специальностей: Конструирование, Реклама\n\nПостановка из нескольких геометрических фигур.\n\n⭐ Оценивание: "зачёт / незачёт"' + footer); return; }
-    if (data === 'exam_painting') { await ctx.reply('🎨 *Живопись красками*\n\nДля специальностей: Дизайн (легкая промышленность), Декоративно-прикладное искусство\n\nПостановка из нескольких бытовых предметов.\n\n⭐ Оценивание: "зачёт / незачёт"' + footer); return; }
-    if (data === 'exam_dates') { const examInfo = await fetchExamDates(); await ctx.reply(`📅 *Даты вступительных испытаний*\n\n${examInfo.fullText}${footer}`); return; }
     
     // Специальности
     const specs = ['spec_construction', 'spec_design_light', 'spec_master', 'spec_operator', 'spec_artist', 'spec_dpi', 'spec_advert', 'spec_bank', 'spec_design_media', 'spec_seamstress'];
     if (specs.includes(data)) {
         const info = getSpecialtyInfo(data.replace('spec_', ''));
         await ctx.reply(info + footer);
-        if (data === 'spec_advert' || data === 'spec_bank' || data === 'spec_design_media') {
-            await ctx.reply('Выберите другую специальность:', { attachments: [getPaidSpecialties()] });
-        } else if (data === 'spec_seamstress') {
-            await ctx.reply('Выберите другую специальность:', { attachments: [getOzvSpecialties()] });
-        } else {
-            await ctx.reply('Выберите другую специальность:', { attachments: [getBudgetSpecialties()] });
-        }
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
         return;
     }
     
-    // Простые ответы
-    if (data === 'main_scores') { await ctx.reply('📊 *Средние баллы аттестата 2025:*\n\n• Реклама — 4.1\n• Банковское дело — 3.9\n• Дизайн в СМИ — 4.03\n• КМ и технология — 4.3\n• Мастер швейных изделий — 3.9\n• Оператор швейного оборудования — 3.79' + footer); return; }
+    // Вступительные испытания
+    if (data === 'exam_drawing') { 
+        await ctx.reply('✏️ *Рисунок карандашом*\n\nДля специальностей: Конструирование, Реклама\n\nПостановка из нескольких геометрических фигур.\n\n⭐ Оценивание: "зачёт / незачёт"' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    if (data === 'exam_painting') { 
+        await ctx.reply('🎨 *Живопись красками*\n\nДля специальностей: Дизайн (легкая промышленность), Декоративно-прикладное искусство\n\nПостановка из нескольких бытовых предметов.\n\n⭐ Оценивание: "зачёт / незачёт"' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    if (data === 'exam_dates') { 
+        const examInfo = await fetchExamDates(); 
+        await ctx.reply(`📅 *Даты вступительных испытаний*\n\n${examInfo.fullText}${footer}`); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    
+    // Простые ответы (все с одной кнопкой)
+    if (data === 'main_scores') { 
+        await ctx.reply('📊 *Средние баллы аттестата 2025:*\n\n• Реклама — 4.1\n• Банковское дело — 3.9\n• Дизайн в СМИ — 4.03\n• КМ и технология — 4.3\n• Мастер швейных изделий — 3.9\n• Оператор швейного оборудования — 3.79' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
     if (data === 'main_documents') { 
-    await ctx.reply('📋 *Список документов:*\n\n' +
-        '1️⃣ Паспорт\n' +
-        '2️⃣ Аттестат\n' +
-        '3️⃣ Фото 3×4 (4 шт)\n' +
-        '4️⃣ Медсправка 086\n' +
-        '5️⃣ Прививочный сертификат\n' +
-        '6️⃣ Медицинский полис\n' +
-        '7️⃣ СНИЛС\n' +
-        '8️⃣ Документы о льготах\n' +
-        '9️⃣ ИНН\n' +
-        '🔟 Документы об инвалидности\n' +
-        '1️⃣1️⃣ Заключение ПМПК\n' +
-        '1️⃣2️⃣ Приписное\n\n' +
-        '🗓️ Срок подачи: до 15 августа' + footer);
-    return; 
-}
-    if (data === 'main_prof') { await ctx.reply('⚡ *Профессионалитет*\n\n«Профессионалитет» — федеральный проект с сокращёнными сроками обучения.\n\n📌 Программы:\n• Мастер по изготовлению швейных изделий\n• Оператор швейного оборудования\n• Конструирование, моделирование швейных изделий\n• Дизайнер в легкой промышленности' + footer); return; }
-    if (data === 'main_contacts') { await ctx.reply('📍 *Контакты*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\n🚇 Метро: "Динамо", выход к Красному переулку' + footer); return; }
-    if (data === 'main_prepcourses') { await ctx.reply('📚 *Подготовительные курсы*\n\n🎨 Подготовка к рисунку и живописи\n• Продолжительность: 48 часов\n• Место: Стахановская, д. 43\n• Координатор: Лапина Анна Валерьевна\n• Телефон: (343) 378-17-25 (доб.15)\n\n🔗 Запись: https://forms.yandex.ru/u/644a463b02848f025d94c774/' + footer); return; }
-    if (data === 'main_faq') { await ctx.reply('💬 *Часто задаваемые вопросы*\n\n❓ *Какие документы нужны для поступления?*\nПаспорт, аттестат, фото 3×4, медсправка 086, прививочный сертификат, полис, СНИЛС, ИНН, документы о льготах, приписное.\n\n❓ *Можно ли перевестись с платного на бюджет?*\nДа, если учитесь на "отлично" и есть свободные бюджетные места.\n\n❓ *Как подать заявление дистанционно?*\nЧерез личный кабинет абитуриента или портал Госуслуг.\n\n❓ *Есть ли общежитие?*\nДа, ул. Репина, 19' + footer); return; }
-        
+        await ctx.reply('📋 *Список документов:*\n\n1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медицинский полис\n7️⃣ СНИЛС\n8️⃣ Документы о льготах\n9️⃣ ИНН\n🔟 Документы об инвалидности\n1️⃣1️⃣ Заключение ПМПК\n1️⃣2️⃣ Приписное\n\n🗓️ Срок подачи: до 15 августа' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    if (data === 'main_prof') { 
+        await ctx.reply('⚡ *Профессионалитет*\n\n«Профессионалитет» — федеральный проект с сокращёнными сроками обучения.\n\n📌 Программы:\n• Мастер по изготовлению швейных изделий\n• Оператор швейного оборудования\n• Конструирование, моделирование швейных изделий\n• Дизайнер в легкой промышленности' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    if (data === 'main_contacts') { 
+        await ctx.reply('📍 *Контакты*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\n🚇 Метро: "Динамо", выход к Красному переулку' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    if (data === 'main_prepcourses') { 
+        await ctx.reply('📚 *Подготовительные курсы*\n\n🎨 Подготовка к рисунку и живописи\n• Продолжительность: 48 часов\n• Место: Стахановская, д. 43\n• Координатор: Лапина Анна Валерьевна\n• Телефон: (343) 378-17-25 (доб.15)\n\n🔗 Запись: https://forms.yandex.ru/u/644a463b02848f025d94c774/' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
+    if (data === 'main_faq') { 
+        await ctx.reply('💬 *Часто задаваемые вопросы*\n\n❓ *Какие документы нужны для поступления?*\nПаспорт, аттестат, фото 3×4, медсправка 086, прививочный сертификат, полис, СНИЛС, ИНН, документы о льготах, приписное.\n\n❓ *Можно ли перевестись с платного на бюджет?*\nДа, если учитесь на "отлично" и есть свободные бюджетные места.\n\n❓ *Как подать заявление дистанционно?*\nЧерез личный кабинет абитуриента или портал Госуслуг.\n\n❓ *Есть ли общежитие?*\nДа, ул. Репина, 19' + footer); 
+        await ctx.reply('👇', { attachments: [getBackToMainButton()] });
+        return; 
+    }
 });
 
 bot.on('message_created', async (ctx) => {
     const text = ctx.message?.body?.text || '';
     if (text.startsWith('/')) return;
     
-    // ===== ОБРАБОТКА ЗАПИСИ ИЗ МИНИ-ПРИЛОЖЕНИЯ =====
     if (text.startsWith('ЗАПИСЬ:')) {
         const lines = text.split('\n');
         let bookingData = {};
@@ -513,10 +531,7 @@ bot.on('message_created', async (ctx) => {
             if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
             if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
         }
-        
         console.log(`📝 Запись из мини-приложения: ${bookingData.user_name}`);
-        
-        // Сохраняем в bookings.json
         const bookings = loadBookings();
         bookings.push({
             id: Date.now(),
@@ -528,15 +543,12 @@ bot.on('message_created', async (ctx) => {
             created_at: new Date().toISOString()
         });
         saveBookings(bookings);
-        
-        // Отправляем email
         await sendEmailNotification({
             user_name: bookingData.user_name,
             phone: bookingData.phone,
             date: bookingData.date,
             time: bookingData.time
         });
-        
         await ctx.reply(`✅ *Вы успешно записаны, ${bookingData.user_name}!*\n\n📅 *Дата:* ${bookingData.date}\n🕐 *Время:* ${bookingData.time}\n📞 *Телефон:* ${bookingData.phone}\n\nСпециалист свяжется с вами для подтверждения.`);
         return;
     }
