@@ -3,7 +3,40 @@ const fs = require('fs');
 const path = require('path');
 const { Bot, Keyboard } = require('@maxhub/max-bot-api');
 const axios = require('axios');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
+
+// ========== НАСТРОЙКА ПОЧТЫ ==========
+const transporter = nodemailer.createTransport({
+    host: 'smtp.yandex.ru',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+async function sendEmailNotification(bookingData) {
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_TO,
+            subject: '📅 Новая запись в боте ОТДИС',
+            text: `Новая запись:\n\nИмя: ${bookingData.user_name}\nТелефон: ${bookingData.phone}\nДата: ${bookingData.date}\nВремя: ${bookingData.time}`,
+            html: `<h3>🔔 Новая запись</h3>
+                   <p><strong>👤 Имя:</strong> ${bookingData.user_name}</p>
+                   <p><strong>📞 Телефон:</strong> ${bookingData.phone}</p>
+                   <p><strong>📅 Дата:</strong> ${bookingData.date}</p>
+                   <p><strong>🕐 Время:</strong> ${bookingData.time}</p>
+                   <hr>
+                   <p style="color: #666;">Отправлено ботом ОТДИС</p>`
+        });
+        console.log('✅ Email уведомление отправлено');
+    } catch (e) {
+        console.error('❌ Ошибка отправки email:', e.message);
+    }
+}
 
 // ========== КЛЮЧ YANDEXGPT ==========
 const YANDEX_API_KEY = process.env.YANDEX_API_KEY;
@@ -92,6 +125,7 @@ function addBooking(booking) {
     bookings.push({ ...booking, id: Date.now(), created_at: new Date().toISOString() });
     saveBookings(bookings);
 }
+
 
 // ========== ФУНКЦИИ ДЛЯ КАЛЕНДАРЯ ==========
 function generateTimeSlots(date) {
@@ -227,6 +261,13 @@ async function saveBookingFinal(ctx, userId, userName, phone) {
         time: state.selectedTime,
         purpose: 'Запись'
     });
+    // Отправляем email
+await sendEmailNotification({
+    user_name: userName,
+    phone: phone || 'не указан',
+    date: state.selectedDate,
+    time: state.selectedTime
+});
     const dateObj = new Date(state.selectedDate);
     const dateReadable = `${getDayName(dateObj)} ${dateObj.getDate()}.${dateObj.getMonth() + 1}`;
     await ctx.reply(`✅ *Вы успешно записаны!*\n\n📅 *Дата:* ${dateReadable}\n🕐 *Время:* ${state.selectedTime}\n📞 *Телефон:* ${phone || 'не указан'}\n\nСпециалист свяжется с вами для подтверждения.`);
@@ -434,7 +475,23 @@ if (!knownButtons.includes(data)) {
     
     // Простые ответы
     if (data === 'main_scores') { await ctx.reply('📊 *Средние баллы аттестата 2025:*\n\n• Реклама — 4.1\n• Банковское дело — 3.9\n• Дизайн в СМИ — 4.03\n• КМ и технология — 4.3\n• Мастер швейных изделий — 3.9\n• Оператор швейного оборудования — 3.79' + footer); return; }
-    if (data === 'main_documents') { await ctx.reply('📋 *Список документов:*\n\n1️⃣ Паспорт\n2️⃣ Аттестат\n3️⃣ Фото 3×4 (4 шт)\n4️⃣ Медсправка 086\n5️⃣ Прививочный сертификат\n6️⃣ Медполис\n7️⃣ СНИЛС\n8️⃣ ИНН\n9️⃣ Документы о льготах\n🔟 Приписное' + footer); return; }
+    if (data === 'main_documents') { 
+    await ctx.reply('📋 *Список документов:*\n\n' +
+        '1️⃣ Паспорт\n' +
+        '2️⃣ Аттестат\n' +
+        '3️⃣ Фото 3×4 (4 шт)\n' +
+        '4️⃣ Медсправка 086\n' +
+        '5️⃣ Прививочный сертификат\n' +
+        '6️⃣ Медицинский полис\n' +
+        '7️⃣ СНИЛС\n' +
+        '8️⃣ Документы о льготах\n' +
+        '9️⃣ ИНН\n' +
+        '🔟 Документы об инвалидности\n' +
+        '1️⃣1️⃣ Заключение ПМПК\n' +
+        '1️⃣2️⃣ Приписное\n\n' +
+        '🗓️ Срок подачи: до 15 августа' + footer);
+    return; 
+}
     if (data === 'main_prof') { await ctx.reply('⚡ *Профессионалитет*\n\n«Профессионалитет» — федеральный проект с сокращёнными сроками обучения.\n\n📌 Программы:\n• Мастер по изготовлению швейных изделий\n• Оператор швейного оборудования\n• Конструирование, моделирование швейных изделий\n• Дизайнер в легкой промышленности' + footer); return; }
     if (data === 'main_contacts') { await ctx.reply('📍 *Контакты*\n\n📞 +7 (343) 378-17-25 (доб. 3)\n✉️ postupi@otdis.ru\n🌐 otdis.ru\n🏢 г. Екатеринбург, пер. Красный, д. 3\n\n🚇 Метро: "Динамо", выход к Красному переулку' + footer); return; }
     if (data === 'main_prepcourses') { await ctx.reply('📚 *Подготовительные курсы*\n\n🎨 Подготовка к рисунку и живописи\n• Продолжительность: 48 часов\n• Место: Стахановская, д. 43\n• Координатор: Лапина Анна Валерьевна\n• Телефон: (343) 378-17-25 (доб.15)\n\n🔗 Запись: https://forms.yandex.ru/u/644a463b02848f025d94c774/' + footer); return; }
@@ -445,6 +502,45 @@ if (!knownButtons.includes(data)) {
 bot.on('message_created', async (ctx) => {
     const text = ctx.message?.body?.text || '';
     if (text.startsWith('/')) return;
+    
+    // ===== ОБРАБОТКА ЗАПИСИ ИЗ МИНИ-ПРИЛОЖЕНИЯ =====
+    if (text.startsWith('ЗАПИСЬ:')) {
+        const lines = text.split('\n');
+        let bookingData = {};
+        for (const line of lines) {
+            if (line.includes('Имя:')) bookingData.user_name = line.replace('Имя:', '').trim();
+            if (line.includes('Телефон:')) bookingData.phone = line.replace('Телефон:', '').trim();
+            if (line.includes('Дата:')) bookingData.date = line.replace('Дата:', '').trim();
+            if (line.includes('Время:')) bookingData.time = line.replace('Время:', '').trim();
+        }
+        
+        console.log(`📝 Запись из мини-приложения: ${bookingData.user_name}`);
+        
+        // Сохраняем в bookings.json
+        const bookings = loadBookings();
+        bookings.push({
+            id: Date.now(),
+            user_name: bookingData.user_name,
+            phone: bookingData.phone,
+            date: bookingData.date,
+            time: bookingData.time,
+            purpose: 'Запись через мини-приложение',
+            created_at: new Date().toISOString()
+        });
+        saveBookings(bookings);
+        
+        // Отправляем email
+        await sendEmailNotification({
+            user_name: bookingData.user_name,
+            phone: bookingData.phone,
+            date: bookingData.date,
+            time: bookingData.time
+        });
+        
+        await ctx.reply(`✅ *Вы успешно записаны, ${bookingData.user_name}!*\n\n📅 *Дата:* ${bookingData.date}\n🕐 *Время:* ${bookingData.time}\n📞 *Телефон:* ${bookingData.phone}\n\nСпециалист свяжется с вами для подтверждения.`);
+        return;
+    }
+  
     console.log(`💬 Получен текст: "${text}"`);
     const aiAnswer = await askYandexGPT(text);
     await ctx.reply(aiAnswer + footer);
