@@ -52,25 +52,46 @@ function buildMainMenu() {
 
 function buildSubMenu(section) {
     const items = menuData.filter(row => row['Раздел'] === section);
-    const subsections = [...new Set(items.map(row => row['Подраздел']))];
-
-    const buttons = [];
-    // Если есть подразделы — показываем их
-    if (subsections.length > 0 && subsections[0] !== undefined && subsections[0] !== '-') {
+    
+    // Шаг 1: Проверяем, есть ли прямая запись (без подраздела и пункта)
+    const directItem = items.find(row => 
+        (row['Подраздел'] === '-' || row['Подраздел'] === undefined || row['Подраздел'] === '') &&
+        (row['Пункт'] === '-' || row['Пункт'] === undefined || row['Пункт'] === '')
+    );
+    
+    if (directItem && directItem['Значение'] && directItem['Значение'].trim() !== '') {
+        // Если есть прямая запись — сразу возвращаем значение
+        return { type: 'direct', value: directItem['Значение'] };
+    }
+    
+    // Шаг 2: Проверяем, есть ли подразделы
+    const subsections = [...new Set(items.map(row => row['Подраздел']).filter(s => s && s !== '-' && s !== undefined && s !== ''))];
+    
+    if (subsections.length > 0) {
+        // Есть подразделы — строим меню подразделов
+        const buttons = [];
         for (const sub of subsections) {
             buttons.push([Keyboard.button.callback(sub, `sub_${section}_${sub}`)]);
         }
-    } else {
-        // Если нет подразделов — показываем пункты
-        for (const row of items) {
-            if (row['Пункт']) {
-                buttons.push([Keyboard.button.callback(row['Пункт'], `item_${section}_${row['Пункт']}`)]);
-            }
-        }
+        buttons.push([Keyboard.button.callback('🏠 Главное меню', 'main_menu')]);
+        return { type: 'menu', keyboard: Keyboard.inlineKeyboard(buttons) };
     }
-    // Добавляем кнопки навигации
-    buttons.push([Keyboard.button.callback('🏠 Главное меню', 'main_menu')]);
-    return Keyboard.inlineKeyboard(buttons);
+    
+    // Шаг 3: Нет подразделов — проверяем пункты
+    const itemsWithPunkt = items.filter(row => row['Пункт'] && row['Пункт'] !== '-' && row['Пункт'] !== undefined && row['Пункт'] !== '');
+    
+    if (itemsWithPunkt.length > 0) {
+        // Есть пункты — строим меню пунктов
+        const buttons = [];
+        for (const row of itemsWithPunkt) {
+            buttons.push([Keyboard.button.callback(row['Пункт'], `item_${section}_${row['Пункт']}`)]);
+        }
+        buttons.push([Keyboard.button.callback('🏠 Главное меню', 'main_menu')]);
+        return { type: 'menu', keyboard: Keyboard.inlineKeyboard(buttons) };
+    }
+    
+    // Шаг 4: Если ничего нет — возвращаем сообщение
+    return { type: 'direct', value: 'Информация отсутствует.' };
 }
 
 function buildItemMenu(section, subsection) {
@@ -121,13 +142,19 @@ bot.on('message_callback', async (ctx) => {
         return;
     }
 
-    // Обработка навигации назад
-    if (data.startsWith('back_')) {
-        const section = data.replace('back_', '');
-        const menu = buildSubMenu(section);
-        await ctx.reply(`⬅ *${section}*`, { attachments: [menu] });
-        return;
+   // Обработка кнопки "Назад"
+if (data.startsWith('back_')) {
+    const section = data.replace('back_', '');
+    const result = buildSubMenu(section);
+    if (result.type === 'direct') {
+        await ctx.reply(`📌 *${section}:*\n\n${result.value}`);
+        const mainMenu = buildMainMenu();
+        await ctx.reply('🏠 *Главное меню:*', { attachments: [mainMenu] });
+    } else {
+        await ctx.reply(`⬅ *${section}*`, { attachments: [result.keyboard] });
     }
+    return;
+}
 
     // Обработка выбора подраздела
     if (data.startsWith('sub_')) {
@@ -142,10 +169,16 @@ bot.on('message_callback', async (ctx) => {
     // Обработка выбора раздела (главное меню)
     const sections = [...new Set(menuData.map(row => row['Раздел']))];
     if (sections.includes(data)) {
-        const menu = buildSubMenu(data);
-        await ctx.reply(`📂 *${data}*`, { attachments: [menu] });
-        return;
+    const result = buildSubMenu(data);
+    if (result.type === 'direct') {
+        await ctx.reply(`📌 *${data}:*\n\n${result.value}`);
+        const mainMenu = buildMainMenu();
+        await ctx.reply('🏠 *Главное меню:*', { attachments: [mainMenu] });
+    } else {
+        await ctx.reply(`📂 *${data}*`, { attachments: [result.keyboard] });
     }
+    return;
+}
 
     // Обработка выбора пункта (детали)
     if (data.startsWith('item_') || data.startsWith('detail_')) {
