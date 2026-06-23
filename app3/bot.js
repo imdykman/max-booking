@@ -188,16 +188,12 @@ if (data.startsWith('back_')) {
         const itemName = parts.slice(2).join('_');
         
         let value = '';
-        if (data.startsWith('item_')) {
-            const row = menuData.find(r => r['Раздел'] === section && r['Пункт'] === itemName);
-            value = row ? row['Значение'] : 'Информация отсутствует';
-        } else {
-            const row = menuData.find(r => r['Пункт'] === itemName);
-            value = row ? row['Значение'] : 'Информация отсутствует';
-        }
+        // Теперь для обоих случаев ищем с учётом раздела
+        const row = menuData.find(r => r['Раздел'] === section && r['Пункт'] === itemName);
+        value = row ? row['Значение'] : 'Информация отсутствует';
 
         await ctx.reply(`📌 *${itemName}:*\n\n${value}`);
-        // Возвращаем предыдущий уровень
+        // Возвращаем главное меню
         const menu = buildMainMenu();
         await ctx.reply('🏠 *Главное меню:*', { attachments: [menu] });
         return;
