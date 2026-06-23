@@ -5,7 +5,8 @@ process.stderr.setDefaultEncoding('utf8');
 const { Bot, Keyboard } = require('@maxhub/max-bot-api');
 const XLSX = require('xlsx');
 const path = require('path');
-require('dotenv').config();
+
+// require('dotenv').config(); // ← больше не нужно
 
 console.log('🚀 Бот запускается...');
 
