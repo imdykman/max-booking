@@ -181,6 +181,30 @@ if (data.startsWith('back_')) {
     return;
 }
 
+// Обработка выбора пункта (item_)
+if (data.startsWith('item_')) {
+    const parts = data.split('_');
+    const section = parts[1];
+    const itemName = parts.slice(2).join('_').trim();
+    
+    let value = '';
+    const row = menuData.find(r => 
+        r['Раздел'] === section && 
+        r['Пункт'] && 
+        r['Пункт'].trim() === itemName
+    );
+    value = row ? row['Значение'] : 'Информация отсутствует.';
+
+    if (!value || value.trim() === '') {
+        value = 'ℹ️ Информация по этому вопросу временно отсутствует.';
+    }
+
+    await ctx.reply(`📌 *${itemName}:*\n\n${value}`);
+    const menu = buildMainMenu();
+    await ctx.reply('🏠 *Главное меню:*', { attachments: [menu] });
+    return;
+}
+
     // Обработка выбора пункта (детали)
 if (data.startsWith('detail_')) {
     const parts = data.split('_');
