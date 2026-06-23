@@ -100,10 +100,10 @@ function buildItemMenu(section, subsection) {
     const buttons = [];
     for (const row of items) {
         if (row['Пункт']) {
-            buttons.push([Keyboard.button.callback(row['Пункт'], `detail_${section}_${row['Пункт']}`)]);
+            // Передаём и раздел, и подраздел, и пункт
+            buttons.push([Keyboard.button.callback(row['Пункт'], `detail_${section}_${subsection}_${row['Пункт']}`)]);
         }
     }
-    // Добавляем кнопки навигации
     buttons.push([Keyboard.button.callback('⬅ Назад', `back_${section}`)]);
     buttons.push([Keyboard.button.callback('🏠 Главное меню', 'main_menu')]);
     return Keyboard.inlineKeyboard(buttons);
@@ -182,22 +182,26 @@ if (data.startsWith('back_')) {
 }
 
     // Обработка выбора пункта (детали)
-    if (data.startsWith('item_') || data.startsWith('detail_')) {
-        const parts = data.split('_');
-        const section = parts[1];
-        const itemName = parts.slice(2).join('_');
-        
-        let value = '';
-        // Теперь для обоих случаев ищем с учётом раздела
-        const row = menuData.find(r => r['Раздел'] === section && r['Пункт'] === itemName);
-        value = row ? row['Значение'] : 'Информация отсутствует';
+if (data.startsWith('detail_')) {
+    const parts = data.split('_');
+    const section = parts[1];
+    const subsection = parts[2];
+    const itemName = parts.slice(3).join('_').trim();
+    
+    let value = '';
+    const row = menuData.find(r => 
+        r['Раздел'] === section && 
+        r['Подраздел'] === subsection && 
+        r['Пункт'] && 
+        r['Пункт'].trim() === itemName
+    );
+    value = row ? row['Значение'] : 'Информация отсутствует';
 
-        await ctx.reply(`📌 *${itemName}:*\n\n${value}`);
-        // Возвращаем главное меню
-        const menu = buildMainMenu();
-        await ctx.reply('🏠 *Главное меню:*', { attachments: [menu] });
-        return;
-    }
+    await ctx.reply(`📌 *${itemName}:*\n\n${value}`);
+    const menu = buildMainMenu();
+    await ctx.reply('🏠 *Главное меню:*', { attachments: [menu] });
+    return;
+}
 
     await ctx.reply('❓ Неизвестная команда.');
 });
