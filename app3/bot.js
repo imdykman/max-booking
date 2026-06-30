@@ -178,27 +178,6 @@ bot.on("message_callback", async (ctx) => {
     return;
   }
 
-  // ========== ОБРАБОТКА ЛЮБЫХ ТЕКСТОВЫХ СООБЩЕНИЙ ==========
-  bot.on("message_created", async (ctx) => {
-    // Игнорируем команды (начинаются с /)
-    const text = ctx.message?.body?.text || "";
-    if (text.startsWith("/")) return;
-
-    console.log(`💬 Получен текст: "${text}"`);
-
-    // Все остальные сообщения — показываем главное меню
-    if (menuData.length === 0) {
-      await ctx.reply("❌ Данные не загружены. Обратитесь к администратору.");
-      return;
-    }
-
-    const sections = [...new Set(menuData.map((row) => row["Раздел"]))];
-    const welcomeText = `🎓 *${process.env.BOT_NAME || "Приёмная комиссия"}*\n\nДоступные разделы:`;
-    await ctx.reply(welcomeText);
-    const menu = buildMainMenu();
-    await ctx.reply("👇 Выберите раздел:", { attachments: [menu] });
-  });
-
   // Обработка кнопки "Назад"
   if (data.startsWith("back_")) {
     const section = data.replace("back_", "");
@@ -284,6 +263,27 @@ bot.on("message_callback", async (ctx) => {
   }
 
   await ctx.reply("❓ Неизвестная команда.");
+});
+
+// ========== ОБРАБОТКА ЛЮБЫХ ТЕКСТОВЫХ СООБЩЕНИЙ ==========
+bot.on("message_created", async (ctx) => {
+  // Игнорируем команды (начинаются с /)
+  const text = ctx.message?.body?.text || "";
+  if (text.startsWith("/")) return;
+
+  console.log(`💬 Получен текст: "${text}"`);
+
+  // Все остальные сообщения — показываем главное меню
+  if (menuData.length === 0) {
+    await ctx.reply("❌ Данные не загружены. Обратитесь к администратору.");
+    return;
+  }
+
+  const sections = [...new Set(menuData.map((row) => row["Раздел"]))];
+  const welcomeText = `🎓 *${process.env.BOT_NAME || "Приёмная комиссия"}*\n\nДоступные разделы:`;
+  await ctx.reply(welcomeText);
+  const menu = buildMainMenu();
+  await ctx.reply("👇 Выберите раздел:", { attachments: [menu] });
 });
 
 bot.start();
